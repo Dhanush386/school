@@ -117,13 +117,7 @@ const OnlinePayment = () => {
         </div>
       )}
 
-      {/* Footer Logo equivalent */}
-      <div className="w-full max-w-4xl flex justify-end mt-12 mb-4">
-        <div className="flex items-center text-[#0033cc] font-bold text-xs gap-2">
-          <div className="w-4 h-4 bg-gradient-to-br from-green-500 to-blue-600 clip-triangle"></div>
-          Developed by Aveon Infotech Pvt Ltd.
-        </div>
-      </div>
+
 
       <style jsx>{`
         .clip-triangle {
