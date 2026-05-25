@@ -123,6 +123,28 @@ app.use('/api/transport',  transportRoutes);
 app.use('/api/complaints', complaintsRoutes);
 app.use('/api/cron',       cronRoutes);
 
+// TEMPORARY SEED ROUTE
+const User = require('./models/User');
+app.get('/api/seed', async (req, res) => {
+  try {
+    const userCount = await User.countDocuments();
+    if (userCount > 0) {
+      return res.status(200).json({ message: "Database already seeded!" });
+    }
+    const usersData = [
+      { name: 'Alice Johnson', loginId: 'STU001', role: 'student', department: 'Computer Science', password: 'STU001', mustChangePassword: false, isActive: true },
+      { name: 'Bob Smith', loginId: 'TCH001', role: 'teacher', department: 'Computer Science', password: 'TCH001', mustChangePassword: false, isActive: true },
+      { name: 'Dr. Carol White', loginId: 'PRN001', role: 'principal', department: 'Administration', password: 'PRN001', mustChangePassword: false, isActive: true },
+      { name: 'Dave Admin', loginId: 'ADM001', role: 'admin', department: 'IT Support', password: 'ADM001', mustChangePassword: false, isActive: true }
+    ];
+    await User.insertMany(usersData);
+    res.status(200).json({ message: "Database seeded successfully with default users!", users: usersData });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // ---------------------------------------------------------------------------
 // 8. Health-check endpoint (no auth required)
 // ---------------------------------------------------------------------------
