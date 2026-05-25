@@ -72,9 +72,11 @@ const Login = () => {
           {/* Logo */}
           <img src="/logo.jpeg" alt="Vidhya Vikas Logo" className="w-20 h-20 md:w-24 md:h-24 object-contain rounded-full mb-3" />
           
-          <h1 className="text-lg md:text-xl font-bold text-slate-700 mb-4 uppercase tracking-wider">
-            VIDHYA VIKAS MATRIC HR. SEC. SCHOOL
-          </h1>
+          <div className="w-full overflow-hidden mb-4">
+            <h1 className="text-lg md:text-xl font-bold text-slate-700 uppercase tracking-wider animate-marquee whitespace-nowrap">
+              VIDHYA VIKAS MATRIC HR. SEC. SCHOOL
+            </h1>
+          </div>
 
           {/* Login Card */}
           <div className="bg-white p-6 md:p-8 rounded shadow-lg w-full border border-slate-200">

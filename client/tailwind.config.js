@@ -117,6 +117,7 @@ export default {
         'spin-slow':  'spin 3s linear infinite',
         'bounce-sm':  'bounceSm 1s infinite',
         'shimmer':    'shimmer 2s linear infinite',
+        'marquee':    'marquee 15s linear infinite',
       },
 
       keyframes: {
@@ -135,6 +136,10 @@ export default {
         shimmer: {
           '0%':   { backgroundPosition: '-200% 0' },
           '100%': { backgroundPosition:  '200% 0' },
+        },
+        marquee: {
+          '0%':   { transform: 'translateX(100%)' },
+          '100%': { transform: 'translateX(-100%)' },
         },
       },
 
