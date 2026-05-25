@@ -87,11 +87,23 @@ const notifyPendingCertificates = async () => {
   }
 };
 
+const runAllCronJobs = async () => {
+  initModels();
+  log('Running serverless cron jobs...');
+  await Promise.allSettled([
+    notifyPendingCertificates(),
+    markOverdueBooks(),
+    markOverdueFees(),
+  ]);
+  log('Finished serverless cron jobs.');
+};
+
 /**
  * Initialize all cron jobs.
  * Call this once after DB is connected.
  */
 const initCronJobs = () => {
+  if (process.env.VERCEL) return; // Vercel uses the API endpoint instead
   initModels();
 
   // Daily at 07:00 AM
@@ -115,4 +127,4 @@ const initCronJobs = () => {
   log('All cron jobs initialized (timezone: Asia/Kolkata)');
 };
 
-module.exports = { initCronJobs };
+module.exports = { initCronJobs, runAllCronJobs };

@@ -71,6 +71,10 @@ export const SocketProvider = ({ children }) => {
 
     newSocket.on('connect_error', (err) => {
       console.warn('[Socket] Connection error:', err.message);
+      if (err.message.includes('404') || err.message.includes('Not Found') || err.message === 'xhr poll error') {
+        console.log('[Socket] Disabling reconnection attempts (Serverless environment detected).');
+        newSocket.disconnect();
+      }
     });
 
     newSocket.on('notification', (notification) => {

@@ -42,6 +42,7 @@ const libraryRoutes    = require('./routes/library.routes');
 const feedbackRoutes   = require('./routes/feedback.routes');
 const transportRoutes  = require('./routes/transport.routes');
 const complaintsRoutes = require('./routes/complaint.routes');
+const cronRoutes       = require('./routes/cron.routes');
 const { initCronJobs } = require('./cron/reminderJobs');
 
 // ---------------------------------------------------------------------------
@@ -53,24 +54,23 @@ const server = http.createServer(app);
 // ---------------------------------------------------------------------------
 // 5. Socket.io setup
 // ---------------------------------------------------------------------------
-const io = new Server(server, {
-  cors: {
-    origin:  process.env.NODE_ENV === 'production'
-      ? process.env.CLIENT_ORIGIN   // set in production .env
-      : '*',                        // allow all origins in development
-    methods: ['GET', 'POST'],
-    credentials: true,
-  },
-  // Reconnection handled on client side; ping timeout tuned for LAN + mobile
-  pingTimeout:  60000,
-  pingInterval: 25000,
-});
+let io = null;
+if (!process.env.VERCEL) {
+  io = new Server(server, {
+    cors: {
+      origin:  process.env.NODE_ENV === 'production'
+        ? process.env.CLIENT_ORIGIN
+        : '*',
+      methods: ['GET', 'POST'],
+      credentials: true,
+    },
+    pingTimeout:  60000,
+    pingInterval: 25000,
+  });
 
-// Attach all socket event listeners
-socketHandler(io);
-
-// Make io accessible inside route handlers via req.app.get('io')
-app.set('io', io);
+  socketHandler(io);
+  app.set('io', io);
+}
 
 // ---------------------------------------------------------------------------
 // 6. Global middleware
@@ -101,6 +101,18 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // ---------------------------------------------------------------------------
 // 7. API routes
 // ---------------------------------------------------------------------------
+// Vercel Serverless: ensure DB is connected before any routes are hit
+if (process.env.VERCEL) {
+  app.use(async (req, res, next) => {
+    try {
+      await connectDB();
+      next();
+    } catch (err) {
+      next(err);
+    }
+  });
+}
+
 app.use('/api/auth',       authRoutes);
 app.use('/api/academic',   academicRoutes);
 app.use('/api/fees',       feesRoutes);
@@ -109,6 +121,7 @@ app.use('/api/library',    libraryRoutes);
 app.use('/api/feedback',   feedbackRoutes);
 app.use('/api/transport',  transportRoutes);
 app.use('/api/complaints', complaintsRoutes);
+app.use('/api/cron',       cronRoutes);
 
 // ---------------------------------------------------------------------------
 // 8. Health-check endpoint (no auth required)
@@ -119,7 +132,7 @@ app.get('/api/health', (req, res) => {
     message:     'School ERP API is running',
     environment: process.env.NODE_ENV,
     timestamp:   new Date().toISOString(),
-    onlineUsers: require('./socket/socketHandler').getOnlineUsers().length,
+    onlineUsers: !process.env.VERCEL ? require('./socket/socketHandler').getOnlineUsers().length : 0,
   });
 });
 
@@ -142,57 +155,55 @@ app.use(errorHandler);
 // ---------------------------------------------------------------------------
 const PORT = process.env.PORT || 5000;
 
-const startServer = async () => {
-  await connectDB();
-  initCronJobs();
+if (process.env.VERCEL) {
+  // Export the Express app for Vercel Serverless
+  module.exports = app;
+} else {
+  // Start long-running server
+  const startServer = async () => {
+    await connectDB();
+    initCronJobs();
 
-  server.listen(PORT, () => {
-    console.log(
-      `🚀 School ERP server running in ${process.env.NODE_ENV} mode on port ${PORT}`
-    );
-    console.log(`   Health check: http://localhost:${PORT}/api/health`);
+    server.listen(PORT, () => {
+      console.log(
+        `🚀 School ERP server running in ${process.env.NODE_ENV} mode on port ${PORT}`
+      );
+      console.log(`   Health check: http://localhost:${PORT}/api/health`);
+    });
+  };
+
+  startServer();
+
+  // Graceful shutdown
+  const gracefulShutdown = (signal) => {
+    console.log(`\n⚙️  Received ${signal}. Shutting down gracefully…`);
+
+    server.close(async () => {
+      console.log('✅  HTTP server closed.');
+
+      try {
+        const mongoose = require('mongoose');
+        await mongoose.connection.close();
+        console.log('✅  MongoDB connection closed.');
+      } catch (err) {
+        console.error('❌  Error closing MongoDB connection:', err.message);
+      }
+
+      process.exit(0);
+    });
+
+    setTimeout(() => {
+      console.error('❌  Could not close connections in time. Forcing exit.');
+      process.exit(1);
+    }, 10_000);
+  };
+
+  process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+  process.on('SIGINT',  () => gracefulShutdown('SIGINT'));
+
+  process.on('unhandledRejection', (reason) => {
+    console.error('❌  Unhandled Promise Rejection:', reason);
   });
-};
-
-startServer();
-
-// ---------------------------------------------------------------------------
-// 12. Graceful shutdown
-//     Closes the HTTP server and Mongoose connection before exiting so that
-//     in-flight requests finish and the DB connection is released cleanly.
-// ---------------------------------------------------------------------------
-const gracefulShutdown = (signal) => {
-  console.log(`\n⚙️  Received ${signal}. Shutting down gracefully…`);
-
-  server.close(async () => {
-    console.log('✅  HTTP server closed.');
-
-    try {
-      const mongoose = require('mongoose');
-      await mongoose.connection.close();
-      console.log('✅  MongoDB connection closed.');
-    } catch (err) {
-      console.error('❌  Error closing MongoDB connection:', err.message);
-    }
-
-    process.exit(0);
-  });
-
-  // Force-kill if the server hasn't closed within 10 s
-  setTimeout(() => {
-    console.error('❌  Could not close connections in time. Forcing exit.');
-    process.exit(1);
-  }, 10_000);
-};
-
-process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
-process.on('SIGINT',  () => gracefulShutdown('SIGINT'));
-
-// Catch unhandled promise rejections (safety net; routes use express-async-errors)
-process.on('unhandledRejection', (reason) => {
-  console.error('❌  Unhandled Promise Rejection:', reason);
-  // In production you may want to exit and let the process manager restart
-  // process.exit(1);
-});
-
-module.exports = { app, server, io }; // exported for testing
+  
+  module.exports = { app, server, io }; // exported for testing
+}
