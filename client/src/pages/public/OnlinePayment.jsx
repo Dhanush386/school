@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const OnlinePayment = () => {
   const [username, setUsername] = useState('');
@@ -54,12 +55,21 @@ const OnlinePayment = () => {
               />
             </div>
 
-            <button 
-              type="submit"
-              className="bg-[#f27b21] hover:bg-[#d96614] text-white font-bold py-2 px-6 rounded-md shadow h-10 text-sm whitespace-nowrap"
-            >
-              View Fees
-            </button>
+            <div className="flex gap-4">
+              <button 
+                type="submit"
+                className="bg-[#f27b21] hover:bg-[#d96614] text-white font-bold py-2 px-6 rounded-md shadow h-10 text-sm whitespace-nowrap"
+              >
+                View Fees
+              </button>
+              
+              <Link 
+                to="/"
+                className="bg-[#0033cc] hover:bg-[#002299] text-white font-bold py-2 px-6 rounded-md shadow h-10 text-sm whitespace-nowrap flex items-center justify-center"
+              >
+                Home Page
+              </Link>
+            </div>
           </form>
 
           <p className="text-red-600 font-bold text-sm mb-6">
