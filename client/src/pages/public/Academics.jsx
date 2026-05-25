@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { MdEmail, MdPhone, MdNotificationsActive, MdPerson } from 'react-icons/md';
+import { MdEmail, MdPhone, MdPerson } from 'react-icons/md';
 import { FaWhatsapp } from 'react-icons/fa';
+import PublicHeader from '../../components/layout/PublicHeader';
 
 const Academics = () => {
-  const [vvmsMenuOpen, setVvmsMenuOpen] = useState(false);
 
   const academicLevels = [
     {
@@ -47,44 +47,7 @@ const Academics = () => {
       </div>
 
       {/* Main Header */}
-      <header className="bg-white text-[#0f2a4a] py-4 px-6 shadow-md flex items-center justify-between sticky top-0 z-50">
-        <div className="flex items-center gap-3">
-          <img src="/logo.jpeg" alt="Vidhya Vikas Logo" className="h-12 w-12 object-contain rounded-full" />
-          <div className="flex flex-col uppercase">
-            <span className="font-bold text-3xl leading-none">Vidhya Vikas</span>
-            <span className="font-semibold text-xs leading-tight tracking-wide">Matric Hr. Sec School</span>
-          </div>
-        </div>
-
-        {/* Desktop Navigation */}
-        <nav className="hidden xl:flex items-center gap-6 font-bold text-sm tracking-wide">
-          <Link to="/" className="hover:text-[#28a745] transition-colors pb-1">HOME</Link>
-          <div className="relative">
-            <button 
-              onClick={() => setVvmsMenuOpen(!vvmsMenuOpen)}
-              className={`hover:text-[#28a745] transition-colors pb-1 flex items-center ${vvmsMenuOpen ? 'text-[#28a745] border-b-2 border-[#28a745]' : ''}`}
-            >
-              VVMS
-            </button>
-            {vvmsMenuOpen && (
-              <div className="absolute top-full left-0 mt-5 w-64 bg-gray-100 shadow-xl flex flex-col py-2 z-50 text-sm">
-                <Link to="/about-us" className="px-6 py-3 text-slate-700 hover:bg-gray-200 transition-colors font-normal border-l-4 border-transparent hover:border-[#28a745]">About Us</Link>
-                <Link to="/vision-mission" className="px-6 py-3 text-slate-700 hover:bg-gray-200 transition-colors font-normal border-l-4 border-transparent hover:border-[#28a745]">Vision, Mission & Quality Policy</Link>
-                <Link to="/administration" className="px-6 py-3 text-slate-700 hover:bg-gray-200 transition-colors font-normal border-l-4 border-transparent hover:border-[#28a745]">Administration</Link>
-                <Link to="/facilities" className="px-6 py-3 text-slate-700 hover:bg-gray-200 transition-colors font-normal border-l-4 border-transparent hover:border-[#28a745]">Facilities</Link>
-                <a href="#" className="px-6 py-3 text-slate-700 hover:bg-gray-200 transition-colors font-normal border-l-4 border-transparent hover:border-[#28a745]">Admission</a>
-                <a href="#" className="px-6 py-3 text-slate-700 hover:bg-gray-200 transition-colors font-normal border-l-4 border-transparent hover:border-[#28a745]">Organogram</a>
-              </div>
-            )}
-          </div>
-          <Link to="/academics" className="text-[#28a745] border-b-2 border-[#28a745] transition-colors pb-1">ACADEMICS</Link>
-          <a href="#" className="hover:text-[#28a745] transition-colors pb-1">LIFE @ VVMS</a>
-          <a href="#" className="hover:text-[#28a745] transition-colors pb-1">VVMS-TBI</a>
-          <a href="#" className="hover:text-[#28a745] transition-colors pb-1">PLACEMENTS</a>
-          <a href="#" className="hover:text-[#28a745] transition-colors pb-1">STUDENTS' SPACE</a>
-          <a href="#" className="hover:text-[#28a745] transition-colors pb-1">CONTACT US</a>
-        </nav>
-      </header>
+      <PublicHeader />
 
       {/* Hero Image Section */}
       <div className="relative h-[250px] bg-slate-900 flex flex-col justify-end p-10" style={{
