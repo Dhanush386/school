@@ -49,7 +49,6 @@ const PublicHeader = () => {
                 <Link to="/administration" className="px-6 py-3 text-slate-700 hover:bg-gray-200 transition-colors font-normal border-l-4 border-transparent hover:border-[#28a745]">Administration</Link>
                 <Link to="/facilities" className="px-6 py-3 text-slate-700 hover:bg-gray-200 transition-colors font-normal border-l-4 border-transparent hover:border-[#28a745]">Facilities</Link>
                 <a href="#" className="px-6 py-3 text-slate-700 hover:bg-gray-200 transition-colors font-normal border-l-4 border-transparent hover:border-[#28a745]">Admission</a>
-                <a href="#" className="px-6 py-3 text-slate-700 hover:bg-gray-200 transition-colors font-normal border-l-4 border-transparent hover:border-[#28a745]">Organogram</a>
               </div>
             )}
           </div>
@@ -89,7 +88,6 @@ const PublicHeader = () => {
                 <Link to="/administration" onClick={() => setMobileMenuOpen(false)} className="px-10 py-3 border-b border-gray-100 hover:text-[#28a745]">Administration</Link>
                 <Link to="/facilities" onClick={() => setMobileMenuOpen(false)} className="px-10 py-3 border-b border-gray-100 hover:text-[#28a745]">Facilities</Link>
                 <a href="#" onClick={() => setMobileMenuOpen(false)} className="px-10 py-3 border-b border-gray-100 hover:text-[#28a745]">Admission</a>
-                <a href="#" onClick={() => setMobileMenuOpen(false)} className="px-10 py-3 hover:text-[#28a745]">Organogram</a>
               </div>
             )}
           </div>
