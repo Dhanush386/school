@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { MdMenu, MdClose, MdKeyboardArrowDown } from 'react-icons/md';
 
@@ -6,6 +6,18 @@ const PublicHeader = () => {
   const [vvmsMenuOpen, setVvmsMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileVvmsOpen, setMobileVvmsOpen] = useState(false);
+
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setVvmsMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
     <header className="bg-white text-[#0f2a4a] py-4 px-6 shadow-md sticky top-0 z-50">
@@ -23,9 +35,8 @@ const PublicHeader = () => {
         <nav className="hidden xl:flex items-center gap-6 font-bold text-sm tracking-wide">
           <Link to="/" className="hover:text-[#28a745] transition-colors pb-1">HOME</Link>
           
-          <div className="relative" onMouseLeave={() => setVvmsMenuOpen(false)}>
+          <div className="relative" ref={dropdownRef}>
             <button 
-              onMouseEnter={() => setVvmsMenuOpen(true)}
               onClick={() => setVvmsMenuOpen(!vvmsMenuOpen)}
               className={`hover:text-[#28a745] transition-colors pb-1 flex items-center gap-1 ${vvmsMenuOpen ? 'text-[#28a745] border-b-2 border-[#28a745]' : ''}`}
             >
