@@ -6,13 +6,19 @@ const PublicHeader = () => {
   const [vvmsMenuOpen, setVvmsMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileVvmsOpen, setMobileVvmsOpen] = useState(false);
+  const [studentsMenuOpen, setStudentsMenuOpen] = useState(false);
+  const [mobileStudentsOpen, setMobileStudentsOpen] = useState(false);
 
   const dropdownRef = useRef(null);
+  const studentsDropdownRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setVvmsMenuOpen(false);
+      }
+      if (studentsDropdownRef.current && !studentsDropdownRef.current.contains(event.target)) {
+        setStudentsMenuOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -56,7 +62,25 @@ const PublicHeader = () => {
           <Link to="/academics" className="hover:text-[#28a745] transition-colors pb-1">ACADEMICS</Link>
           <a href="#" className="hover:text-[#28a745] transition-colors pb-1">LIFE @ VVMS</a>
           <a href="#" className="hover:text-[#28a745] transition-colors pb-1">VVMS-TBI</a>
-          <a href="#" className="hover:text-[#28a745] transition-colors pb-1">STUDENTS' SPACE</a>
+          
+          <div className="relative" ref={studentsDropdownRef}>
+            <button 
+              onClick={() => setStudentsMenuOpen(!studentsMenuOpen)}
+              className={`hover:text-[#28a745] transition-colors pb-1 flex items-center gap-1 ${studentsMenuOpen ? 'text-[#28a745] border-b-2 border-[#28a745]' : ''}`}
+            >
+              STUDENTS' SPACE <MdKeyboardArrowDown />
+            </button>
+            {studentsMenuOpen && (
+              <div className="absolute top-full left-0 mt-2 w-56 bg-gray-100 shadow-xl flex flex-col py-2 z-50 text-sm">
+                <Link to="/login" className="px-6 py-3 text-slate-700 hover:bg-gray-200 transition-colors font-normal border-l-4 border-transparent hover:border-[#28a745]">CMS Login</Link>
+                <a href="#" className="px-6 py-3 text-slate-700 hover:bg-gray-200 transition-colors font-normal border-l-4 border-transparent hover:border-[#28a745]">AUERC</a>
+                <a href="#" className="px-6 py-3 text-slate-700 hover:bg-gray-200 transition-colors font-normal border-l-4 border-transparent hover:border-[#28a745]">Online Payment</a>
+                <a href="#" className="px-6 py-3 text-slate-700 hover:bg-gray-200 transition-colors font-normal border-l-4 border-transparent hover:border-[#28a745]">Examination</a>
+                <a href="#" className="px-6 py-3 text-slate-700 hover:bg-gray-200 transition-colors font-normal border-l-4 border-transparent hover:border-[#28a745]">Results</a>
+              </div>
+            )}
+          </div>
+
           <a href="#" className="hover:text-[#28a745] transition-colors pb-1">CONTACT US</a>
         </nav>
 
@@ -95,7 +119,25 @@ const PublicHeader = () => {
           <Link to="/academics" onClick={() => setMobileMenuOpen(false)} className="px-6 py-4 border-b border-gray-100 hover:bg-gray-50 hover:text-[#28a745]">ACADEMICS</Link>
           <a href="#" onClick={() => setMobileMenuOpen(false)} className="px-6 py-4 border-b border-gray-100 hover:bg-gray-50 hover:text-[#28a745]">LIFE @ VVMS</a>
           <a href="#" onClick={() => setMobileMenuOpen(false)} className="px-6 py-4 border-b border-gray-100 hover:bg-gray-50 hover:text-[#28a745]">VVMS-TBI</a>
-          <a href="#" onClick={() => setMobileMenuOpen(false)} className="px-6 py-4 border-b border-gray-100 hover:bg-gray-50 hover:text-[#28a745]">STUDENTS' SPACE</a>
+          
+          <div className="flex flex-col border-b border-gray-100">
+            <button 
+              onClick={() => setMobileStudentsOpen(!mobileStudentsOpen)}
+              className="px-6 py-4 flex items-center justify-between hover:bg-gray-50 hover:text-[#28a745] w-full text-left"
+            >
+              STUDENTS' SPACE <MdKeyboardArrowDown className={`text-xl transition-transform ${mobileStudentsOpen ? 'rotate-180' : ''}`} />
+            </button>
+            {mobileStudentsOpen && (
+              <div className="flex flex-col bg-gray-50 text-slate-600 font-normal">
+                <Link to="/login" onClick={() => setMobileMenuOpen(false)} className="px-10 py-3 border-b border-gray-100 hover:text-[#28a745]">CMS Login</Link>
+                <a href="#" onClick={() => setMobileMenuOpen(false)} className="px-10 py-3 border-b border-gray-100 hover:text-[#28a745]">AUERC</a>
+                <a href="#" onClick={() => setMobileMenuOpen(false)} className="px-10 py-3 border-b border-gray-100 hover:text-[#28a745]">Online Payment</a>
+                <a href="#" onClick={() => setMobileMenuOpen(false)} className="px-10 py-3 border-b border-gray-100 hover:text-[#28a745]">Examination</a>
+                <a href="#" onClick={() => setMobileMenuOpen(false)} className="px-10 py-3 border-b border-gray-100 hover:text-[#28a745]">Results</a>
+              </div>
+            )}
+          </div>
+
           <a href="#" onClick={() => setMobileMenuOpen(false)} className="px-6 py-4 hover:bg-gray-50 hover:text-[#28a745]">CONTACT US</a>
         </nav>
       )}
