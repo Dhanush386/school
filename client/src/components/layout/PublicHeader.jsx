@@ -72,7 +72,7 @@ const PublicHeader = () => {
             </button>
             {studentsMenuOpen && (
               <div className="absolute top-full left-0 mt-2 w-56 bg-gray-100 shadow-xl flex flex-col py-2 z-50 text-sm">
-                <Link to="/login" className="px-6 py-3 text-slate-700 hover:bg-gray-200 transition-colors font-normal border-l-4 border-transparent hover:border-[#28a745]">CMS Login</Link>
+                <Link to="/login" className="px-6 py-3 text-slate-700 hover:bg-gray-200 transition-colors font-normal border-l-4 border-transparent hover:border-[#28a745]">VVMS Login</Link>
                 <a href="#" className="px-6 py-3 text-slate-700 hover:bg-gray-200 transition-colors font-normal border-l-4 border-transparent hover:border-[#28a745]">AUERC</a>
                 <Link to="/online-payment" className="px-6 py-3 text-slate-700 hover:bg-gray-200 transition-colors font-normal border-l-4 border-transparent hover:border-[#28a745]">Online Payment</Link>
                 <a href="#" className="px-6 py-3 text-slate-700 hover:bg-gray-200 transition-colors font-normal border-l-4 border-transparent hover:border-[#28a745]">Examination</a>
@@ -129,7 +129,7 @@ const PublicHeader = () => {
             </button>
             {mobileStudentsOpen && (
               <div className="flex flex-col bg-gray-50 text-slate-600 font-normal">
-                <Link to="/login" onClick={() => setMobileMenuOpen(false)} className="px-10 py-3 border-b border-gray-100 hover:text-[#28a745]">CMS Login</Link>
+                <Link to="/login" onClick={() => setMobileMenuOpen(false)} className="px-10 py-3 border-b border-gray-100 hover:text-[#28a745]">VVMS Login</Link>
                 <a href="#" onClick={() => setMobileMenuOpen(false)} className="px-10 py-3 border-b border-gray-100 hover:text-[#28a745]">AUERC</a>
                 <Link to="/online-payment" onClick={() => setMobileMenuOpen(false)} className="px-10 py-3 border-b border-gray-100 hover:text-[#28a745]">Online Payment</Link>
                 <a href="#" onClick={() => setMobileMenuOpen(false)} className="px-10 py-3 border-b border-gray-100 hover:text-[#28a745]">Examination</a>
