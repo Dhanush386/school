@@ -46,7 +46,6 @@ const PublicHeader = () => {
           <Link to="/academics" className="hover:text-[#28a745] transition-colors pb-1">ACADEMICS</Link>
           <a href="#" className="hover:text-[#28a745] transition-colors pb-1">LIFE @ VVMS</a>
           <a href="#" className="hover:text-[#28a745] transition-colors pb-1">VVMS-TBI</a>
-          <a href="#" className="hover:text-[#28a745] transition-colors pb-1">PLACEMENTS</a>
           <a href="#" className="hover:text-[#28a745] transition-colors pb-1">STUDENTS' SPACE</a>
           <a href="#" className="hover:text-[#28a745] transition-colors pb-1">CONTACT US</a>
         </nav>
@@ -87,7 +86,6 @@ const PublicHeader = () => {
           <Link to="/academics" onClick={() => setMobileMenuOpen(false)} className="px-6 py-4 border-b border-gray-100 hover:bg-gray-50 hover:text-[#28a745]">ACADEMICS</Link>
           <a href="#" onClick={() => setMobileMenuOpen(false)} className="px-6 py-4 border-b border-gray-100 hover:bg-gray-50 hover:text-[#28a745]">LIFE @ VVMS</a>
           <a href="#" onClick={() => setMobileMenuOpen(false)} className="px-6 py-4 border-b border-gray-100 hover:bg-gray-50 hover:text-[#28a745]">VVMS-TBI</a>
-          <a href="#" onClick={() => setMobileMenuOpen(false)} className="px-6 py-4 border-b border-gray-100 hover:bg-gray-50 hover:text-[#28a745]">PLACEMENTS</a>
           <a href="#" onClick={() => setMobileMenuOpen(false)} className="px-6 py-4 border-b border-gray-100 hover:bg-gray-50 hover:text-[#28a745]">STUDENTS' SPACE</a>
           <a href="#" onClick={() => setMobileMenuOpen(false)} className="px-6 py-4 hover:bg-gray-50 hover:text-[#28a745]">CONTACT US</a>
         </nav>
