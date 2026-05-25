@@ -25,6 +25,7 @@ const VisionMission  = lazy(() => import('../pages/public/VisionMission'));
 const Academics      = lazy(() => import('../pages/public/Academics'));
 const Administration = lazy(() => import('../pages/public/Administration'));
 const Facilities     = lazy(() => import('../pages/public/Facilities'));
+const OnlinePayment  = lazy(() => import('../pages/public/OnlinePayment'));
 
 // ── Dashboards
 const StudentDashboard     = lazy(() => import('../pages/dashboard/student/StudentDashboard'));
@@ -79,6 +80,7 @@ const AppRouter = () => (
       <Route path="/academics"       element={<Academics />} />
       <Route path="/administration"  element={<Administration />} />
       <Route path="/facilities"      element={<Facilities />} />
+      <Route path="/online-payment"  element={<OnlinePayment />} />
       <Route path="/login"           element={<Login />} />
       <Route path="/signup"          element={<Signup />} />
       <Route path="/change-password" element={<ChangePassword />} />
