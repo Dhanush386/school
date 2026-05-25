@@ -73,7 +73,7 @@ const Login = () => {
           <img src="/logo.jpeg" alt="Vidhya Vikas Logo" className="w-20 h-20 md:w-24 md:h-24 object-contain rounded-full mb-3" />
           
           <h1 className="text-lg md:text-xl font-bold text-slate-700 mb-4 uppercase tracking-wider">
-            VIDHYA VIKAS ERP
+            VIDHYA VIKAS MATRIC HR. SEC. SCHOOL
           </h1>
 
           {/* Login Card */}
