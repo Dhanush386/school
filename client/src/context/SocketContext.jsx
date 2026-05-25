@@ -46,8 +46,8 @@ export const SocketProvider = ({ children }) => {
       return;
     }
 
-    // Connect to the same origin (Vite proxy handles /socket.io → backend)
-    const newSocket = io('', {
+    // Connect to the API URL (Vite environment variable or same origin fallback)
+    const newSocket = io(import.meta.env.VITE_API_URL || '', {
       transports: ['websocket', 'polling'],
       autoConnect: true,
       reconnection: true,
