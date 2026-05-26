@@ -160,7 +160,7 @@ const StudentDashboard = () => {
         <div className="relative z-10 mt-5 grid grid-cols-3 gap-4">
           {[
             { label: 'Attendance', value: 88, color: '#6366f1' },
-            { label: 'Assignments', value: 73, color: '#8b5cf6' },
+            { label: 'Homework', value: 73, color: '#8b5cf6' },
             { label: 'Grade', value: 87, color: '#06b6d4' },
           ].map(item => (
             <div key={item.label}>
@@ -190,7 +190,7 @@ const StudentDashboard = () => {
         className="grid grid-cols-2 lg:grid-cols-4 gap-4"
       >
         <StatCard icon={MdCheckCircle} label="Attendance" value="88%" sub="23/26 days" color="from-primary-500 to-indigo-600" trend={3} />
-        <StatCard icon={MdAssignment} label="Assignments" value="11/15" sub="4 pending" color="from-violet-500 to-purple-600" trend={-5} />
+        <StatCard icon={MdAssignment} label="Homework" value="11/15" sub="4 pending" color="from-violet-500 to-purple-600" trend={-5} />
         <StatCard icon={MdPayment} label="Fees Due" value="₹8,500" sub="Due Jun 30" color="from-amber-500 to-orange-600" />
         <StatCard icon={MdLocalLibrary} label="Books Issued" value="3" sub="1 overdue" color="from-cyan-500 to-blue-600" />
       </motion.div>
@@ -328,7 +328,7 @@ const StudentDashboard = () => {
           style={{ background: 'rgba(30,41,59,0.8)' }}
         >
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-white font-semibold">Upcoming Assignments</h3>
+            <h3 className="text-white font-semibold">Upcoming Homework</h3>
             <Link to="/academic/assignments" className="text-primary-400 text-xs hover:text-primary-300 flex items-center gap-1">
               View all <MdArrowForward />
             </Link>

@@ -55,7 +55,7 @@ export const getSidebarMenu = (role) => {
         },
         {
           id: 'assignments',
-          label: 'Assignments',
+          label: 'Homework',
           icon: 'MdAssignment',
           path: '/academic/assignments',
         },

@@ -52,7 +52,7 @@ const quickActions = [
   { label: 'Question Bank', icon: MdQuiz, color: 'from-blue-600 to-blue-800' },
   { label: 'My Timetable', icon: MdSchedule, color: 'from-indigo-600 to-indigo-800' },
   { label: 'Apply Leave', icon: MdBeachAccess, color: 'from-pink-600 to-pink-800' },
-  { label: 'Assignments', icon: MdAssignment, color: 'from-purple-600 to-purple-800' },
+  { label: 'Homework', icon: MdAssignment, color: 'from-purple-600 to-purple-800' },
   { label: 'Mark Attendance', icon: MdCheckCircle, color: 'from-green-600 to-green-800' },
   { label: 'Lesson Plan', icon: MdBook, color: 'from-teal-600 to-teal-800' },
 ];

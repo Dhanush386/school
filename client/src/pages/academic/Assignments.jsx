@@ -44,8 +44,8 @@ const Assignments = () => {
     <div className="space-y-6">
       <motion.div variants={fadeInUp} initial="initial" animate="animate" className="flex items-start justify-between">
         <div>
-          <h1 className="text-white text-2xl font-bold">Assignments</h1>
-          <p className="text-slate-400 text-sm mt-1">{isTeacher ? 'Manage and review student assignments' : 'Your assignments and submissions'}</p>
+          <h1 className="text-white text-2xl font-bold">Homework</h1>
+          <p className="text-slate-400 text-sm mt-1">{isTeacher ? 'Manage and review student homework' : 'Your homework and submissions'}</p>
         </div>
         {isTeacher && (
           <button onClick={() => toast('Assignment creation coming soon!', { icon: '📋' })}
