@@ -39,7 +39,11 @@ const Academics = () => {
           </div>
         </div>
 
-        
+        <div className="flex items-center h-full">
+          <Link to="/login" className="bg-[#28a745] hover:bg-[#218838] text-white font-bold px-6 py-3 h-full flex items-center transition-colors">
+            VVMS LOGIN
+          </Link>
+        </div>
       </div>
 
       {/* Main Header */}
