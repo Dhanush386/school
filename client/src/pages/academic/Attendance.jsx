@@ -33,7 +33,7 @@ const Attendance = () => {
   const handleMark = (student, status) => setMarking(prev => ({ ...prev, [student]: status }));
 
   const handleSave = async () => {
-    await new Promise(r => setTimeout(r, 800));
+    await new Promise(r => setTimeout(r, 200));
     setSaved(true);
     toast.success('Attendance saved successfully!');
   };
@@ -57,11 +57,14 @@ const Attendance = () => {
           <motion.div variants={fadeInUp} className="rounded-2xl p-5 border border-white/5" style={{ background: 'rgba(30,41,59,0.8)' }}>
             <h3 className="text-white font-semibold mb-4">Overall Attendance</h3>
             <div className="flex items-center gap-6">
-              <ResponsiveContainer width="50%" height={140}>
-                <PieChart><Pie data={pieData} cx="50%" cy="50%" innerRadius={40} outerRadius={60} dataKey="value" paddingAngle={3}>
-                  {pieData.map((e, i) => <Cell key={i} fill={e.color} />)}
-                </Pie><Tooltip formatter={v => `${v}%`} /></PieChart>
-              </ResponsiveContainer>
+              <div style={{ width: 140, height: 140 }}>
+                <PieChart width={140} height={140}>
+                  <Pie data={pieData} cx="50%" cy="50%" innerRadius={40} outerRadius={60} dataKey="value" paddingAngle={3} isAnimationActive={false}>
+                    {pieData.map((e, i) => <Cell key={i} fill={e.color} />)}
+                  </Pie>
+                  <Tooltip formatter={v => `${v}%`} />
+                </PieChart>
+              </div>
               <div className="space-y-2">
                 {pieData.map(p => (
                   <div key={p.name} className="flex items-center gap-2">
