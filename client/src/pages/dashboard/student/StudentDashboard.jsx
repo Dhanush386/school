@@ -68,15 +68,15 @@ const StatCard = ({ icon: Icon, label, value, sub, color, trend }) => (
   <motion.div
     variants={staggerItem}
     whileHover={{ y: -4, scale: 1.02 }}
-    className="relative rounded-2xl p-5 overflow-hidden border border-white/5"
-    style={{ background: 'rgba(30,41,59,0.8)' }}
+    className="relative rounded-2xl p-5 overflow-hidden border border-slate-200"
+    style={{ background: 'rgba(255,255,255,1)' }}
   >
     <div className={`absolute top-0 right-0 w-32 h-32 rounded-full blur-3xl opacity-10 bg-gradient-to-br ${color}`} />
     <div className="flex items-start justify-between relative z-10">
       <div>
-        <p className="text-slate-400 text-xs font-medium uppercase tracking-wider">{label}</p>
-        <p className="text-white text-3xl font-bold mt-1">{value}</p>
-        {sub && <p className="text-slate-400 text-xs mt-1">{sub}</p>}
+        <p className="text-slate-500 text-xs font-medium uppercase tracking-wider">{label}</p>
+        <p className="text-slate-900 text-3xl font-bold mt-1">{value}</p>
+        {sub && <p className="text-slate-500 text-xs mt-1">{sub}</p>}
         {trend && (
           <div className={`flex items-center gap-1 mt-2 text-xs font-medium ${trend > 0 ? 'text-green-400' : 'text-red-400'}`}>
             <MdTrendingUp className={trend < 0 ? 'rotate-180' : ''} />
@@ -85,7 +85,7 @@ const StatCard = ({ icon: Icon, label, value, sub, color, trend }) => (
         )}
       </div>
       <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${color} flex items-center justify-center shadow-lg`}>
-        <Icon className="text-white text-xl" />
+        <Icon className="text-slate-900 text-xl" />
       </div>
     </div>
   </motion.div>
@@ -94,10 +94,10 @@ const StatCard = ({ icon: Icon, label, value, sub, color, trend }) => (
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload?.length) {
     return (
-      <div className="bg-slate-800 border border-white/10 rounded-xl px-3 py-2 shadow-xl">
-        <p className="text-slate-400 text-xs mb-1">{label}</p>
+      <div className="bg-white border border-slate-200 rounded-xl px-3 py-2 shadow-xl">
+        <p className="text-slate-500 text-xs mb-1">{label}</p>
         {payload.map(p => (
-          <p key={p.name} className="text-white text-sm font-semibold">
+          <p key={p.name} className="text-slate-900 text-sm font-semibold">
             {p.name}: <span style={{ color: p.color }}>{p.value}</span>
           </p>
         ))}
@@ -132,10 +132,10 @@ const StudentDashboard = () => {
         <div className="relative z-10 flex items-center justify-between">
           <div>
             <p className="text-primary-300 text-sm font-medium">Good {new Date().getHours() < 12 ? 'Morning' : new Date().getHours() < 17 ? 'Afternoon' : 'Evening'}, 👋</p>
-            <h1 className="text-white text-2xl font-bold mt-1">{user?.name}</h1>
-            <p className="text-slate-400 text-sm mt-1">{user?.department} · {user?.loginId} · Semester 4</p>
+            <h1 className="text-slate-900 text-2xl font-bold mt-1">{user?.name}</h1>
+            <p className="text-slate-500 text-sm mt-1">{user?.department} · {user?.loginId} · Semester 4</p>
             <div className="flex items-center gap-3 mt-4">
-              <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white/10 rounded-lg text-white text-xs">
+              <div className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 rounded-lg text-slate-900 text-xs">
                 <MdCalendarToday className="text-primary-400" />
                 AY 2024-25
               </div>
@@ -147,11 +147,11 @@ const StudentDashboard = () => {
           </div>
           <div className="hidden md:flex flex-col items-end gap-2">
             <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary-400 to-violet-500 flex items-center justify-center shadow-2xl">
-              <span className="text-white text-3xl font-black">{user?.name?.charAt(0)}</span>
+              <span className="text-slate-900 text-3xl font-black">{user?.name?.charAt(0)}</span>
             </div>
             <div className="text-center">
-              <div className="text-white text-xl font-bold">87.4%</div>
-              <div className="text-slate-400 text-xs">Overall Score</div>
+              <div className="text-slate-900 text-xl font-bold">87.4%</div>
+              <div className="text-slate-500 text-xs">Overall Score</div>
             </div>
           </div>
         </div>
@@ -165,10 +165,10 @@ const StudentDashboard = () => {
           ].map(item => (
             <div key={item.label}>
               <div className="flex justify-between mb-1">
-                <span className="text-slate-400 text-xs">{item.label}</span>
-                <span className="text-white text-xs font-bold">{item.value}%</span>
+                <span className="text-slate-500 text-xs">{item.label}</span>
+                <span className="text-slate-900 text-xs font-bold">{item.value}%</span>
               </div>
-              <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
+              <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${item.value}%` }}
@@ -200,15 +200,15 @@ const StudentDashboard = () => {
         {/* Attendance Chart */}
         <motion.div
           variants={fadeInUp}
-          className="lg:col-span-2 rounded-2xl p-5 border border-white/5"
-          style={{ background: 'rgba(30,41,59,0.8)' }}
+          className="lg:col-span-2 rounded-2xl p-5 border border-slate-200"
+          style={{ background: 'rgba(255,255,255,1)' }}
         >
           <div className="flex items-center justify-between mb-5">
             <div>
-              <h3 className="text-white font-semibold">Attendance Overview</h3>
-              <p className="text-slate-400 text-xs mt-0.5">Monthly present/absent breakdown</p>
+              <h3 className="text-slate-900 font-semibold">Attendance Overview</h3>
+              <p className="text-slate-500 text-xs mt-0.5">Monthly present/absent breakdown</p>
             </div>
-            <select className="bg-white/5 border border-white/10 text-slate-300 text-xs rounded-lg px-2 py-1.5 outline-none">
+            <select className="bg-slate-50 border border-slate-200 text-slate-700 text-xs rounded-lg px-2 py-1.5 outline-none">
               <option>2024</option>
               <option>2023</option>
             </select>
@@ -238,24 +238,24 @@ const StudentDashboard = () => {
         {/* Notifications */}
         <motion.div
           variants={fadeInUp}
-          className="rounded-2xl p-5 border border-white/5"
-          style={{ background: 'rgba(30,41,59,0.8)' }}
+          className="rounded-2xl p-5 border border-slate-200"
+          style={{ background: 'rgba(255,255,255,1)' }}
         >
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-white font-semibold">Notifications</h3>
+            <h3 className="text-slate-900 font-semibold">Notifications</h3>
             <span className="text-slate-500 text-xs">Recent</span>
           </div>
           <div className="space-y-3">
             {recentNotifications.map(n => {
               const colors = { warning: 'text-amber-400 bg-amber-400/10', success: 'text-green-400 bg-green-400/10', info: 'text-blue-400 bg-blue-400/10' };
               return (
-                <div key={n.id} className="flex items-start gap-3 p-3 rounded-xl bg-white/3 border border-white/5 hover:bg-white/5 transition-colors">
+                <div key={n.id} className="flex items-start gap-3 p-3 rounded-xl bg-white/3 border border-slate-200 hover:bg-slate-50 transition-colors">
                   <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${colors[n.type]}`}>
                     <MdNotifications />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-white text-xs font-semibold truncate">{n.title}</p>
-                    <p className="text-slate-400 text-xs mt-0.5 line-clamp-1">{n.message}</p>
+                    <p className="text-slate-900 text-xs font-semibold truncate">{n.title}</p>
+                    <p className="text-slate-500 text-xs mt-0.5 line-clamp-1">{n.message}</p>
                     <p className="text-slate-600 text-xs mt-1">{n.time}</p>
                   </div>
                 </div>
@@ -270,12 +270,12 @@ const StudentDashboard = () => {
         {/* Grades Bar Chart */}
         <motion.div
           variants={fadeInUp}
-          className="lg:col-span-2 rounded-2xl p-5 border border-white/5"
-          style={{ background: 'rgba(30,41,59,0.8)' }}
+          className="lg:col-span-2 rounded-2xl p-5 border border-slate-200"
+          style={{ background: 'rgba(255,255,255,1)' }}
         >
           <div className="flex items-center justify-between mb-5">
-            <h3 className="text-white font-semibold">Subject Performance</h3>
-            <span className="text-slate-400 text-xs">Semester 4</span>
+            <h3 className="text-slate-900 font-semibold">Subject Performance</h3>
+            <span className="text-slate-500 text-xs">Semester 4</span>
           </div>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={gradeData} barSize={28}>
@@ -295,10 +295,10 @@ const StudentDashboard = () => {
         {/* Quick Actions */}
         <motion.div
           variants={fadeInUp}
-          className="rounded-2xl p-5 border border-white/5"
-          style={{ background: 'rgba(30,41,59,0.8)' }}
+          className="rounded-2xl p-5 border border-slate-200"
+          style={{ background: 'rgba(255,255,255,1)' }}
         >
-          <h3 className="text-white font-semibold mb-4">Quick Actions</h3>
+          <h3 className="text-slate-900 font-semibold mb-4">Quick Actions</h3>
           <div className="grid grid-cols-2 gap-3">
             {quickActions.map(action => {
               const Icon = action.icon;
@@ -309,8 +309,8 @@ const StudentDashboard = () => {
                     whileTap={{ scale: 0.95 }}
                     className={`rounded-xl p-3 bg-gradient-to-br ${action.color} flex flex-col items-center justify-center gap-2 h-20 cursor-pointer shadow-lg`}
                   >
-                    <Icon className="text-white text-2xl" />
-                    <span className="text-white text-xs font-semibold text-center">{action.label}</span>
+                    <Icon className="text-slate-900 text-2xl" />
+                    <span className="text-slate-900 text-xs font-semibold text-center">{action.label}</span>
                   </motion.div>
                 </Link>
               );
@@ -324,24 +324,24 @@ const StudentDashboard = () => {
         {/* Assignments */}
         <motion.div
           variants={fadeInUp}
-          className="rounded-2xl p-5 border border-white/5"
-          style={{ background: 'rgba(30,41,59,0.8)' }}
+          className="rounded-2xl p-5 border border-slate-200"
+          style={{ background: 'rgba(255,255,255,1)' }}
         >
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-white font-semibold">Upcoming Homework</h3>
+            <h3 className="text-slate-900 font-semibold">Upcoming Homework</h3>
             <Link to="/academic/assignments" className="text-primary-400 text-xs hover:text-primary-300 flex items-center gap-1">
               View all <MdArrowForward />
             </Link>
           </div>
           <div className="space-y-3">
             {upcomingAssignments.map(a => (
-              <div key={a.id} className="flex items-center gap-3 p-3 rounded-xl bg-white/3 border border-white/5">
+              <div key={a.id} className="flex items-center gap-3 p-3 rounded-xl bg-white/3 border border-slate-200">
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${a.status === 'submitted' ? 'bg-green-500/20 text-green-400' : 'bg-amber-500/20 text-amber-400'}`}>
                   {a.status === 'submitted' ? <MdCheckCircle className="text-xl" /> : <MdTimelapse className="text-xl" />}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-white text-sm font-medium truncate">{a.title}</p>
-                  <p className="text-slate-400 text-xs mt-0.5">{a.subject} · Due: {a.due}</p>
+                  <p className="text-slate-900 text-sm font-medium truncate">{a.title}</p>
+                  <p className="text-slate-500 text-xs mt-0.5">{a.subject} · Due: {a.due}</p>
                 </div>
                 <span className={`text-xs px-2 py-1 rounded-lg font-medium flex-shrink-0 ${a.status === 'submitted' ? 'bg-green-500/20 text-green-400' : 'bg-amber-500/20 text-amber-400'}`}>
                   {a.status === 'submitted' ? 'Done' : 'Pending'}
@@ -354,10 +354,10 @@ const StudentDashboard = () => {
         {/* Subject Attendance Donut */}
         <motion.div
           variants={fadeInUp}
-          className="rounded-2xl p-5 border border-white/5"
-          style={{ background: 'rgba(30,41,59,0.8)' }}
+          className="rounded-2xl p-5 border border-slate-200"
+          style={{ background: 'rgba(255,255,255,1)' }}
         >
-          <h3 className="text-white font-semibold mb-4">Subject-wise Attendance</h3>
+          <h3 className="text-slate-900 font-semibold mb-4">Subject-wise Attendance</h3>
           <div className="flex items-center gap-4">
             <ResponsiveContainer width="50%" height={160}>
               <PieChart>
@@ -373,7 +373,7 @@ const StudentDashboard = () => {
               {subjectAttendance.map(s => (
                 <div key={s.name} className="flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: s.color }} />
-                  <span className="text-slate-400 text-xs flex-1 truncate">{s.name}</span>
+                  <span className="text-slate-500 text-xs flex-1 truncate">{s.name}</span>
                   <span className={`text-xs font-bold ${s.value < 75 ? 'text-red-400' : s.value < 85 ? 'text-amber-400' : 'text-green-400'}`}>
                     {s.value}%
                   </span>

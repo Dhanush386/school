@@ -34,8 +34,8 @@ const upcomingEvents = [
 
 const T = ({ active, payload, label }) => {
   if (active && payload?.length) return (
-    <div className="bg-slate-800 border border-white/10 rounded-xl px-3 py-2 shadow-xl text-xs">
-      <p className="text-slate-400 mb-1">{label}</p>
+    <div className="bg-white border border-slate-200 rounded-xl px-3 py-2 shadow-xl text-xs">
+      <p className="text-slate-500 mb-1">{label}</p>
       {payload.map(p => <p key={p.name} style={{ color: p.color }} className="font-semibold">{p.name}: {p.value}%</p>)}
     </div>
   );
@@ -69,16 +69,16 @@ const CoordinatorDashboard = () => {
         <div className="relative z-10 flex items-start justify-between">
           <div>
             <p className="text-teal-300 text-sm font-medium">Academic Coordinator 📋</p>
-            <h1 className="text-white text-2xl font-bold mt-1">{user?.name}</h1>
-            <p className="text-slate-300 text-sm mt-1">Coordinator · {user?.loginId} · Academic Affairs</p>
+            <h1 className="text-slate-900 text-2xl font-bold mt-1">{user?.name}</h1>
+            <p className="text-slate-700 text-sm mt-1">Coordinator · {user?.loginId} · Academic Affairs</p>
             <div className="flex flex-wrap gap-2 mt-4">
-              <span className="px-3 py-1 bg-white/10 rounded-lg text-white text-xs">AY 2024-25</span>
+              <span className="px-3 py-1 bg-slate-100 rounded-lg text-slate-900 text-xs">AY 2024-25</span>
               <span className="px-3 py-1 bg-teal-500/20 border border-teal-500/30 rounded-lg text-teal-300 text-xs">6 Departments Managed</span>
             </div>
           </div>
           <div className="hidden md:flex flex-col items-center gap-1">
             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-teal-400 to-emerald-500 flex items-center justify-center shadow-2xl">
-              <span className="text-white text-2xl font-black">{user?.name?.charAt(0)}</span>
+              <span className="text-slate-900 text-2xl font-black">{user?.name?.charAt(0)}</span>
             </div>
             <span className="text-teal-300 text-xs font-medium">Coordinator</span>
           </div>
@@ -89,16 +89,16 @@ const CoordinatorDashboard = () => {
       <motion.div variants={staggerContainer} initial="initial" animate="animate" className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map(s => (
           <motion.div key={s.label} variants={staggerItem} whileHover={{ y: -4 }}
-            className="rounded-2xl p-5 border border-white/5 relative overflow-hidden" style={{ background: 'rgba(30,41,59,0.8)' }}>
+            className="rounded-2xl p-5 border border-slate-200 relative overflow-hidden" style={{ background: 'rgba(255,255,255,1)' }}>
             <div className={`absolute top-0 right-0 w-28 h-28 rounded-full blur-3xl opacity-10 bg-gradient-to-br ${s.color}`} />
             <div className="relative flex items-start justify-between">
               <div>
-                <p className="text-slate-400 text-xs font-medium uppercase tracking-wider">{s.label}</p>
-                <p className="text-white text-3xl font-bold mt-1">{s.value}</p>
+                <p className="text-slate-500 text-xs font-medium uppercase tracking-wider">{s.label}</p>
+                <p className="text-slate-900 text-3xl font-bold mt-1">{s.value}</p>
                 <p className="text-slate-500 text-xs mt-1">{s.sub}</p>
               </div>
               <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${s.color} flex items-center justify-center shadow-lg`}>
-                <s.icon className="text-white text-xl" />
+                <s.icon className="text-slate-900 text-xl" />
               </div>
             </div>
           </motion.div>
@@ -107,8 +107,8 @@ const CoordinatorDashboard = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Dept Attendance Chart */}
-        <motion.div variants={fadeInUp} className="lg:col-span-2 rounded-2xl p-5 border border-white/5" style={{ background: 'rgba(30,41,59,0.8)' }}>
-          <h3 className="text-white font-semibold mb-4">This Week's Department Attendance</h3>
+        <motion.div variants={fadeInUp} className="lg:col-span-2 rounded-2xl p-5 border border-slate-200" style={{ background: 'rgba(255,255,255,1)' }}>
+          <h3 className="text-slate-900 font-semibold mb-4">This Week's Department Attendance</h3>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={days.map(d => ({ day: d, ...Object.fromEntries(deptWeekAttendance.map(dep => [dep.dept, dep[d]])) }))} barGap={2} barSize={14}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
@@ -124,26 +124,26 @@ const CoordinatorDashboard = () => {
             {deptWeekAttendance.map((dep, i) => (
               <div key={dep.dept} className="flex items-center gap-1.5">
                 <div className="w-2 h-2 rounded-full" style={{ background: colors[i] }} />
-                <span className="text-slate-400 text-xs">{dep.dept}</span>
+                <span className="text-slate-500 text-xs">{dep.dept}</span>
               </div>
             ))}
           </div>
         </motion.div>
 
         {/* Upcoming Events */}
-        <motion.div variants={fadeInUp} className="rounded-2xl p-5 border border-white/5" style={{ background: 'rgba(30,41,59,0.8)' }}>
+        <motion.div variants={fadeInUp} className="rounded-2xl p-5 border border-slate-200" style={{ background: 'rgba(255,255,255,1)' }}>
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-white font-semibold">Upcoming Events</h3>
+            <h3 className="text-slate-900 font-semibold">Upcoming Events</h3>
             <button className="text-primary-400 text-xs hover:text-primary-300 flex items-center gap-1">View <MdArrowForward /></button>
           </div>
           <div className="space-y-2">
             {upcomingEvents.map(e => (
-              <div key={e.id} className="flex items-center gap-3 p-3 rounded-xl bg-white/3 border border-white/5">
+              <div key={e.id} className="flex items-center gap-3 p-3 rounded-xl bg-white/3 border border-slate-200">
                 <div className={`px-2 py-1 rounded-lg text-center min-w-[40px] flex-shrink-0 ${e.color}`}>
                   <p className="text-xs font-bold leading-tight">{e.date.split(' ')[0]}</p>
                   <p className="text-xs opacity-75 leading-tight">{e.date.split(' ')[1]}</p>
                 </div>
-                <p className="text-slate-300 text-xs font-medium flex-1 min-w-0 truncate">{e.title}</p>
+                <p className="text-slate-700 text-xs font-medium flex-1 min-w-0 truncate">{e.title}</p>
               </div>
             ))}
           </div>
@@ -151,28 +151,28 @@ const CoordinatorDashboard = () => {
       </div>
 
       {/* Staff Leave Requests */}
-      <motion.div variants={fadeInUp} className="rounded-2xl p-5 border border-white/5" style={{ background: 'rgba(30,41,59,0.8)' }}>
+      <motion.div variants={fadeInUp} className="rounded-2xl p-5 border border-slate-200" style={{ background: 'rgba(255,255,255,1)' }}>
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-white font-semibold">Staff Leave Requests</h3>
-          <span className="text-slate-400 text-xs">{leaveRequests.filter(l => l.status === 'pending').length} pending</span>
+          <h3 className="text-slate-900 font-semibold">Staff Leave Requests</h3>
+          <span className="text-slate-500 text-xs">{leaveRequests.filter(l => l.status === 'pending').length} pending</span>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-white/5">
+              <tr className="border-b border-slate-200">
                 {['Staff Member', 'Department', 'Leave Type', 'Period', 'Days', 'Status', 'Action'].map(h => (
                   <th key={h} className="text-left text-slate-500 text-xs font-medium pb-3 pr-4 whitespace-nowrap">{h}</th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5">
+            <tbody className="divide-y divide-slate-200">
               {leaveRequests.map(l => (
-                <tr key={l.id} className="hover:bg-white/3 transition-colors">
-                  <td className="py-3 pr-4 text-white text-xs font-medium whitespace-nowrap">{l.name}</td>
-                  <td className="py-3 pr-4 text-slate-400 text-xs">{l.dept}</td>
-                  <td className="py-3 pr-4 text-slate-400 text-xs whitespace-nowrap">{l.type}</td>
-                  <td className="py-3 pr-4 text-slate-400 text-xs whitespace-nowrap">{l.from} → {l.to}</td>
-                  <td className="py-3 pr-4 text-white text-xs font-semibold">{l.days}d</td>
+                <tr key={l.id} className="hover:bg-slate-50 transition-colors">
+                  <td className="py-3 pr-4 text-slate-900 text-xs font-medium whitespace-nowrap">{l.name}</td>
+                  <td className="py-3 pr-4 text-slate-500 text-xs">{l.dept}</td>
+                  <td className="py-3 pr-4 text-slate-500 text-xs whitespace-nowrap">{l.type}</td>
+                  <td className="py-3 pr-4 text-slate-500 text-xs whitespace-nowrap">{l.from} → {l.to}</td>
+                  <td className="py-3 pr-4 text-slate-900 text-xs font-semibold">{l.days}d</td>
                   <td className="py-3 pr-4">
                     <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
                       approvedLeaves.has(l.id) || l.status === 'approved'

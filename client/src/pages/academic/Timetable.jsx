@@ -27,20 +27,20 @@ const colors = {
 const Timetable = () => (
   <div className="space-y-6">
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-      <h1 className="text-white text-2xl font-bold">Class Timetable</h1>
-      <p className="text-slate-400 text-sm mt-1">Academic Year 2024-25 · Semester 4 · CSE Department</p>
+      <h1 className="text-slate-900 text-2xl font-bold">Class Timetable</h1>
+      <p className="text-slate-500 text-sm mt-1">Academic Year 2024-25 · Semester 4 · CSE Department</p>
     </motion.div>
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-      className="rounded-2xl border border-white/5 overflow-hidden" style={{ background: 'rgba(30,41,59,0.8)' }}>
+      className="rounded-2xl border border-slate-200 overflow-hidden" style={{ background: 'rgba(255,255,255,1)' }}>
       <div className="overflow-x-auto">
         <table className="w-full text-sm min-w-[700px]">
           <thead>
-            <tr className="border-b border-white/5">
+            <tr className="border-b border-slate-200">
               <th className="text-left text-slate-500 text-xs font-medium p-4 w-28">Time</th>
-              {days.map(d => <th key={d} className="text-center text-slate-300 text-xs font-semibold p-4">{d}</th>)}
+              {days.map(d => <th key={d} className="text-center text-slate-700 text-xs font-semibold p-4">{d}</th>)}
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/5">
+          <tbody className="divide-y divide-slate-200">
             {slots.map((slot, si) => (
               <tr key={slot} className="hover:bg-white/2 transition-colors">
                 <td className="p-4 text-slate-500 text-xs font-mono whitespace-nowrap">{slot}</td>

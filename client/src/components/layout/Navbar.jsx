@@ -32,10 +32,10 @@ const LiveClock = () => {
 
   return (
     <div className="hidden lg:flex flex-col items-end">
-      <span className="text-white font-semibold text-sm leading-tight tabular-nums">
+      <span className="text-slate-900 font-semibold text-sm leading-tight tabular-nums">
         {format(time, 'hh:mm:ss a')}
       </span>
-      <span className="text-slate-400 text-xs">
+      <span className="text-slate-500 text-xs">
         {format(time, 'EEEE, dd MMM yyyy')}
       </span>
     </div>
@@ -80,7 +80,7 @@ const Navbar = ({ sidebarCollapsed }) => {
       {/* Institution Name */}
       <div className="hidden md:flex items-center gap-2 mr-2">
         <MdSchool className="text-primary-400 text-xl" />
-        <span className="text-white font-semibold text-sm tracking-wide">
+        <span className="text-slate-900 font-semibold text-sm tracking-wide">
           International School
         </span>
       </div>
@@ -90,9 +90,9 @@ const Navbar = ({ sidebarCollapsed }) => {
         <div className={`flex items-center gap-2 px-3 py-2 rounded-xl border transition-all duration-200 ${
           searchFocused
             ? 'bg-white/10 border-primary-500/50 shadow-lg shadow-primary-900/20'
-            : 'bg-white/5 border-white/10 hover:border-white/20'
+            : 'bg-slate-100 border-slate-200 hover:border-white/20'
         }`}>
-          <MdSearch className="text-slate-400 text-lg flex-shrink-0" />
+          <MdSearch className="text-slate-500 text-lg flex-shrink-0" />
           <input
             type="text"
             placeholder="Search students, modules, reports..."
@@ -100,11 +100,11 @@ const Navbar = ({ sidebarCollapsed }) => {
             onChange={(e) => setSearchQuery(e.target.value)}
             onFocus={() => setSearchFocused(true)}
             onBlur={() => setSearchFocused(false)}
-            className="bg-transparent text-white text-sm placeholder-slate-500 flex-1 outline-none"
+            className="bg-transparent text-slate-900 text-sm placeholder-slate-500 flex-1 outline-none"
           />
           {searchQuery && (
             <button onClick={() => setSearchQuery('')}>
-              <MdClose className="text-slate-400 hover:text-white text-sm" />
+              <MdClose className="text-slate-500 hover:text-slate-900 text-sm" />
             </button>
           )}
         </div>
@@ -118,14 +118,14 @@ const Navbar = ({ sidebarCollapsed }) => {
         <div ref={notifRef} className="relative">
           <button
             onClick={() => { setNotifOpen(!notifOpen); setProfileOpen(false); }}
-            className="relative w-9 h-9 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center text-slate-300 hover:text-white transition-all"
+            className="relative w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 flex items-center justify-center text-slate-700 hover:text-slate-900 transition-all"
           >
             <MdNotifications className="text-xl" />
             {unreadCount > 0 && (
               <motion.span
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
-                className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center font-bold"
+                className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-xs text-slate-900 flex items-center justify-center font-bold"
               >
                 {unreadCount > 9 ? '9+' : unreadCount}
               </motion.span>
@@ -141,13 +141,13 @@ const Navbar = ({ sidebarCollapsed }) => {
                 transition={{ duration: 0.15 }}
                 className="absolute right-0 top-12 w-80 rounded-2xl border overflow-hidden shadow-2xl z-50"
                 style={{
-                  background: 'rgba(15, 23, 42, 0.95)',
+                  background: 'rgba(255, 255, 255, 0.95)',
                   backdropFilter: 'blur(20px)',
-                  borderColor: 'rgba(255,255,255,0.1)',
+                  borderColor: 'rgba(0,0,0,0.1)',
                 }}
               >
-                <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
-                  <h3 className="text-white font-semibold text-sm">Notifications</h3>
+                <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200">
+                  <h3 className="text-slate-900 font-semibold text-sm">Notifications</h3>
                   {unreadCount > 0 && (
                     <button
                       onClick={markAllRead}
@@ -167,14 +167,14 @@ const Navbar = ({ sidebarCollapsed }) => {
                     notifications.slice(0, 10).map((notif) => (
                       <div
                         key={notif._id}
-                        className={`flex items-start gap-3 px-4 py-3 hover:bg-white/5 transition-colors ${!notif.isRead ? 'bg-primary-900/20' : ''}`}
+                        className={`flex items-start gap-3 px-4 py-3 hover:bg-slate-100 transition-colors ${!notif.isRead ? 'bg-primary-900/20' : ''}`}
                       >
                         <div className="text-lg mt-0.5 flex-shrink-0">
                           <NotificationIcon type={notif.type} />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-white text-xs font-medium truncate">{notif.title}</p>
-                          <p className="text-slate-400 text-xs mt-0.5 line-clamp-2">{notif.message}</p>
+                          <p className="text-slate-900 text-xs font-medium truncate">{notif.title}</p>
+                          <p className="text-slate-500 text-xs mt-0.5 line-clamp-2">{notif.message}</p>
                           <p className="text-slate-600 text-xs mt-1">
                             {format(new Date(notif.createdAt), 'dd MMM, hh:mm a')}
                           </p>
@@ -188,7 +188,7 @@ const Navbar = ({ sidebarCollapsed }) => {
                 </div>
                 <button
                   onClick={() => { setNotifOpen(false); markAllRead(); }}
-                  className="block w-full text-center px-4 py-3 text-primary-400 text-sm hover:text-primary-300 border-t border-white/10 transition-colors"
+                  className="block w-full text-center px-4 py-3 text-primary-400 text-sm hover:text-primary-300 border-t border-slate-200 transition-colors"
                 >
                   Mark all as read
                 </button>
@@ -201,20 +201,20 @@ const Navbar = ({ sidebarCollapsed }) => {
         <div ref={profileRef} className="relative">
           <button
             onClick={() => { setProfileOpen(!profileOpen); setNotifOpen(false); }}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-all"
+            className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 transition-all"
           >
             <div className="w-7 h-7 rounded-full bg-gradient-to-br from-primary-400 to-violet-500 flex items-center justify-center flex-shrink-0">
-              <span className="text-white text-xs font-bold">
+              <span className="text-slate-900 text-xs font-bold">
                 {user?.name?.charAt(0) || 'U'}
               </span>
             </div>
             <div className="hidden md:block text-left">
-              <p className="text-white text-xs font-semibold leading-tight truncate max-w-[100px]">{user?.name}</p>
-              <span className={`text-xs px-1.5 py-0.5 rounded-full ${ROLE_COLORS[user?.role] || 'bg-slate-700 text-slate-300'}`}>
+              <p className="text-slate-900 text-xs font-semibold leading-tight truncate max-w-[100px]">{user?.name}</p>
+              <span className={`text-xs px-1.5 py-0.5 rounded-full ${ROLE_COLORS[user?.role] || 'bg-slate-700 text-slate-700'}`}>
                 {ROLE_LABELS[user?.role] || user?.role}
               </span>
             </div>
-            <MdKeyboardArrowDown className={`text-slate-400 text-sm transition-transform ${profileOpen ? 'rotate-180' : ''}`} />
+            <MdKeyboardArrowDown className={`text-slate-500 text-sm transition-transform ${profileOpen ? 'rotate-180' : ''}`} />
           </button>
 
           <AnimatePresence>
@@ -226,32 +226,32 @@ const Navbar = ({ sidebarCollapsed }) => {
                 transition={{ duration: 0.15 }}
                 className="absolute right-0 top-12 w-56 rounded-2xl border overflow-hidden shadow-2xl z-50"
                 style={{
-                  background: 'rgba(15, 23, 42, 0.95)',
+                  background: 'rgba(255, 255, 255, 0.95)',
                   backdropFilter: 'blur(20px)',
-                  borderColor: 'rgba(255,255,255,0.1)',
+                  borderColor: 'rgba(0,0,0,0.1)',
                 }}
               >
-                <div className="px-4 py-3 border-b border-white/10">
-                  <p className="text-white font-semibold text-sm">{user?.name}</p>
-                  <p className="text-slate-400 text-xs mt-0.5">{user?.loginId} • {user?.department}</p>
+                <div className="px-4 py-3 border-b border-slate-200">
+                  <p className="text-slate-900 font-semibold text-sm">{user?.name}</p>
+                  <p className="text-slate-500 text-xs mt-0.5">{user?.loginId} • {user?.department}</p>
                 </div>
                 <div className="py-1">
                   <Link
                     to="/settings"
                     onClick={() => setProfileOpen(false)}
-                    className="flex items-center gap-3 px-4 py-2.5 text-slate-300 hover:text-white hover:bg-white/5 text-sm transition-colors"
+                    className="flex items-center gap-3 px-4 py-2.5 text-slate-700 hover:text-slate-900 hover:bg-slate-100 text-sm transition-colors"
                   >
                     <MdPerson className="text-lg" /> My Profile
                   </Link>
                   <Link
                     to="/settings"
                     onClick={() => setProfileOpen(false)}
-                    className="flex items-center gap-3 px-4 py-2.5 text-slate-300 hover:text-white hover:bg-white/5 text-sm transition-colors"
+                    className="flex items-center gap-3 px-4 py-2.5 text-slate-700 hover:text-slate-900 hover:bg-slate-100 text-sm transition-colors"
                   >
                     <MdSettings className="text-lg" /> Settings
                   </Link>
                 </div>
-                <div className="border-t border-white/10 py-1">
+                <div className="border-t border-slate-200 py-1">
                   <button
                     onClick={logout}
                     className="w-full flex items-center gap-3 px-4 py-2.5 text-red-400 hover:text-red-300 hover:bg-red-500/10 text-sm transition-colors"

@@ -41,11 +41,11 @@ const SidebarItem = ({ item, collapsed }) => {
           onClick={() => setOpen(!open)}
           className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group
             ${isActive
-              ? 'bg-primary-600/20 text-primary-300 border border-primary-500/30'
-              : 'text-slate-400 hover:bg-white/5 hover:text-white'
+              ? 'bg-primary-50 text-primary-700 border border-primary-100'
+              : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
             }`}
         >
-          <span className={`text-xl flex-shrink-0 transition-colors ${isActive ? 'text-primary-400' : 'text-slate-500 group-hover:text-slate-300'}`}>
+          <span className={`text-xl flex-shrink-0 transition-colors ${isActive ? 'text-primary-600' : 'text-slate-400 group-hover:text-slate-600'}`}>
             <Icon />
           </span>
           {!collapsed && (
@@ -76,8 +76,8 @@ const SidebarItem = ({ item, collapsed }) => {
                       to={sub.path}
                       className={`flex items-center gap-2 px-2 py-2 rounded-lg text-xs font-medium transition-all duration-200
                         ${subActive
-                          ? 'text-primary-400 bg-primary-600/10'
-                          : 'text-slate-400 hover:text-white hover:bg-white/5'
+                          ? 'text-primary-700 bg-primary-100/50'
+                          : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100'
                         }`}
                     >
                       <SubIcon className="text-sm flex-shrink-0" />
@@ -100,8 +100,8 @@ const SidebarItem = ({ item, collapsed }) => {
       className={({ isActive: navActive }) =>
         `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group relative
         ${navActive
-          ? 'bg-gradient-to-r from-primary-600/30 to-primary-500/10 text-white border border-primary-500/30 shadow-lg shadow-primary-900/20'
-          : 'text-slate-400 hover:bg-white/5 hover:text-white'
+          ? 'bg-gradient-to-r from-primary-50 to-primary-100/50 text-primary-700 border border-primary-200 shadow-sm shadow-primary-100'
+          : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
         }`
       }
     >
@@ -113,7 +113,7 @@ const SidebarItem = ({ item, collapsed }) => {
               className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary-400 rounded-r-full"
             />
           )}
-          <span className={`text-xl flex-shrink-0 transition-colors ${navActive ? 'text-primary-400' : 'text-slate-500 group-hover:text-slate-300'}`}>
+          <span className={`text-xl flex-shrink-0 transition-colors ${navActive ? 'text-primary-600' : 'text-slate-400 group-hover:text-slate-600'}`}>
             <Icon />
           </span>
           {!collapsed && <span className="truncate">{item.label}</span>}
@@ -133,12 +133,12 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
       transition={{ duration: 0.3, ease: 'easeInOut' }}
       className="fixed left-0 top-0 h-full z-40 flex flex-col"
       style={{
-        background: 'linear-gradient(180deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%)',
-        borderRight: '1px solid rgba(99,102,241,0.15)',
+        background: '#ffffff',
+        borderRight: '1px solid #e2e8f0',
       }}
     >
       {/* Logo */}
-      <div className="flex items-center gap-3 px-4 py-5 border-b border-white/5">
+      <div className="flex items-center gap-3 px-4 py-5 border-b border-slate-100">
         <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary-500 to-indigo-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-primary-900/50">
           <MdSchool className="text-white text-xl" />
         </div>
@@ -151,7 +151,7 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
               transition={{ duration: 0.2 }}
               className="overflow-hidden"
             >
-              <p className="text-white font-bold text-sm leading-tight whitespace-nowrap">EduManage Pro</p>
+              <p className="text-slate-900 font-bold text-sm leading-tight whitespace-nowrap">EduManage Pro</p>
               <p className="text-slate-500 text-xs whitespace-nowrap">International School ERP</p>
             </motion.div>
           )}
@@ -165,7 +165,7 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="mx-3 mt-4 p-3 rounded-xl bg-white/5 border border-white/10"
+            className="mx-3 mt-4 p-3 rounded-xl bg-slate-50 border border-slate-200"
           >
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary-400 to-violet-500 flex items-center justify-center flex-shrink-0">
@@ -174,8 +174,8 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
                 </span>
               </div>
               <div className="min-w-0">
-                <p className="text-white text-xs font-semibold truncate">{user?.name}</p>
-                <p className="text-slate-400 text-xs truncate">{user?.loginId}</p>
+                <p className="text-slate-900 text-xs font-semibold truncate">{user?.name}</p>
+                <p className="text-slate-500 text-xs truncate">{user?.loginId}</p>
               </div>
             </div>
           </motion.div>
@@ -191,7 +191,7 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
                 {section.section}
               </p>
             )}
-            {collapsed && <div className="border-t border-white/5 my-2" />}
+            {collapsed && <div className="border-t border-slate-100 my-2" />}
             <div className="space-y-0.5">
               {section.items.map(item => (
                 <SidebarItem key={item.id} item={item} collapsed={collapsed} />
@@ -202,10 +202,10 @@ const Sidebar = ({ collapsed, setCollapsed }) => {
       </nav>
 
       {/* Bottom Actions */}
-      <div className="px-3 py-3 border-t border-white/5 space-y-1">
+      <div className="px-3 py-3 border-t border-slate-100 space-y-1">
         <NavLink
           to="/settings"
-          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white text-sm transition-all"
+          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 hover:bg-slate-100 hover:text-slate-900 text-sm transition-all"
         >
           <MdSettings className="text-xl flex-shrink-0" />
           {!collapsed && <span>Settings</span>}

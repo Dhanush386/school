@@ -9,7 +9,7 @@ const Layout = ({ children }) => {
   const sidebarWidth = collapsed ? 72 : 260;
 
   return (
-    <div className="min-h-screen bg-slate-950">
+    <div className="min-h-screen bg-slate-50">
       <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
       <Navbar sidebarCollapsed={collapsed} />
 
