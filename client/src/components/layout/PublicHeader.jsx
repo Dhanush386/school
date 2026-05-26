@@ -83,13 +83,21 @@ const PublicHeader = () => {
           <a href="#" className="hover:text-[#28a745] transition-colors pb-1">CONTACT US</a>
         </nav>
 
-        {/* Mobile Hamburger Button */}
-        <button 
-          className="xl:hidden text-3xl text-[#0f2a4a] hover:text-[#28a745] transition-colors p-1"
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-        >
-          {mobileMenuOpen ? <MdClose /> : <MdMenu />}
-        </button>
+        {/* Mobile Actions (Login + Hamburger) */}
+        <div className="flex xl:hidden items-center gap-4">
+          <Link 
+            to="/login"
+            className="bg-[#28a745] hover:bg-[#218838] text-white px-4 py-1.5 rounded-md text-xs sm:text-sm font-bold shadow-sm transition-colors"
+          >
+            VVMS LOGIN
+          </Link>
+          <button 
+            className="text-3xl text-[#0f2a4a] hover:text-[#28a745] transition-colors p-1"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            {mobileMenuOpen ? <MdClose /> : <MdMenu />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile Navigation Menu */}
