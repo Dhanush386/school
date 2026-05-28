@@ -15,10 +15,20 @@ const OnlinePayment = () => {
   ];
 
   const [selectedFees, setSelectedFees] = useState(mockFees.map(f => f.id));
+  const [feeAmounts, setFeeAmounts] = useState(
+    mockFees.reduce((acc, fee) => ({ ...acc, [fee.id]: fee.amount }), {})
+  );
 
   const totalAmount = mockFees
     .filter(f => selectedFees.includes(f.id))
-    .reduce((sum, f) => sum + f.amount, 0);
+    .reduce((sum, f) => sum + (Number(feeAmounts[f.id]) || 0), 0);
+
+  const handleAmountChange = (id, value) => {
+    setFeeAmounts(prev => ({
+      ...prev,
+      [id]: value
+    }));
+  };
 
   const toggleFee = (id) => {
     if (selectedFees.includes(id)) {
@@ -57,7 +67,10 @@ const OnlinePayment = () => {
         amount: totalAmount,
         studentId: username || 'anonymous',
         studentName: username || 'Unknown Student',
-        feeDetails: mockFees.filter(f => selectedFees.includes(f.id))
+        feeDetails: mockFees.filter(f => selectedFees.includes(f.id)).map(f => ({
+          ...f,
+          amount: Number(feeAmounts[f.id]) || 0
+        }))
       });
 
       if (!orderData.success) {
@@ -285,8 +298,22 @@ const OnlinePayment = () => {
                     <td className="border border-slate-300 px-4 py-2 font-medium">{fee.category}</td>
                     <td className="border border-slate-300 px-4 py-2">{fee.term}</td>
                     <td className="border border-slate-300 px-4 py-2 text-red-600 font-medium">{fee.due}</td>
-                    <td className="border border-slate-300 px-4 py-2 text-right font-medium">
-                      {fee.amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                    <td className="border border-slate-300 px-4 py-2 text-right">
+                      <div className="flex items-center justify-end gap-1">
+                        <span className={!selectedFees.includes(fee.id) ? 'text-slate-400' : 'text-slate-800'}>₹</span>
+                        <input
+                          type="number"
+                          min="1"
+                          max={fee.amount}
+                          value={feeAmounts[fee.id]}
+                          onChange={(e) => handleAmountChange(fee.id, e.target.value)}
+                          disabled={!selectedFees.includes(fee.id)}
+                          className="w-24 text-right border border-slate-300 px-2 py-1 rounded focus:outline-none focus:border-[#0033cc] disabled:bg-slate-100 disabled:text-slate-400 font-medium"
+                        />
+                      </div>
+                      <div className="text-[11px] text-slate-500 mt-1 pr-1">
+                        Total Due: ₹ {fee.amount.toLocaleString('en-IN')}
+                      </div>
                     </td>
                   </tr>
                 ))}
