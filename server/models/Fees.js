@@ -81,6 +81,21 @@ feesSchema.pre('save', function (next) {
 });
 
 // ─── Indexes ──────────────────────────────────────────────────────────────────
+feesSchema.index({ status: 1 });
+feesSchema.index({ dueDate: 1 });
+
+// Virtual for 'student' to support .populate('student')
+feesSchema.virtual('student', {
+  ref: 'User',
+  localField: 'studentId',
+  foreignField: '_id',
+  justOne: true
+});
+
+feesSchema.set('toObject', { virtuals: true });
+feesSchema.set('toJSON', { virtuals: true });
+
+// Compound indexes
 feesSchema.index({ studentId: 1, academicYear: 1, semester: 1 });
 feesSchema.index({ studentId: 1, status: 1 });
 feesSchema.index({ status: 1, dueDate: 1 });
