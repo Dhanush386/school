@@ -117,13 +117,58 @@ const OnlinePayment = () => {
 
       {/* Action Area Below Form */}
       {showDetails && (
-        <div className="w-full max-w-4xl flex justify-between items-center px-4 mt-2">
-          <div className="text-red-700 text-sm">
-            No pending fees available to the student
+        <div className="w-full max-w-4xl px-4 mt-4 pb-10">
+          <h3 className="text-lg font-bold text-[#0033cc] mb-4">Pending Fee Details</h3>
+          
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse border border-slate-300 text-sm text-left">
+              <thead>
+                <tr className="bg-slate-100 text-slate-700">
+                  <th className="border border-slate-300 px-4 py-2">S.No</th>
+                  <th className="border border-slate-300 px-4 py-2">Fee Category</th>
+                  <th className="border border-slate-300 px-4 py-2">Term / Month</th>
+                  <th className="border border-slate-300 px-4 py-2">Due Date</th>
+                  <th className="border border-slate-300 px-4 py-2 text-right">Amount (₹)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td className="border border-slate-300 px-4 py-2">1</td>
+                  <td className="border border-slate-300 px-4 py-2 font-medium">Term 1 Tuition Fee</td>
+                  <td className="border border-slate-300 px-4 py-2">June to Sep 2026</td>
+                  <td className="border border-slate-300 px-4 py-2 text-red-600 font-medium">30-Jun-2026</td>
+                  <td className="border border-slate-300 px-4 py-2 text-right font-medium">12,500.00</td>
+                </tr>
+                <tr>
+                  <td className="border border-slate-300 px-4 py-2">2</td>
+                  <td className="border border-slate-300 px-4 py-2 font-medium">Transport Fee</td>
+                  <td className="border border-slate-300 px-4 py-2">June 2026</td>
+                  <td className="border border-slate-300 px-4 py-2 text-red-600 font-medium">15-Jun-2026</td>
+                  <td className="border border-slate-300 px-4 py-2 text-right font-medium">1,200.00</td>
+                </tr>
+                <tr className="bg-slate-50 font-bold">
+                  <td colSpan="4" className="border border-slate-300 px-4 py-2 text-right text-slate-800">Total Payable Amount</td>
+                  <td className="border border-slate-300 px-4 py-2 text-right text-[#0033cc] text-lg">₹ 13,700.00</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
-          <button className="bg-[#f27b21] hover:bg-[#d96614] text-white font-bold py-2 px-6 rounded-md shadow text-sm">
-            Check Your Payment History
-          </button>
+
+          <div className="flex flex-col sm:flex-row justify-between items-center mt-6 gap-4">
+            <button className="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2.5 px-6 rounded-md shadow-sm text-sm transition-colors w-full sm:w-auto">
+              Check Payment History
+            </button>
+            <button 
+              onClick={() => alert('Redirecting to secure payment gateway...')}
+              className="bg-[#28a745] hover:bg-[#218838] text-white font-bold py-2.5 px-10 rounded-md shadow-md text-base transition-colors flex items-center gap-2 w-full sm:w-auto justify-center"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
+                <path fillRule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clipRule="evenodd" />
+              </svg>
+              Pay Now (₹ 13,700)
+            </button>
+          </div>
         </div>
       )}
 
