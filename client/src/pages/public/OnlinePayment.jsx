@@ -24,9 +24,19 @@ const OnlinePayment = () => {
     .reduce((sum, f) => sum + (Number(feeAmounts[f.id]) || 0), 0);
 
   const handleAmountChange = (id, value) => {
+    const fee = mockFees.find(f => f.id === id);
+    let finalValue = value;
+    
+    if (value !== '') {
+      const numValue = Number(value);
+      if (numValue > fee.amount) {
+        finalValue = fee.amount; // Clamp to original amount
+      }
+    }
+
     setFeeAmounts(prev => ({
       ...prev,
-      [id]: value
+      [id]: finalValue
     }));
   };
 
