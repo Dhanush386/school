@@ -13,7 +13,7 @@ const getStudentFees = async (req, res) => {
     const studentId = req.user.role === 'student' ? req.user.id : req.params.studentId;
 
     const { status, academicYear, feeType } = req.query;
-    const filter = { studentId: studentId };
+    const filter = { $or: [{ studentId: studentId }, { student: studentId }] };
     if (status) filter.status = status;
     if (academicYear) filter.academicYear = academicYear;
     if (feeType) filter.feeType = feeType;
@@ -116,7 +116,7 @@ const getFeeStructure = async (req, res) => {
     if (academicYear) match.academicYear = academicYear;
     if (department) {
       const students = await User.find({ department, role: 'student' }).select('_id');
-      match.studentId = { $in: students.map(s => s._id) };
+      match.$or = [{ studentId: { $in: students.map(s => s._id) } }, { student: { $in: students.map(s => s._id) } }];
     }
 
     const breakdown = await Fee.aggregate([
@@ -159,7 +159,7 @@ const getAllFees = async (req, res) => {
         ],
         role: 'student',
       }).select('_id');
-      filter.studentId = { $in: users.map(u => u._id) };
+      filter.$or = [{ studentId: { $in: users.map(u => u._id) } }, { student: { $in: users.map(u => u._id) } }];
     }
 
     const total = await Fee.countDocuments(filter);
