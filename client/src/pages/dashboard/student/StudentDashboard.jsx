@@ -26,26 +26,25 @@ const attendanceData = [
 ];
 
 const subjectAttendance = [
-  { name: 'Mathematics', value: 92, color: '#6366f1' },
-  { name: 'Physics', value: 78, color: '#8b5cf6' },
-  { name: 'Chemistry', value: 85, color: '#06b6d4' },
+  { name: 'Tamil', value: 92, color: '#6366f1' },
   { name: 'English', value: 95, color: '#10b981' },
-  { name: 'CS', value: 88, color: '#f59e0b' },
+  { name: 'Maths', value: 88, color: '#f59e0b' },
+  { name: 'Science', value: 85, color: '#06b6d4' },
+  { name: 'Social', value: 78, color: '#8b5cf6' },
 ];
 
 const gradeData = [
-  { subject: 'Math', grade: 88 },
-  { subject: 'Physics', grade: 74 },
-  { subject: 'Chem', grade: 82 },
-  { subject: 'English', grade: 91 },
-  { subject: 'CS', grade: 96 },
-  { subject: 'PE', grade: 85 },
+  { subject: 'Tamil', grade: 91 },
+  { subject: 'English', grade: 88 },
+  { subject: 'Maths', grade: 96 },
+  { subject: 'Science', grade: 85 },
+  { subject: 'Social', grade: 82 },
 ];
 
 const upcomingAssignments = [
-  { id: 1, title: 'Data Structures Lab Report', subject: 'CS', due: '2024-06-28', status: 'pending' },
-  { id: 2, title: 'Quantum Mechanics Problem Set', subject: 'Physics', due: '2024-06-30', status: 'submitted' },
-  { id: 3, title: 'English Essay: Digital Era', subject: 'English', due: '2024-07-02', status: 'pending' },
+  { id: 1, title: 'Tamil Grammar Worksheet', subject: 'Tamil', due: '2024-06-28', status: 'pending' },
+  { id: 2, title: 'Algebra Practice Questions', subject: 'Maths', due: '2024-06-30', status: 'submitted' },
+  { id: 3, title: 'Science Project Draft', subject: 'Science', due: '2024-07-02', status: 'pending' },
 ];
 
 const recentNotifications = [
