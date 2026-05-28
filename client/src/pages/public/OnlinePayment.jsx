@@ -6,6 +6,25 @@ const OnlinePayment = () => {
   const [password, setPassword] = useState('');
   const [showDetails, setShowDetails] = useState(false);
 
+  const mockFees = [
+    { id: 1, category: 'Term 1 Tuition Fee', term: 'June to Sep 2026', due: '30-Jun-2026', amount: 12500 },
+    { id: 2, category: 'Transport Fee', term: 'June 2026', due: '15-Jun-2026', amount: 1200 },
+  ];
+
+  const [selectedFees, setSelectedFees] = useState(mockFees.map(f => f.id));
+
+  const totalAmount = mockFees
+    .filter(f => selectedFees.includes(f.id))
+    .reduce((sum, f) => sum + f.amount, 0);
+
+  const toggleFee = (id) => {
+    if (selectedFees.includes(id)) {
+      setSelectedFees(selectedFees.filter(fid => fid !== id));
+    } else {
+      setSelectedFees([...selectedFees, id]);
+    }
+  };
+
   const handleViewFees = (e) => {
     e.preventDefault();
     if (username && password) {
@@ -124,6 +143,17 @@ const OnlinePayment = () => {
             <table className="w-full border-collapse border border-slate-300 text-sm text-left">
               <thead>
                 <tr className="bg-slate-100 text-slate-700">
+                  <th className="border border-slate-300 px-4 py-2 w-10 text-center">
+                    <input 
+                      type="checkbox" 
+                      className="cursor-pointer h-4 w-4"
+                      checked={selectedFees.length === mockFees.length}
+                      onChange={(e) => {
+                        if (e.target.checked) setSelectedFees(mockFees.map(f => f.id));
+                        else setSelectedFees([]);
+                      }}
+                    />
+                  </th>
                   <th className="border border-slate-300 px-4 py-2">S.No</th>
                   <th className="border border-slate-300 px-4 py-2">Fee Category</th>
                   <th className="border border-slate-300 px-4 py-2">Term / Month</th>
@@ -132,23 +162,30 @@ const OnlinePayment = () => {
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td className="border border-slate-300 px-4 py-2">1</td>
-                  <td className="border border-slate-300 px-4 py-2 font-medium">Term 1 Tuition Fee</td>
-                  <td className="border border-slate-300 px-4 py-2">June to Sep 2026</td>
-                  <td className="border border-slate-300 px-4 py-2 text-red-600 font-medium">30-Jun-2026</td>
-                  <td className="border border-slate-300 px-4 py-2 text-right font-medium">12,500.00</td>
-                </tr>
-                <tr>
-                  <td className="border border-slate-300 px-4 py-2">2</td>
-                  <td className="border border-slate-300 px-4 py-2 font-medium">Transport Fee</td>
-                  <td className="border border-slate-300 px-4 py-2">June 2026</td>
-                  <td className="border border-slate-300 px-4 py-2 text-red-600 font-medium">15-Jun-2026</td>
-                  <td className="border border-slate-300 px-4 py-2 text-right font-medium">1,200.00</td>
-                </tr>
+                {mockFees.map((fee, index) => (
+                  <tr key={fee.id}>
+                    <td className="border border-slate-300 px-4 py-2 text-center">
+                      <input 
+                        type="checkbox" 
+                        className="cursor-pointer h-4 w-4"
+                        checked={selectedFees.includes(fee.id)}
+                        onChange={() => toggleFee(fee.id)}
+                      />
+                    </td>
+                    <td className="border border-slate-300 px-4 py-2">{index + 1}</td>
+                    <td className="border border-slate-300 px-4 py-2 font-medium">{fee.category}</td>
+                    <td className="border border-slate-300 px-4 py-2">{fee.term}</td>
+                    <td className="border border-slate-300 px-4 py-2 text-red-600 font-medium">{fee.due}</td>
+                    <td className="border border-slate-300 px-4 py-2 text-right font-medium">
+                      {fee.amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                    </td>
+                  </tr>
+                ))}
                 <tr className="bg-slate-50 font-bold">
-                  <td colSpan="4" className="border border-slate-300 px-4 py-2 text-right text-slate-800">Total Payable Amount</td>
-                  <td className="border border-slate-300 px-4 py-2 text-right text-[#0033cc] text-lg">₹ 13,700.00</td>
+                  <td colSpan="5" className="border border-slate-300 px-4 py-2 text-right text-slate-800">Total Payable Amount</td>
+                  <td className="border border-slate-300 px-4 py-2 text-right text-[#0033cc] text-lg">
+                    ₹ {totalAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -159,14 +196,15 @@ const OnlinePayment = () => {
               Check Payment History
             </button>
             <button 
-              onClick={() => alert('Redirecting to secure payment gateway...')}
-              className="bg-[#28a745] hover:bg-[#218838] text-white font-bold py-2.5 px-10 rounded-md shadow-md text-base transition-colors flex items-center gap-2 w-full sm:w-auto justify-center"
+              onClick={() => alert(`Redirecting to secure payment gateway to pay ₹ ${totalAmount.toLocaleString('en-IN')}`)}
+              disabled={selectedFees.length === 0}
+              className={`${selectedFees.length === 0 ? 'bg-slate-400 cursor-not-allowed' : 'bg-[#28a745] hover:bg-[#218838]'} text-white font-bold py-2.5 px-10 rounded-md shadow-md text-base transition-colors flex items-center gap-2 w-full sm:w-auto justify-center`}
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                 <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
                 <path fillRule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clipRule="evenodd" />
               </svg>
-              Pay Now (₹ 13,700)
+              Pay Now (₹ {totalAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })})
             </button>
           </div>
         </div>
