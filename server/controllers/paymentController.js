@@ -5,8 +5,8 @@ const Payment = require('../models/Payment');
 // We will use test keys if env vars are not set
 // In a real scenario, these should be inside the .env file.
 const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID || 'rzp_test_YourTestKeyHere123',
-  key_secret: process.env.RAZORPAY_KEY_SECRET || 'YourTestSecretKeyHere123',
+  key_id: process.env.RAZORPAY_KEY_ID || 'rzp_test_SugfhuiekQdenz',
+  key_secret: process.env.RAZORPAY_KEY_SECRET || 'IWnwZmN8s34yxox6ge3aBRqe',
 });
 
 // @desc    Create a new Razorpay Order
@@ -42,34 +42,10 @@ const createOrder = async (req, res) => {
       orderId: order.id,
       amount: order.amount,
       currency: order.currency,
-      keyId: process.env.RAZORPAY_KEY_ID || 'rzp_test_YourTestKeyHere123'
+      keyId: process.env.RAZORPAY_KEY_ID || 'rzp_test_SugfhuiekQdenz'
     });
   } catch (error) {
     console.error('Razorpay create order error:', error);
-    
-    // If using fake keys, Razorpay will reject the request.
-    // Instead of a 500 error, we fallback to a mock order so the UI doesn't break.
-    if ((process.env.RAZORPAY_KEY_ID || 'rzp_test_YourTestKeyHere123').includes('YourTestKeyHere123')) {
-      const mockOrderId = 'order_mock_' + Math.floor(Math.random() * 1000000);
-      
-      await Payment.create({
-        studentId: studentId || 'anonymous',
-        studentName: studentName || 'Unknown Student',
-        razorpayOrderId: mockOrderId,
-        amount,
-        feeDetails: feeDetails || []
-      });
-
-      return res.status(200).json({
-        success: true,
-        orderId: mockOrderId,
-        amount: options.amount,
-        currency: options.currency,
-        keyId: 'rzp_test_YourTestKeyHere123',
-        isMock: true // Flag to tell frontend to bypass real widget
-      });
-    }
-
     res.status(500).json({ success: false, message: 'Something went wrong while creating order' });
   }
 };
@@ -92,7 +68,7 @@ const verifyPayment = async (req, res) => {
   const body = razorpay_order_id + '|' + razorpay_payment_id;
   
   const expectedSignature = crypto
-    .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET || 'YourTestSecretKeyHere123')
+    .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET || 'IWnwZmN8s34yxox6ge3aBRqe')
     .update(body.toString())
     .digest('hex');
 
