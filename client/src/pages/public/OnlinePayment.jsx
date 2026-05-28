@@ -290,7 +290,8 @@ const OnlinePayment = () => {
                   <th className="border border-slate-300 px-4 py-2">Fee Category</th>
                   <th className="border border-slate-300 px-4 py-2">Term / Month</th>
                   <th className="border border-slate-300 px-4 py-2">Due Date</th>
-                  <th className="border border-slate-300 px-4 py-2 text-right">Amount (₹)</th>
+                  <th className="border border-slate-300 px-4 py-2 text-right">Total Due (₹)</th>
+                  <th className="border border-slate-300 px-4 py-2 text-right">Paying Now (₹)</th>
                 </tr>
               </thead>
               <tbody>
@@ -308,6 +309,9 @@ const OnlinePayment = () => {
                     <td className="border border-slate-300 px-4 py-2 font-medium">{fee.category}</td>
                     <td className="border border-slate-300 px-4 py-2">{fee.term}</td>
                     <td className="border border-slate-300 px-4 py-2 text-red-600 font-medium">{fee.due}</td>
+                    <td className="border border-slate-300 px-4 py-2 text-right font-medium">
+                      {fee.amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                    </td>
                     <td className="border border-slate-300 px-4 py-2 text-right">
                       <div className="flex items-center justify-end gap-1">
                         <span className={!selectedFees.includes(fee.id) ? 'text-slate-400' : 'text-slate-800'}>₹</span>
@@ -321,14 +325,11 @@ const OnlinePayment = () => {
                           className="w-24 text-right border border-slate-300 px-2 py-1 rounded focus:outline-none focus:border-[#0033cc] disabled:bg-slate-100 disabled:text-slate-400 font-medium"
                         />
                       </div>
-                      <div className="text-[11px] text-slate-500 mt-1 pr-1">
-                        Total Due: ₹ {fee.amount.toLocaleString('en-IN')}
-                      </div>
                     </td>
                   </tr>
                 ))}
                 <tr className="bg-slate-50 font-bold">
-                  <td colSpan="5" className="border border-slate-300 px-4 py-2 text-right text-slate-800">Total Payable Amount</td>
+                  <td colSpan="6" className="border border-slate-300 px-4 py-2 text-right text-slate-800">Total Payable Amount</td>
                   <td className="border border-slate-300 px-4 py-2 text-right text-[#0033cc] text-lg">
                     ₹ {totalAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                   </td>
