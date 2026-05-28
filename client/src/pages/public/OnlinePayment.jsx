@@ -5,6 +5,8 @@ const OnlinePayment = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showDetails, setShowDetails] = useState(false);
+  const [paymentStatus, setPaymentStatus] = useState('idle'); // 'idle', 'processing', 'success'
+  const [transactionId, setTransactionId] = useState('');
 
   const mockFees = [
     { id: 1, category: 'Term 1 Tuition Fee', term: 'June to Sep 2026', due: '30-Jun-2026', amount: 12500 },
@@ -30,6 +32,21 @@ const OnlinePayment = () => {
     if (username && password) {
       setShowDetails(true);
     }
+  };
+
+  const handlePayment = () => {
+    setPaymentStatus('processing');
+    // Simulate network request and payment processing
+    setTimeout(() => {
+      setTransactionId('TXN' + Math.floor(1000000000 + Math.random() * 9000000000));
+      setPaymentStatus('success');
+    }, 2500);
+  };
+
+  const handleCloseModal = () => {
+    setPaymentStatus('idle');
+    // Reset selections and total after "successful" mock payment
+    setSelectedFees([]);
   };
 
   return (
@@ -196,7 +213,7 @@ const OnlinePayment = () => {
               Check Payment History
             </button>
             <button 
-              onClick={() => alert(`Redirecting to secure payment gateway to pay ₹ ${totalAmount.toLocaleString('en-IN')}`)}
+              onClick={handlePayment}
               disabled={selectedFees.length === 0}
               className={`${selectedFees.length === 0 ? 'bg-slate-400 cursor-not-allowed' : 'bg-[#28a745] hover:bg-[#218838]'} text-white font-bold py-2.5 px-10 rounded-md shadow-md text-base transition-colors flex items-center gap-2 w-full sm:w-auto justify-center`}
             >
@@ -211,6 +228,65 @@ const OnlinePayment = () => {
       )}
 
 
+
+      {/* Payment Processing/Success Modal */}
+      {paymentStatus !== 'idle' && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-300">
+            {paymentStatus === 'processing' ? (
+              <div className="p-10 flex flex-col items-center text-center">
+                <div className="w-16 h-16 border-4 border-slate-200 border-t-[#0033cc] rounded-full animate-spin mb-6"></div>
+                <h3 className="text-xl font-bold text-slate-800 mb-2">Processing Payment...</h3>
+                <p className="text-slate-500 text-sm">Please do not refresh or close this window.</p>
+                <div className="mt-6 bg-slate-50 px-6 py-3 rounded-xl border border-slate-200">
+                  <span className="text-slate-600 text-sm font-medium mr-2">Amount:</span>
+                  <span className="text-xl font-bold text-[#0033cc]">₹ {totalAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+                </div>
+              </div>
+            ) : (
+              <div className="p-8 flex flex-col items-center text-center">
+                <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
+                  <svg className="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <h3 className="text-2xl font-bold text-slate-800 mb-2">Payment Successful!</h3>
+                <p className="text-slate-500 mb-6">Your fee payment has been successfully recorded.</p>
+                
+                <div className="w-full bg-slate-50 rounded-xl p-4 border border-slate-200 mb-8 space-y-3">
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-slate-500 font-medium">Amount Paid:</span>
+                    <span className="text-slate-900 font-bold text-base">₹ {totalAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-slate-500 font-medium">Transaction ID:</span>
+                    <span className="text-slate-900 font-mono font-medium">{transactionId}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-slate-500 font-medium">Date:</span>
+                    <span className="text-slate-900 font-medium">{new Date().toLocaleString()}</span>
+                  </div>
+                </div>
+
+                <div className="w-full flex gap-3">
+                  <button 
+                    onClick={() => alert('Downloading receipt...')}
+                    className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 px-4 rounded-xl transition-colors"
+                  >
+                    Download Receipt
+                  </button>
+                  <button 
+                    onClick={handleCloseModal}
+                    className="flex-1 bg-[#0033cc] hover:bg-[#002299] text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-blue-500/30 transition-all"
+                  >
+                    Done
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       <style jsx>{`
         .clip-triangle {
