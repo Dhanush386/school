@@ -24,6 +24,8 @@ router.post('/forgot-password', forgotPassword);
 // TEMPORARY: Seed Cashier User
 router.get('/seed-cashier', async (req, res) => {
   try {
+    const User = require('../models/User');
+    const bcrypt = require('bcryptjs');
     const cashierExists = await User.findOne({ loginId: 'CASHIER001' });
     if (cashierExists) {
       return res.json({ success: true, message: 'Cashier already exists!' });
@@ -47,6 +49,7 @@ router.get('/seed-cashier', async (req, res) => {
 // Temporary debug route
 router.get('/debug-fees/:loginId', async (req, res) => {
   try {
+    const User = require('../models/User');
     const user = await User.findOne({ loginId: new RegExp(req.params.loginId, 'i') });
     if (!user) {
       return res.json({ error: 'User not found' });
