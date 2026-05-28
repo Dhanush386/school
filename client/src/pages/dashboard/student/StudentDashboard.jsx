@@ -133,7 +133,7 @@ const StudentDashboard = () => {
           <div>
             <p className="text-primary-600 text-sm font-bold">Good {new Date().getHours() < 12 ? 'Morning' : new Date().getHours() < 17 ? 'Afternoon' : 'Evening'}, 👋</p>
             <h1 className="text-slate-900 text-2xl font-bold mt-1">{user?.name}</h1>
-            <p className="text-slate-500 text-sm mt-1">{user?.department} · {user?.loginId} · Semester 4</p>
+            <p className="text-slate-500 text-sm mt-1">{user?.department} · {user?.loginId} · Section A</p>
             <div className="flex items-center gap-3 mt-4">
               <div className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 rounded-lg text-slate-900 text-xs">
                 <MdCalendarToday className="text-primary-400" />
