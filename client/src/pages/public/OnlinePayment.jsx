@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import axiosInstance from '../../api/axiosInstance';
 
 const OnlinePayment = () => {
   const [username, setUsername] = useState('');
@@ -34,13 +35,94 @@ const OnlinePayment = () => {
     }
   };
 
-  const handlePayment = () => {
+  useEffect(() => {
+    // Load Razorpay script
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.async = true;
+    document.body.appendChild(script);
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
+  const handlePayment = async () => {
+    if (totalAmount <= 0) return;
+    
     setPaymentStatus('processing');
-    // Simulate network request and payment processing
-    setTimeout(() => {
-      setTransactionId('TXN' + Math.floor(1000000000 + Math.random() * 9000000000));
-      setPaymentStatus('success');
-    }, 2500);
+    
+    try {
+      // 1. Create order on backend
+      const { data: orderData } = await axiosInstance.post('/payment/create-order', {
+        amount: totalAmount,
+        studentId: username || 'anonymous',
+        studentName: username || 'Unknown Student',
+        feeDetails: mockFees.filter(f => selectedFees.includes(f.id))
+      });
+
+      if (!orderData.success) {
+        throw new Error('Failed to create order');
+      }
+
+      // 2. Open Razorpay Checkout
+      const options = {
+        key: orderData.keyId,
+        amount: orderData.amount,
+        currency: orderData.currency,
+        name: 'Vidhya Vikas Matric Hr. Sec. School',
+        description: 'Fee Payment',
+        image: '/logo.jpeg',
+        order_id: orderData.orderId,
+        handler: async function (response) {
+          // 3. Verify payment on backend
+          try {
+            const verifyRes = await axiosInstance.post('/payment/verify', {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature
+            });
+
+            if (verifyRes.data.success) {
+              setTransactionId(response.razorpay_payment_id);
+              setPaymentStatus('success');
+            } else {
+              alert('Payment Verification Failed!');
+              setPaymentStatus('idle');
+            }
+          } catch (verifyErr) {
+            console.error('Verify Error:', verifyErr);
+            alert('Payment verified but error connecting to server.');
+            setPaymentStatus('idle');
+          }
+        },
+        prefill: {
+          name: username || 'Student',
+          email: 'student@example.com',
+          contact: '9999999999'
+        },
+        theme: {
+          color: '#0033cc'
+        },
+        modal: {
+          ondismiss: function() {
+            setPaymentStatus('idle');
+          }
+        }
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.on('payment.failed', function (response){
+        console.error('Payment Failed:', response.error);
+        alert(response.error.description);
+        setPaymentStatus('idle');
+      });
+      rzp.open();
+
+    } catch (error) {
+      console.error('Payment initialization error:', error);
+      alert('Failed to initialize payment gateway.');
+      setPaymentStatus('idle');
+    }
   };
 
   const handleCloseModal = () => {

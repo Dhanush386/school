@@ -42,6 +42,7 @@ const libraryRoutes    = require('./routes/library.routes');
 const feedbackRoutes   = require('./routes/feedback.routes');
 const transportRoutes  = require('./routes/transport.routes');
 const complaintsRoutes = require('./routes/complaint.routes');
+const paymentRoutes    = require('./routes/paymentRoutes');
 const cronRoutes       = require('./routes/cron.routes');
 const { initCronJobs } = require('./cron/reminderJobs');
 
@@ -121,6 +122,7 @@ app.use('/api/library',    libraryRoutes);
 app.use('/api/feedback',   feedbackRoutes);
 app.use('/api/transport',  transportRoutes);
 app.use('/api/complaints', complaintsRoutes);
+app.use('/api/payment',    paymentRoutes);
 app.use('/api/cron',       cronRoutes);
 
 
