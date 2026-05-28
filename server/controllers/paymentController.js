@@ -3,10 +3,10 @@ const crypto = require('crypto');
 const Payment = require('../models/Payment');
 
 // We will use test keys if env vars are not set
-// In a real scenario, these should be inside the .env file.
+// In a real scenario, these must be inside the .env file.
 const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID || 'rzp_test_SugfhuiekQdenz',
-  key_secret: process.env.RAZORPAY_KEY_SECRET || 'IWnwZmN8s34yxox6ge3aBRqe',
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
 
 // @desc    Create a new Razorpay Order
@@ -42,7 +42,7 @@ const createOrder = async (req, res) => {
       orderId: order.id,
       amount: order.amount,
       currency: order.currency,
-      keyId: process.env.RAZORPAY_KEY_ID || 'rzp_test_SugfhuiekQdenz'
+      keyId: process.env.RAZORPAY_KEY_ID
     });
   } catch (error) {
     console.error('Razorpay create order error:', error);
@@ -68,7 +68,7 @@ const verifyPayment = async (req, res) => {
   const body = razorpay_order_id + '|' + razorpay_payment_id;
   
   const expectedSignature = crypto
-    .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET || 'IWnwZmN8s34yxox6ge3aBRqe')
+    .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
     .update(body.toString())
     .digest('hex');
 
