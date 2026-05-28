@@ -21,6 +21,29 @@ router.post('/login', validateLogin, login);
  */
 router.post('/forgot-password', forgotPassword);
 
+// TEMPORARY: Seed Cashier User
+router.get('/seed-cashier', async (req, res) => {
+  const User = require('../models/User');
+  try {
+    // Check if exists
+    const exists = await User.findOne({ loginId: 'CASHIER001' });
+    if (exists) return res.json({ success: true, message: 'Cashier already exists' });
+    
+    const user = await User.create({
+      name: 'Frank Cashier',
+      loginId: 'CASHIER001',
+      role: 'cashier',
+      department: 'Finance',
+      mustChangePassword: false,
+      isActive: true,
+      password: 'password123',
+    });
+    res.json({ success: true, message: 'Cashier seeded successfully!', user });
+  } catch (error) {
+    res.json({ success: false, error: error.message });
+  }
+});
+
 // ── Protected Routes ──────────────────────────────────────────────────────────
 
 /**
