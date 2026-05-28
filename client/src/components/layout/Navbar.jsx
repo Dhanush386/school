@@ -79,7 +79,7 @@ const Navbar = ({ sidebarCollapsed }) => {
     >
       {/* Institution Logo & Name */}
       <div className="hidden md:flex items-center gap-2 mr-2">
-        <img src="/logo.jpeg" alt="School Logo" className="h-8 w-8 object-contain rounded-md" />
+        <img src="/logo.jpeg" alt="School Logo" className="h-8 w-8 object-cover rounded-full shadow-sm" />
         <span className="text-slate-900 font-bold text-sm tracking-wide">
           Vidhya Vikas
         </span>
