@@ -228,7 +228,7 @@ const StudentDashboard = () => {
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
               <XAxis dataKey="month" tick={{ fill: '#64748b', fontSize: 12 }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fill: '#64748b', fontSize: 12 }} axisLine={false} tickLine={false} />
-              <Tooltip content={<CustomTooltip />} />
+              <Tooltip content={<CustomTooltip />} cursor={false} />
               <Area type="monotone" dataKey="present" name="Present" stroke="#6366f1" fill="url(#presentGrad)" strokeWidth={2} />
               <Area type="monotone" dataKey="absent" name="Absent" stroke="#ef4444" fill="url(#absentGrad)" strokeWidth={2} />
             </AreaChart>
@@ -275,14 +275,14 @@ const StudentDashboard = () => {
         >
           <div className="flex items-center justify-between mb-5">
             <h3 className="text-slate-900 font-semibold">Subject Performance</h3>
-            <span className="text-slate-500 text-xs">Semester 4</span>
+            <span className="text-slate-500 text-xs">Term 1</span>
           </div>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={gradeData} barSize={28}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
               <XAxis dataKey="subject" tick={{ fill: '#64748b', fontSize: 12 }} axisLine={false} tickLine={false} />
               <YAxis domain={[0, 100]} tick={{ fill: '#64748b', fontSize: 12 }} axisLine={false} tickLine={false} />
-              <Tooltip content={<CustomTooltip />} />
+              <Tooltip content={<CustomTooltip />} cursor={false} />
               <Bar dataKey="grade" name="Grade" radius={[6, 6, 0, 0]}>
                 {gradeData.map((entry, i) => (
                   <Cell key={i} fill={`hsl(${220 + i * 15}, 70%, ${55 + i * 3}%)`} />
