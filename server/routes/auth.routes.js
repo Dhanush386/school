@@ -23,24 +23,46 @@ router.post('/forgot-password', forgotPassword);
 
 // TEMPORARY: Seed Cashier User
 router.get('/seed-cashier', async (req, res) => {
-  const User = require('../models/User');
   try {
-    // Check if exists
-    const exists = await User.findOne({ loginId: 'CASHIER001' });
-    if (exists) return res.json({ success: true, message: 'Cashier already exists' });
-    
-    const user = await User.create({
+    const cashierExists = await User.findOne({ loginId: 'CASHIER001' });
+    if (cashierExists) {
+      return res.json({ success: true, message: 'Cashier already exists!' });
+    }
+    const hashedPassword = await bcrypt.hash('password123', 10);
+    const cashier = await User.create({
       name: 'Frank Cashier',
       loginId: 'CASHIER001',
+      password: hashedPassword,
       role: 'cashier',
       department: 'Finance',
       mustChangePassword: false,
       isActive: true,
-      password: 'password123',
     });
-    res.json({ success: true, message: 'Cashier seeded successfully!', user });
+    res.json({ success: true, message: 'Cashier seeded successfully!', data: cashier });
   } catch (error) {
-    res.json({ success: false, error: error.message });
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Temporary debug route
+router.get('/debug-fees/:loginId', async (req, res) => {
+  try {
+    const user = await User.findOne({ loginId: new RegExp(req.params.loginId, 'i') });
+    if (!user) {
+      return res.json({ error: 'User not found' });
+    }
+    const feesByStudentId = await require('../models/Fees').find({ studentId: user._id }).lean();
+    const feesByStudent = await require('../models/Fees').find({ student: user._id }).lean();
+    const allFees = await require('../models/Fees').find().limit(5).lean();
+    
+    res.json({
+      user,
+      feesByStudentId,
+      feesByStudent,
+      allFeesSample: allFees
+    });
+  } catch (err) {
+    res.json({ error: err.message });
   }
 });
 
