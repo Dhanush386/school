@@ -71,9 +71,9 @@ const Navbar = ({ sidebarCollapsed }) => {
       transition={{ duration: 0.3, ease: 'easeInOut' }}
       className="fixed top-0 right-0 z-30 h-16 flex items-center px-4 lg:px-6 gap-4"
       style={{
-        background: 'rgba(15, 23, 42, 0.85)',
+        background: 'rgba(255, 255, 255, 0.95)',
         backdropFilter: 'blur(20px)',
-        borderBottom: '1px solid rgba(255,255,255,0.06)',
+        borderBottom: '1px solid rgba(0,0,0,0.05)',
         WebkitBackdropFilter: 'blur(20px)',
       }}
     >

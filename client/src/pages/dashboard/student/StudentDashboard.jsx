@@ -121,8 +121,8 @@ const StudentDashboard = () => {
         animate="animate"
         className="relative rounded-3xl p-6 overflow-hidden"
         style={{
-          background: 'linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #1e3a5f 100%)',
-          border: '1px solid rgba(99,102,241,0.2)',
+          background: 'white',
+          border: '1px solid rgba(0,0,0,0.05)',
         }}
       >
         <div className="absolute inset-0 overflow-hidden">
@@ -131,7 +131,7 @@ const StudentDashboard = () => {
         </div>
         <div className="relative z-10 flex items-center justify-between">
           <div>
-            <p className="text-primary-300 text-sm font-medium">Good {new Date().getHours() < 12 ? 'Morning' : new Date().getHours() < 17 ? 'Afternoon' : 'Evening'}, 👋</p>
+            <p className="text-primary-600 text-sm font-bold">Good {new Date().getHours() < 12 ? 'Morning' : new Date().getHours() < 17 ? 'Afternoon' : 'Evening'}, 👋</p>
             <h1 className="text-slate-900 text-2xl font-bold mt-1">{user?.name}</h1>
             <p className="text-slate-500 text-sm mt-1">{user?.department} · {user?.loginId} · Semester 4</p>
             <div className="flex items-center gap-3 mt-4">
@@ -139,8 +139,8 @@ const StudentDashboard = () => {
                 <MdCalendarToday className="text-primary-400" />
                 AY 2024-25
               </div>
-              <div className="flex items-center gap-1.5 px-3 py-1.5 bg-green-500/20 border border-green-500/30 rounded-lg text-green-300 text-xs">
-                <MdCheckCircle />
+              <div className="flex items-center gap-1.5 px-3 py-1.5 bg-green-50 border border-green-200 rounded-lg text-green-700 text-xs font-semibold">
+                <MdCheckCircle className="text-green-600" />
                 Active Student
               </div>
             </div>
