@@ -33,6 +33,7 @@ const TeacherDashboard     = lazy(() => import('../pages/dashboard/teacher/Teach
 const PrincipalDashboard   = lazy(() => import('../pages/dashboard/principal/PrincipalDashboard'));
 const AdminDashboard       = lazy(() => import('../pages/dashboard/admin/AdminDashboard'));
 const CoordinatorDashboard = lazy(() => import('../pages/dashboard/coordinator/CoordinatorDashboard'));
+const CashierDashboard     = lazy(() => import('../pages/dashboard/admin/CashierDashboard'));
 
 // ── Academic
 const QuestionBank = lazy(() => import('../pages/academic/QuestionBank'));
@@ -65,6 +66,7 @@ const DashboardRouter = () => {
     admin:       <AdminDashboard />,
     coordinator: <CoordinatorDashboard />,
     hod:         <CoordinatorDashboard />,
+    cashier:     <CashierDashboard />,
   };
   return map[user?.role] || <Navigate to="/login" replace />;
 };
@@ -88,6 +90,11 @@ const AppRouter = () => (
       {/* ── Protected — all authenticated roles */}
       <Route element={<ProtectedRoute />}>
         <Route path="/dashboard" element={<DashboardRouter />} />
+
+        {/* Cashier Routes */}
+        <Route element={<ProtectedRoute allowedRoles={['cashier', 'admin']} />}>
+          <Route path="/dashboard/cashier" element={<CashierDashboard />} />
+        </Route>
 
         {/* Academic */}
         <Route path="/academic/timetable"     element={<Timetable />} />

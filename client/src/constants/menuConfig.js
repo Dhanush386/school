@@ -19,7 +19,7 @@ export const getSidebarMenu = (role) => {
     // ─── Main ────────────────────────────────────────────────────────────────
     {
       section: 'Main',
-      roles: ['student', 'teacher', 'principal', 'admin', 'coordinator'],
+      roles: ['student', 'teacher', 'principal', 'admin', 'coordinator', 'cashier'],
       items: [
         {
           id: 'dashboard',

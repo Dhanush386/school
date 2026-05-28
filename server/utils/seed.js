@@ -70,6 +70,15 @@ const seedUsers = async () => {
       isActive: true,
       password: 'CRD001',
     },
+    {
+      name: 'Frank Cashier',
+      loginId: 'CASHIER001',
+      role: 'cashier',
+      department: 'Finance',
+      mustChangePassword: false,
+      isActive: true,
+      password: 'password123',
+    },
   ];
 
   const createdUsers = [];

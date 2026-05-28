@@ -43,7 +43,7 @@ router.get(
  */
 router.get(
   '/',
-  authorize('admin', 'principal'),
+  authorize('admin', 'principal', 'cashier'),
   getAllFees
 );
 
@@ -65,7 +65,7 @@ router.post(
  */
 router.post(
   '/:id/pay',
-  authorize('student', 'admin'),
+  authorize('student', 'admin', 'cashier'),
   payFee
 );
 
