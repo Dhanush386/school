@@ -23,8 +23,10 @@ const CashierDashboard = () => {
     setLoading(true);
     try {
       // Admin fees endpoint with search filter
-      const res = await api.get(`/fees?search=${searchQuery}&status=pending`);
-      setFees(res.data.data || []);
+      const res = await api.get(`/fees?search=${searchQuery}`);
+      // Filter out paid fees so we only show pending/overdue
+      const unpaidFees = (res.data.data || []).filter(f => f.status !== 'paid');
+      setFees(unpaidFees);
       setSearched(true);
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to search fees');
