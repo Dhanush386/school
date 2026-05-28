@@ -64,7 +64,17 @@ const OnlinePayment = () => {
         throw new Error('Failed to create order');
       }
 
-      // 2. Open Razorpay Checkout
+      // 1.5. If the backend is using fake keys (mock mode), bypass the real Razorpay widget
+      // because Razorpay's script will throw an error with a fake key.
+      if (orderData.isMock) {
+        setTimeout(() => {
+          setTransactionId('TXN' + Math.floor(1000000000 + Math.random() * 9000000000));
+          setPaymentStatus('success');
+        }, 2000);
+        return;
+      }
+
+      // 2. Open Razorpay Checkout (Real Keys Required)
       const options = {
         key: orderData.keyId,
         amount: orderData.amount,
