@@ -77,11 +77,11 @@ const Navbar = ({ sidebarCollapsed }) => {
         WebkitBackdropFilter: 'blur(20px)',
       }}
     >
-      {/* Institution Name */}
+      {/* Institution Logo & Name */}
       <div className="hidden md:flex items-center gap-2 mr-2">
-        <MdSchool className="text-primary-400 text-xl" />
-        <span className="text-slate-900 font-semibold text-sm tracking-wide">
-          International School
+        <img src="/logo.jpeg" alt="School Logo" className="h-8 w-8 object-contain rounded-md" />
+        <span className="text-slate-900 font-bold text-sm tracking-wide">
+          Vidhya Vikas
         </span>
       </div>
 
