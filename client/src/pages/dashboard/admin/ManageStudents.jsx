@@ -20,7 +20,7 @@ export default function ManageStudents() {
 
   // Form states
   const [studentForm, setStudentForm] = useState({ name: '', loginId: '', department: '', role: 'student', section: 'A' });
-  const [feeForm, setFeeForm] = useState({ feeType: 'Tuition Fee', amount: '', dueDate: '', academicYear: '2024-2025' });
+  const [feeForm, setFeeForm] = useState({ feeType: 'Tuition Fee', amount: '', dueDate: '', academicYear: '2024-25' });
 
   useEffect(() => {
     fetchStudents();
@@ -67,7 +67,7 @@ export default function ManageStudents() {
       if (data.success) {
         toast.success('Fee assigned successfully!');
         setShowAssignFee(false);
-        setFeeForm({ feeType: 'Tuition Fee', amount: '', dueDate: '', academicYear: '2024-2025' });
+        setFeeForm({ feeType: 'Tuition Fee', amount: '', dueDate: '', academicYear: '2024-25' });
       }
     } catch (error) {
       toast.error(error.response?.data?.message || 'Error assigning fee');
