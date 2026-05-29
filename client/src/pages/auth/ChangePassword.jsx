@@ -44,6 +44,29 @@ const PasswordStrength = ({ password }) => {
   );
 };
 
+const InputField = ({ label, field, showKey, placeholder, form, handleChange, show, setShow }) => (
+  <div>
+    <label className="text-slate-400 text-xs font-medium uppercase tracking-wider block mb-2">{label}</label>
+    <div className="relative">
+      <MdLock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xl" />
+      <input
+        type={show[showKey] ? 'text' : 'password'}
+        value={form[field]}
+        onChange={(e) => handleChange(field, e.target.value)}
+        placeholder={placeholder}
+        className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-12 py-3 text-white placeholder-slate-600 text-sm focus:outline-none focus:border-primary-500/60 transition-all"
+      />
+      <button
+        type="button"
+        onClick={() => setShow(s => ({ ...s, [showKey]: !s[showKey] }))}
+        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
+      >
+        {show[showKey] ? <MdVisibilityOff className="text-xl" /> : <MdVisibility className="text-xl" />}
+      </button>
+    </div>
+  </div>
+);
+
 const ChangePassword = () => {
   const [form, setForm] = useState({ oldPassword: '', newPassword: '', confirmPassword: '' });
   const [show, setShow] = useState({ old: false, new: false, confirm: false });
@@ -80,28 +103,7 @@ const ChangePassword = () => {
     }
   };
 
-  const InputField = ({ label, field, showKey, placeholder }) => (
-    <div>
-      <label className="text-slate-400 text-xs font-medium uppercase tracking-wider block mb-2">{label}</label>
-      <div className="relative">
-        <MdLock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xl" />
-        <input
-          type={show[showKey] ? 'text' : 'password'}
-          value={form[field]}
-          onChange={(e) => handleChange(field, e.target.value)}
-          placeholder={placeholder}
-          className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-12 py-3 text-white placeholder-slate-600 text-sm focus:outline-none focus:border-primary-500/60 transition-all"
-        />
-        <button
-          type="button"
-          onClick={() => setShow(s => ({ ...s, [showKey]: !s[showKey] }))}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
-        >
-          {show[showKey] ? <MdVisibilityOff className="text-xl" /> : <MdVisibility className="text-xl" />}
-        </button>
-      </div>
-    </div>
-  );
+
 
   return (
     <div className="min-h-screen bg-slate-950 flex items-center justify-center relative overflow-hidden">
@@ -141,12 +143,12 @@ const ChangePassword = () => {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
-              <InputField label="Current Password" field="oldPassword" showKey="old" placeholder="Your current password" />
+              <InputField label="Current Password" field="oldPassword" showKey="old" placeholder="Your current password" form={form} handleChange={handleChange} show={show} setShow={setShow} />
               <div>
-                <InputField label="New Password" field="newPassword" showKey="new" placeholder="Create a strong password" />
+                <InputField label="New Password" field="newPassword" showKey="new" placeholder="Create a strong password" form={form} handleChange={handleChange} show={show} setShow={setShow} />
                 <PasswordStrength password={form.newPassword} />
               </div>
-              <InputField label="Confirm New Password" field="confirmPassword" showKey="confirm" placeholder="Re-enter new password" />
+              <InputField label="Confirm New Password" field="confirmPassword" showKey="confirm" placeholder="Re-enter new password" form={form} handleChange={handleChange} show={show} setShow={setShow} />
 
               {form.confirmPassword && form.newPassword !== form.confirmPassword && (
                 <p className="text-red-400 text-xs flex items-center gap-1">
