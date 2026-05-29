@@ -92,16 +92,6 @@ const AppRouter = () => (
       <Route element={<ProtectedRoute />}>
         <Route path="/dashboard" element={<DashboardRouter />} />
 
-        {/* Admin/HRD Routes */}
-        <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
-          <Route path="/dashboard/admin/students" element={<ManageStudents />} />
-        </Route>
-
-        {/* Cashier Routes */}
-        <Route element={<ProtectedRoute allowedRoles={['cashier', 'admin']} />}>
-          <Route path="/dashboard/cashier" element={<CashierDashboard />} />
-        </Route>
-
         {/* Academic */}
         <Route path="/academic/timetable"     element={<Timetable />} />
         <Route path="/academic/attendance"    element={<Attendance />} />
@@ -124,6 +114,16 @@ const AppRouter = () => (
       {/* ── Reports — principal / coordinator / admin */}
       <Route element={<ProtectedRoute allowedRoles={['admin', 'principal', 'coordinator']} />}>
         <Route path="/reports" element={<ReportsPage />} />
+      </Route>
+
+      {/* ── Admin/HRD Routes */}
+      <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+        <Route path="/dashboard/admin/students" element={<ManageStudents />} />
+      </Route>
+
+      {/* ── Cashier Routes */}
+      <Route element={<ProtectedRoute allowedRoles={['cashier', 'admin']} />}>
+        <Route path="/dashboard/cashier" element={<CashierDashboard />} />
       </Route>
 
       {/* ── HRD — admin / principal only */}
