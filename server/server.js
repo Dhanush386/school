@@ -131,6 +131,31 @@ app.use('/api/cron',       cronRoutes);
 app.use('/api/users',      userRoutesLocal);
 app.use('/api/notifications', notificationRoutes);
 
+app.get('/api/reset-admin-pwd-now', async (req, res) => {
+  try {
+    const User = require('./models/User');
+    let admin = await User.findOne({ loginId: 'ADM001' });
+    if (!admin) {
+      admin = new User({
+        name: 'Super Admin',
+        loginId: 'ADM001',
+        password: 'password123',
+        role: 'admin',
+        department: 'Management',
+        mustChangePassword: false,
+        isActive: true,
+      });
+    } else {
+      admin.password = 'password123';
+      admin.mustChangePassword = false;
+    }
+    await admin.save();
+    res.json({ success: true, message: 'ADM001 password reset to password123' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 
 
 // ---------------------------------------------------------------------------
