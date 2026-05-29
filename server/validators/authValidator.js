@@ -49,13 +49,6 @@ const changePasswordSchema = Joi.object({
         'New password must contain at least one uppercase letter, one lowercase letter, and one number',
       'any.required': 'New password is required',
     }),
-  confirmPassword: Joi.string()
-    .valid(Joi.ref('newPassword'))
-    .required()
-    .messages({
-      'any.only': 'Passwords do not match',
-      'any.required': 'Confirm password is required',
-    }),
 });
 
 // ── Middleware Factory ────────────────────────────────────────────────────────

@@ -86,6 +86,10 @@ const ChangePassword = () => {
       toast.error('Password must be at least 8 characters.');
       return;
     }
+    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(form.newPassword)) {
+      toast.error('Password must contain uppercase, lowercase, and a number.');
+      return;
+    }
     if (form.newPassword === form.oldPassword) {
       toast.error('New password must be different from current password.');
       return;
@@ -97,7 +101,8 @@ const ChangePassword = () => {
       updateUser({ mustChangePassword: false });
       navigate('/dashboard', { replace: true });
     } catch (err) {
-      toast.error(err?.response?.data?.message || 'Failed to change password.');
+      const errorMsg = err?.response?.data?.errors?.[0] || err?.response?.data?.message || 'Failed to change password.';
+      toast.error(errorMsg);
     } finally {
       setLoading(false);
     }
