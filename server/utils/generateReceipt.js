@@ -1,6 +1,4 @@
 const { PDFDocument, rgb, StandardFonts } = require('pdf-lib');
-const fs = require('fs');
-const path = require('path');
 
 /**
  * Generates a fee receipt PDF and saves it to uploads/receipts/
@@ -25,11 +23,7 @@ const generateReceipt = async ({
   paymentMethod,
   paymentDate = new Date(),
 }) => {
-  // ── Ensure output directory exists ──────────────────────────────────────────
-  const outputDir = path.join(__dirname, '..', 'uploads', 'receipts');
-  if (!fs.existsSync(outputDir)) {
-    fs.mkdirSync(outputDir, { recursive: true });
-  }
+  // No disk writes for serverless environments
 
   // ── Create PDF ───────────────────────────────────────────────────────────────
   const pdfDoc = await PDFDocument.create();
@@ -209,13 +203,9 @@ const generateReceipt = async ({
     color: grayColor,
   });
 
-  // ── Serialize & save ─────────────────────────────────────────────────────────
+  // ── Serialize & return ─────────────────────────────────────────────────────────
   const pdfBytes = await pdfDoc.save();
-  const filename = `receipt_${transactionId}_${Date.now()}.pdf`;
-  const filepath = path.join(outputDir, filename);
-  fs.writeFileSync(filepath, pdfBytes);
-
-  return filename;
+  return pdfBytes;
 };
 
 module.exports = generateReceipt;

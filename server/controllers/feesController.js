@@ -60,33 +60,19 @@ const payFee = async (req, res) => {
     const transactionId = `TXN${Date.now()}${uuidv4().split('-')[0].toUpperCase()}`;
     const paymentDate = new Date();
 
-    // Generate receipt PDF
-    const receiptFilename = await generateReceipt({
-      studentName: fee.student.name,
-      studentId: fee.student.loginId,
-      department: fee.student.department,
-      feeType: fee.feeType,
-      amount: fee.amount,
-      transactionId,
-      paymentMethod,
-      paymentDate,
-    });
-
     fee.status = 'paid';
-    fee.paymentDate = paymentDate;
+    fee.paidAt = paymentDate;
     fee.paymentMethod = paymentMethod;
     fee.transactionId = transactionId;
-    fee.receiptFilename = receiptFilename;
     await fee.save();
 
     // Notify student
     await Notification.create({
-      recipient: fee.student._id,
-      type: 'fee_paid',
+      recipientId: fee.student._id,
+      type: 'success',
       title: 'Fee Payment Successful',
       message: `Payment of ₹${fee.amount} for ${fee.feeType} was successful. Transaction ID: ${transactionId}`,
-      relatedId: fee._id,
-      relatedModel: 'Fee',
+      link: '/fees',
     });
 
     return res.status(200).json({
@@ -97,7 +83,6 @@ const payFee = async (req, res) => {
         amount: fee.amount,
         feeType: fee.feeType,
         paymentDate,
-        receiptFilename,
       },
     });
   } catch (error) {
@@ -229,24 +214,31 @@ const createFeeRecord = async (req, res) => {
 // ── @access  Student (owner) / Admin
 const downloadReceipt = async (req, res) => {
   try {
-    const fee = await Fee.findById(req.params.id);
+    const fee = await Fee.findById(req.params.id).populate('student', 'name loginId department');
     if (!fee) return res.status(404).json({ success: false, message: 'Fee record not found' });
 
-    if (req.user.role === 'student' && fee.student.toString() !== req.user.id) {
+    if (req.user.role === 'student' && fee.student._id.toString() !== req.user.id) {
       return res.status(403).json({ success: false, message: 'Access denied' });
     }
 
-    if (!fee.receiptFilename) {
-      return res.status(404).json({ success: false, message: 'No receipt available for this fee' });
+    if (fee.status !== 'paid') {
+      return res.status(400).json({ success: false, message: 'Fee is not paid yet' });
     }
 
-    const receiptPath = path.join(__dirname, '..', 'uploads', 'receipts', fee.receiptFilename);
-    return res.download(receiptPath, fee.receiptFilename, (err) => {
-      if (err) {
-        console.error('Receipt download error:', err);
-        return res.status(500).json({ success: false, message: 'Could not download receipt' });
-      }
+    const pdfBytes = await generateReceipt({
+      studentName: fee.student.name,
+      studentId: fee.student.loginId,
+      department: fee.student.department,
+      feeType: fee.feeType,
+      amount: fee.amount,
+      transactionId: fee.transactionId,
+      paymentMethod: fee.paymentMethod,
+      paymentDate: fee.paidAt || new Date(),
     });
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename=receipt_${fee.transactionId}.pdf`);
+    return res.send(Buffer.from(pdfBytes));
   } catch (error) {
     console.error('downloadReceipt error:', error);
     return res.status(500).json({ success: false, message: 'Server error', error: error.message });
