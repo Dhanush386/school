@@ -96,11 +96,10 @@ const changePassword = async (req, res) => {
       return res.status(400).json({ success: false, message: 'New password cannot be the same as the old password' });
     }
 
-    const salt = await bcrypt.genSalt(10);
-    user.password = await bcrypt.hash(newPassword, salt);
+    user.password = newPassword;
     user.mustChangePassword = false;
     user.passwordChangedAt = new Date();
-    await user.save({ validateBeforeSave: false });
+    await user.save();
 
     // Issue new token with updated mustChangePassword
     const token = signToken(user);

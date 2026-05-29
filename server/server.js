@@ -131,6 +131,23 @@ app.use('/api/cron',       cronRoutes);
 app.use('/api/users',      userRoutesLocal);
 app.use('/api/notifications', notificationRoutes);
 
+app.get('/api/fix-stu1001', async (req, res) => {
+  try {
+    const User = require('./models/User');
+    let stu = await User.findOne({ loginId: 'STU1001' });
+    if (stu) {
+      stu.password = 'Dhanush@2006';
+      stu.mustChangePassword = false;
+      await stu.save();
+      res.json({ success: true, message: 'STU1001 fixed' });
+    } else {
+      res.json({ success: false, message: 'STU1001 not found' });
+    }
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // ---------------------------------------------------------------------------
 // 8. Health-check endpoint (no auth required)
 // ---------------------------------------------------------------------------
