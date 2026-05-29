@@ -1,6 +1,5 @@
-const express = require('require');
-// Wait, `require('express')`
-const router = require('express').Router();
+const express = require('express');
+const router = express.Router();
 const { getTimetable, saveTimetable } = require('../controllers/timetableController');
 const { protect, restrictTo } = require('../middlewares/auth');
 
