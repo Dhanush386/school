@@ -210,12 +210,11 @@ const createFeeRecord = async (req, res) => {
 
     // Notify student
     await Notification.create({
-      recipient: student,
-      type: 'fee_created',
+      recipientId: student,
+      type: 'info',
       title: 'New Fee Record',
       message: `A new fee record for ${feeType} of ₹${amount} has been created. Due: ${new Date(dueDate).toLocaleDateString('en-IN')}`,
-      relatedId: fee._id,
-      relatedModel: 'Fee',
+      link: '/fees',
     });
 
     return res.status(201).json({ success: true, message: 'Fee record created', data: fee });
