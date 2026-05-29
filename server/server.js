@@ -47,6 +47,7 @@ const paymentRoutes    = require('./routes/paymentRoutes');
 const cronRoutes       = require('./routes/cron.routes');
 const userRoutesLocal  = require('./routes/user.routes');
 const notificationRoutes = require('./routes/notification.routes');
+const dashboardRoutes  = require('./routes/dashboard.routes');
 const { initCronJobs } = require('./cron/reminderJobs');
 
 // ---------------------------------------------------------------------------
@@ -130,6 +131,7 @@ app.use('/api/payment',    paymentRoutes);
 app.use('/api/cron',       cronRoutes);
 app.use('/api/users',      userRoutesLocal);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/dashboard',  dashboardRoutes);
 
 // ---------------------------------------------------------------------------
 // 8. Health-check endpoint (no auth required)

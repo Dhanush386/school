@@ -78,3 +78,7 @@ export const notificationService = {
 export const userService = {
   getStudents: () => api.get('/users/students'),
 };
+
+export const dashboardService = {
+  getStats: () => api.get('/dashboard/stats'),
+};
