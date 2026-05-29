@@ -39,12 +39,13 @@ const academicRoutes   = require('./routes/academic.routes');
 const feesRoutes       = require('./routes/fees.routes');
 const hostelRoutes     = require('./routes/hostel.routes');
 const libraryRoutes    = require('./routes/library.routes');
+const timetableRoutes  = require('./routes/timetableRoutes');
 const feedbackRoutes   = require('./routes/feedback.routes');
 const transportRoutes  = require('./routes/transport.routes');
 const complaintsRoutes = require('./routes/complaint.routes');
 const paymentRoutes    = require('./routes/paymentRoutes');
 const cronRoutes       = require('./routes/cron.routes');
-const userRoutes       = require('./routes/user.routes');
+const userRoutesLocal  = require('./routes/user.routes');
 const notificationRoutes = require('./routes/notification.routes');
 const { initCronJobs } = require('./cron/reminderJobs');
 
@@ -117,6 +118,7 @@ if (process.env.VERCEL) {
 }
 
 app.use('/api/auth',       authRoutes);
+app.use('/api/timetable',  timetableRoutes);
 app.use('/api/academic',   academicRoutes);
 app.use('/api/fees',       feesRoutes);
 app.use('/api/hostel',     hostelRoutes);
@@ -126,7 +128,7 @@ app.use('/api/transport',  transportRoutes);
 app.use('/api/complaints', complaintsRoutes);
 app.use('/api/payment',    paymentRoutes);
 app.use('/api/cron',       cronRoutes);
-app.use('/api/users',      userRoutes);
+app.use('/api/users',      userRoutesLocal);
 app.use('/api/notifications', notificationRoutes);
 
 

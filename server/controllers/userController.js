@@ -6,13 +6,14 @@ const bcrypt = require('bcryptjs');
 // ── @access  Admin, Cashier
 const getStudents = async (req, res) => {
   try {
-    const { search, department, role, limit = 50, page = 1 } = req.query;
+    const { search, department, section, role, limit = 50, page = 1 } = req.query;
     
     const filter = {};
     if (role) filter.role = role;
     else filter.role = { $in: ['student', 'teacher'] };
     
     if (department) filter.department = department;
+    if (section) filter.section = section;
     
     if (search) {
       filter.$or = [

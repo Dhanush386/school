@@ -132,6 +132,12 @@ export const getSidebarMenu = (role) => {
           path: '/dashboard/admin/students',
         },
         {
+          id: 'manage-timetable',
+          label: 'Manage Timetable',
+          icon: 'MdSchedule',
+          path: '/dashboard/admin/timetable',
+        },
+        {
           id: 'fees-admin',
           label: 'Fee Management',
           icon: 'MdPayment',

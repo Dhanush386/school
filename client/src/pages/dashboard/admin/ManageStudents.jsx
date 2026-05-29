@@ -19,16 +19,25 @@ export default function ManageStudents() {
   const [selectedStudent, setSelectedStudent] = useState(null);
 
   // Form states
-  const [studentForm, setStudentForm] = useState({ name: '', loginId: '', department: '', role: 'student', section: 'A' });
+  const [studentForm, setStudentForm] = useState({ name: '', loginId: '', department: '10', role: 'student', section: 'A' });
   const [feeForm, setFeeForm] = useState({ feeType: 'Tuition Fee', amount: '', dueDate: '', academicYear: '2024-25' });
+
+  // Filters
+  const [classFilter, setClassFilter] = useState('');
+  const [sectionFilter, setSectionFilter] = useState('');
 
   useEffect(() => {
     fetchStudents();
-  }, []);
+  }, [classFilter, sectionFilter]);
 
   const fetchStudents = async () => {
     try {
-      const { data } = await api.get('/users/students?limit=100');
+      setLoading(true);
+      const query = new URLSearchParams({ limit: 100 });
+      if (classFilter) query.append('department', classFilter);
+      if (sectionFilter) query.append('section', sectionFilter);
+      
+      const { data } = await api.get(`/users/students?${query.toString()}`);
       if (data.success) {
         setStudents(data.data);
       }
@@ -110,8 +119,28 @@ export default function ManageStudents() {
       </motion.div>
 
       <motion.div variants={fadeInUp} initial="hidden" animate="visible" className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-        <div className="px-5 py-4 border-b border-slate-200">
+        <div className="px-5 py-4 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <h2 className="font-semibold text-slate-900">Registered Students</h2>
+          <div className="flex items-center gap-3">
+            <select
+              value={classFilter}
+              onChange={(e) => setClassFilter(e.target.value)}
+              className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-primary-500"
+            >
+              <option value="">All Classes</option>
+              {[...Array(12)].map((_, i) => (
+                <option key={i} value={i + 1}>Class {i + 1}</option>
+              ))}
+            </select>
+            <select
+              value={sectionFilter}
+              onChange={(e) => setSectionFilter(e.target.value)}
+              className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-primary-500"
+            >
+              <option value="">All Sections</option>
+              {['A', 'B', 'C', 'D'].map(s => <option key={s} value={s}>Section {s}</option>)}
+            </select>
+          </div>
         </div>
         
         {loading ? (
@@ -222,14 +251,13 @@ export default function ManageStudents() {
                     </div>
                     <div>
                       <label className="block text-xs font-medium text-slate-600 mb-1.5">Section</label>
-                      <input
-                        type="text"
-                        required
-                        placeholder="e.g. A"
+                      <select
                         value={studentForm.section}
                         onChange={(e) => setStudentForm({ ...studentForm, section: e.target.value })}
                         className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary-500"
-                      />
+                      >
+                        {['A', 'B', 'C', 'D'].map(s => <option key={s} value={s}>Section {s}</option>)}
+                      </select>
                     </div>
                   </div>
                   <div>
@@ -258,15 +286,16 @@ export default function ManageStudents() {
                     </p>
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-slate-600 mb-1.5">Department / Class</label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="e.g. 12-A or CSE"
+                    <label className="block text-xs font-medium text-slate-600 mb-1.5">Class / Grade</label>
+                    <select
                       value={studentForm.department}
                       onChange={(e) => setStudentForm({ ...studentForm, department: e.target.value })}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
-                    />
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary-500"
+                    >
+                      {[...Array(12)].map((_, i) => (
+                        <option key={i} value={i + 1}>Class {i + 1}</option>
+                      ))}
+                    </select>
                   </div>
                   
                   <div className="bg-blue-50 border border-blue-100 rounded-xl p-3 flex items-start gap-2">

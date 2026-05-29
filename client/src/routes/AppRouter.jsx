@@ -35,6 +35,7 @@ const AdminDashboard       = lazy(() => import('../pages/dashboard/admin/AdminDa
 const CoordinatorDashboard = lazy(() => import('../pages/dashboard/coordinator/CoordinatorDashboard'));
 const CashierDashboard     = lazy(() => import('../pages/dashboard/admin/CashierDashboard'));
 const ManageStudents       = lazy(() => import('../pages/dashboard/admin/ManageStudents'));
+const ManageTimetable      = lazy(() => import('../pages/dashboard/admin/ManageTimetable'));
 
 // ── Academic
 const QuestionBank = lazy(() => import('../pages/academic/QuestionBank'));
@@ -116,9 +117,10 @@ const AppRouter = () => (
         <Route path="/reports" element={<ReportsPage />} />
       </Route>
 
-      {/* ── Admin/HRD Routes */}
+      {/* ── Admin Routes */}
       <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
-        <Route path="/dashboard/admin/students" element={<ManageStudents />} />
+        <Route path="/dashboard/admin/students"  element={<ManageStudents />} />
+        <Route path="/dashboard/admin/timetable" element={<ManageTimetable />} />
       </Route>
 
       {/* ── Cashier Routes */}

@@ -33,6 +33,11 @@ const userSchema = new mongoose.Schema(
       required: [true, 'Department is required'],
       trim: true,
     },
+    section: {
+      type: String,
+      enum: ['A', 'B', 'C', 'D'],
+      default: 'A',
+    },
     email: {
       type: String,
       trim: true,
