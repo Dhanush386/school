@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MdPeople, MdAdd, MdClose, MdPayment, MdCheckCircle, MdSchool, MdWarning } from 'react-icons/md';
+import { MdPeople, MdAdd, MdClose, MdPayment, MdCheckCircle, MdSchool, MdWarning, MdDelete } from 'react-icons/md';
 import api from '../../../api/axiosInstance';
 import toast from 'react-hot-toast';
 
@@ -79,6 +79,19 @@ export default function ManageStudents() {
     setShowAssignFee(true);
   };
 
+  const handleDeleteUser = async (userId) => {
+    if (!window.confirm('Are you sure you want to delete this user? All their fees and data will be lost.')) return;
+    try {
+      const { data } = await api.delete(`/users/students/${userId}`);
+      if (data.success) {
+        toast.success(data.message);
+        fetchStudents();
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Error deleting user');
+    }
+  };
+
   return (
     <div className="space-y-6">
       <motion.div variants={fadeInUp} initial="hidden" animate="visible" className="flex items-center justify-between">
@@ -150,14 +163,22 @@ export default function ManageStudents() {
                     </td>
                     <td className="px-5 py-4 text-slate-600">{student.department} - {student.section || 'A'}</td>
                     <td className="px-5 py-4 text-right">
-                      {student.role === 'student' && (
+                      <div className="flex justify-end gap-2">
+                        {student.role === 'student' && (
+                          <button
+                            onClick={() => openAssignFee(student)}
+                            className="bg-amber-50 text-amber-600 hover:bg-amber-100 px-3 py-1.5 rounded-lg text-xs font-medium inline-flex items-center gap-1.5 transition-colors"
+                          >
+                            <MdPayment size={14} /> Assign Fee
+                          </button>
+                        )}
                         <button
-                          onClick={() => openAssignFee(student)}
-                          className="bg-amber-50 text-amber-600 hover:bg-amber-100 px-3 py-1.5 rounded-lg text-xs font-medium inline-flex items-center gap-1.5 transition-colors"
+                          onClick={() => handleDeleteUser(student._id)}
+                          className="bg-red-50 text-red-600 hover:bg-red-100 px-3 py-1.5 rounded-lg text-xs font-medium inline-flex items-center gap-1.5 transition-colors"
                         >
-                          <MdPayment size={14} /> Assign Fee
+                          <MdDelete size={14} /> Delete
                         </button>
-                      )}
+                      </div>
                     </td>
                   </tr>
                 ))}

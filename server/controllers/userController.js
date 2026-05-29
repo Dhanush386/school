@@ -85,7 +85,38 @@ const createStudent = async (req, res) => {
   }
 };
 
+// ── @desc    Delete a user
+// ── @route   DELETE /api/users/students/:id
+// ── @access  Admin
+const deleteStudent = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    // Do not allow deleting admins or cashiers via this route just in case
+    if (user.role === 'admin' || user.role === 'cashier') {
+      return res.status(403).json({ success: false, message: 'Cannot delete admin or cashier accounts here' });
+    }
+
+    // Delete associated fees and notifications (cleanup)
+    const Fee = require('../models/Fees');
+    const Notification = require('../models/Notification');
+    await Fee.deleteMany({ $or: [{ studentId: user._id }, { student: user._id }] });
+    await Notification.deleteMany({ recipient: user._id });
+
+    await user.deleteOne();
+
+    return res.status(200).json({ success: true, message: 'User and their records deleted successfully' });
+  } catch (error) {
+    console.error('deleteStudent error:', error);
+    return res.status(500).json({ success: false, message: 'Server error', error: error.message });
+  }
+};
+
 module.exports = {
   getStudents,
   createStudent,
+  deleteStudent,
 };
