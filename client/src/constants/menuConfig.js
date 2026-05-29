@@ -135,7 +135,7 @@ export const getSidebarMenu = (role) => {
           id: 'fees-admin',
           label: 'Fee Management',
           icon: 'MdPayment',
-          path: '/fees',
+          path: '/dashboard/cashier',
         },
         {
           id: 'hostel-admin',
