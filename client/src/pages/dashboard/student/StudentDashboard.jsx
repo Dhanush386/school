@@ -63,10 +63,10 @@ const StudentDashboard = () => {
           notificationService.getAll().catch(() => ({ data: { data: [] } }))
         ]);
         
-        setFeesData(feesRes?.summary || feesRes?.data?.summary || { totalAmount: 0, totalPaid: 0, totalPending: 0 });
-        setAttendanceData(attRes?.summary || attRes?.data?.summary || { total: 0, present: 0, overallPercentage: '0.00' });
-        setLibraryData(libRes?.data || libRes?.data?.data || []);
-        setNotifications(notifRes?.data || notifRes?.data?.data || []);
+        setFeesData(feesRes?.data?.summary || { totalAmount: 0, totalPaid: 0, totalPending: 0 });
+        setAttendanceData(attRes?.data?.summary || { total: 0, present: 0, overallPercentage: '0.00' });
+        setLibraryData(libRes?.data?.data || []);
+        setNotifications(notifRes?.data?.data || []);
       } catch (err) {
         console.error('Error fetching dashboard data:', err);
       } finally {
