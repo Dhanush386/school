@@ -132,6 +132,12 @@ export const getSidebarMenu = (role) => {
       roles: ['admin'],
       items: [
         {
+          id: 'manage-students',
+          label: 'Manage Students',
+          icon: 'MdPeople',
+          path: '/dashboard/admin/students',
+        },
+        {
           id: 'fees-admin',
           label: 'Fee Management',
           icon: 'MdPayment',
