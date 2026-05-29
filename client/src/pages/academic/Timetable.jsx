@@ -38,7 +38,7 @@ const Timetable = () => {
   <div className="space-y-6">
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
       <h1 className="text-slate-900 text-2xl font-bold">Class Timetable</h1>
-      <p className="text-slate-500 text-sm mt-1">Academic Year {academicYear} · {user?.department || 'General'} Department</p>
+      <p className="text-slate-500 text-sm mt-1">Academic Year {academicYear} · Class {user?.department || 'General'}</p>
     </motion.div>
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
       className="rounded-2xl border border-slate-200 overflow-hidden" style={{ background: 'rgba(255,255,255,1)' }}>

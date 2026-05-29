@@ -10,11 +10,11 @@ const feeData = months.map((m, i) => ({ month: m, amount: [185000, 210000, 19500
 const attendData = months.map((m, i) => ({ month: m, pct: [88, 91, 87, 93, 89, 91][i] }));
 
 const deptStats = [
-  { dept: 'Computer Science', students: 320, passRate: 91, color: 'bg-blue-500' },
-  { dept: 'Electronics', students: 280, passRate: 87, color: 'bg-violet-500' },
-  { dept: 'Mechanical', students: 240, passRate: 82, color: 'bg-amber-500' },
-  { dept: 'MBA', students: 200, passRate: 89, color: 'bg-green-500' },
-  { dept: 'Civil', students: 200, passRate: 78, color: 'bg-rose-500' },
+  { dept: 'Class XII', students: 320, passRate: 91, color: 'bg-blue-500' },
+  { dept: 'Class XI', students: 280, passRate: 87, color: 'bg-violet-500' },
+  { dept: 'Class X', students: 240, passRate: 82, color: 'bg-amber-500' },
+  { dept: 'Class IX', students: 200, passRate: 89, color: 'bg-green-500' },
+  { dept: 'Class VIII', students: 200, passRate: 78, color: 'bg-rose-500' },
 ];
 
 const stats = [
@@ -36,7 +36,7 @@ const ReportsPage = () => {
     <motion.div variants={fadeInUp} initial="initial" animate="animate" className="flex items-start justify-between">
       <div>
         <h1 className="text-white text-2xl font-bold">Reports & Analytics</h1>
-        <p className="text-slate-400 text-sm mt-1">Academic Year {academicYear} · All Departments</p>
+        <p className="text-slate-400 text-sm mt-1">Academic Year {academicYear} · All Classes</p>
       </div>
       <button onClick={() => toast('Generating PDF report...', { icon: '📄' })}
         className="flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-500 text-white rounded-xl text-sm font-medium transition-colors">
@@ -103,7 +103,7 @@ const ReportsPage = () => {
     <motion.div variants={fadeInUp} initial="initial" animate="animate"
       className="rounded-2xl border border-white/5 overflow-hidden" style={{ background: 'rgba(30,41,59,0.8)' }}>
       <div className="p-5 border-b border-white/5">
-        <h3 className="text-white font-semibold">Department-wise Performance</h3>
+        <h3 className="text-white font-semibold">Class-wise Performance</h3>
       </div>
       <div className="divide-y divide-white/5">
         {deptStats.map(d => (

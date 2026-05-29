@@ -118,7 +118,7 @@ export default function TeacherDashboard() {
           <div>
             <p className="text-blue-200 text-sm font-medium mb-1">Welcome back,</p>
             <h1 className="text-white text-2xl font-bold">{user?.name}</h1>
-            <p className="text-blue-100 text-sm mt-1">{user?.department} Dept · Login ID: {user?.loginId}</p>
+            <p className="text-blue-100 text-sm mt-1">{user?.department} Teacher · Login ID: {user?.loginId}</p>
             <div className="flex flex-wrap gap-2 mt-4">
               <span className="px-3 py-1 bg-white/10 rounded-lg text-white text-xs">AY 2024-25</span>
               <span className="px-3 py-1 bg-blue-500/20 border border-blue-500/30 rounded-lg text-blue-200 text-xs flex items-center gap-1">
