@@ -1,30 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   MdPayment, MdReceipt, MdDownload, MdClose, MdCheckCircle, MdCreditCard,
   MdAccountBalance, MdQrCode2, MdWarning, MdHome, MdExpandMore, MdExpandLess,
 } from "react-icons/md";
+import { useAuth } from '../../context/AuthContext';
+import { feesService } from '../../services/moduleServices';
+import toast from 'react-hot-toast';
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 24 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
 };
-
-const STUDENT = { name: "Rahul Verma", class: "12-A", rollNo: "SCH2024012", id: "STU001" };
-
-const FEE_DATA = [
-  { id: 1, type: "Tuition Fee", amount: 15000, due: "2026-06-01", status: "pending" },
-  { id: 2, type: "Lab Fee",     amount: 2500,  due: "2026-06-01", status: "pending" },
-  { id: 3, type: "Library Fee", amount: 1000,  due: "2026-05-01", status: "overdue" },
-  { id: 4, type: "Sports Fee",  amount: 500,   due: "2026-04-01", status: "paid" },
-  { id: 5, type: "Transport Fee", amount: 3000, due: "2026-04-01", status: "paid" },
-];
-
-const PAYMENT_HISTORY = [
-  { id: "TXN202605001", date: "2026-04-02", amount: 3500, method: "UPI", receipt: "RCP001" },
-  { id: "TXN202603002", date: "2026-03-01", amount: 15000, method: "Net Banking", receipt: "RCP002" },
-  { id: "TXN202601003", date: "2026-01-05", amount: 2500, method: "Card", receipt: "RCP003" },
-];
 
 const STATUS_STYLE = {
   paid:    { cls: "bg-green-500/20 text-green-300 border border-green-500/30", label: "Paid" },
@@ -49,6 +36,12 @@ function SummaryCard({ label, value, sub, color }) {
 }
 
 export default function FeeOverview() {
+  const { user } = useAuth();
+  
+  const [fees, setFees] = useState([]);
+  const [summary, setSummary] = useState({ totalAmount: 0, totalPaid: 0, totalPending: 0 });
+  const [loading, setLoading] = useState(true);
+
   const [showPayModal, setShowPayModal] = useState(false);
   const [payingFee, setPayingFee] = useState(null);
   const [method, setMethod] = useState("upi");
@@ -57,18 +50,77 @@ export default function FeeOverview() {
   const [paySuccess, setPaySuccess] = useState(false);
   const [receiptNo, setReceiptNo] = useState("");
   const [historyOpen, setHistoryOpen] = useState(true);
+  const [processing, setProcessing] = useState(false);
 
-  const totalDue = FEE_DATA.filter(f => f.status !== "paid").reduce((s, f) => s + f.amount, 0);
-  const totalPaid = FEE_DATA.filter(f => f.status === "paid").reduce((s, f) => s + f.amount, 0);
-  const nextDue = FEE_DATA.filter(f => f.status === "pending").sort((a, b) => new Date(a.due) - new Date(b.due))[0]?.due || "N/A";
-
-  const openPay = (fee) => { setPayingFee(fee); setPaySuccess(false); setMethod("upi"); setShowPayModal(true); };
-
-  const handlePay = () => {
-    const rcp = "RCP" + Date.now().toString().slice(-6);
-    setReceiptNo(rcp);
-    setPaySuccess(true);
+  const fetchFees = async () => {
+    try {
+      setLoading(true);
+      const res = await feesService.getStudentFees();
+      const fetchedFees = res.data?.data || [];
+      const fetchedSummary = res.data?.summary || { totalAmount: 0, totalPaid: 0, totalPending: 0 };
+      
+      setFees(fetchedFees);
+      setSummary(fetchedSummary);
+    } catch (error) {
+      toast.error('Failed to load fees');
+    } finally {
+      setLoading(false);
+    }
   };
+
+  useEffect(() => {
+    fetchFees();
+  }, []);
+
+  const openPay = (fee) => {
+    if (!fee) return toast.error("Please select a specific fee to pay from the breakdown below.");
+    setPayingFee(fee); 
+    setPaySuccess(false); 
+    setMethod("upi"); 
+    setShowPayModal(true); 
+  };
+
+  const handlePay = async () => {
+    if (!payingFee) return;
+    try {
+      setProcessing(true);
+      const res = await feesService.payFee(payingFee._id, method);
+      setReceiptNo(res.data?.data?.receiptNumber || "RCP-SUCCESS");
+      setPaySuccess(true);
+      fetchFees(); // Refresh data to show paid status
+      toast.success("Payment successful!");
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Payment failed');
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const handleDownloadReceipt = async (feeId, rcpNo) => {
+    try {
+      toast.loading('Generating receipt...', { id: 'receipt' });
+      const response = await feesService.downloadReceipt(feeId);
+      
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `${rcpNo}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      toast.success('Downloaded!', { id: 'receipt' });
+    } catch (error) {
+      toast.error('Failed to download receipt', { id: 'receipt' });
+    }
+  };
+
+  const nextDue = fees.filter(f => f.status === "pending").sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))[0]?.dueDate || "N/A";
+  const paidFees = fees.filter(f => f.status === "paid").sort((a, b) => new Date(b.paymentDate || b.updatedAt) - new Date(a.paymentDate || a.updatedAt));
+
+  if (loading) {
+    return <div className="min-h-screen bg-slate-950 p-6 flex items-center justify-center text-slate-400">Loading your fees...</div>;
+  }
 
   return (
     <div className="min-h-screen bg-slate-950 p-6">
@@ -82,21 +134,17 @@ export default function FeeOverview() {
               <span className="text-slate-300">Fee Overview</span>
             </div>
             <h1 className="text-2xl font-bold text-white flex items-center gap-2"><MdPayment className="text-primary-400" /> Fee Overview</h1>
-            <p className="text-slate-400 text-sm mt-1">{STUDENT.name} · {STUDENT.class} · Roll: {STUDENT.rollNo}</p>
+            <p className="text-slate-400 text-sm mt-1">{user?.name} · {user?.loginId}</p>
           </div>
-          <button onClick={() => openPay(null)}
-            className="bg-primary-600 hover:bg-primary-500 text-white px-5 py-2.5 rounded-xl text-sm font-medium flex items-center gap-2">
-            <MdPayment size={18} /> Pay Now
-          </button>
         </div>
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-          <SummaryCard label="Total Due" value={totalDue} sub="Includes overdue" color="border-red-500" />
-          <SummaryCard label="Total Paid" value={totalPaid} sub="This academic year" color="border-green-500" />
+          <SummaryCard label="Total Due" value={summary.totalPending} sub="Includes overdue" color="border-red-500" />
+          <SummaryCard label="Total Paid" value={summary.totalPaid} sub="This academic year" color="border-green-500" />
           <div className="rounded-2xl p-5 border border-white/5 bg-slate-800/80 border-l-4 border-amber-500">
             <p className="text-slate-400 text-xs mb-1">Next Due Date</p>
-            <p className="text-2xl font-bold text-white">{nextDue}</p>
+            <p className="text-2xl font-bold text-white">{nextDue !== "N/A" ? new Date(nextDue).toLocaleDateString() : "N/A"}</p>
             <p className="text-xs text-slate-500 mt-1">Mark your calendar</p>
           </div>
         </div>
@@ -115,19 +163,20 @@ export default function FeeOverview() {
               </tr>
             </thead>
             <tbody>
-              {FEE_DATA.map((fee, i) => (
-                <tr key={fee.id} className={`border-b border-white/5 hover:bg-white/5 transition-colors ${i % 2 === 0 ? "bg-slate-900/30" : ""}`}>
-                  <td className="px-4 py-3 font-medium text-white">{fee.type}</td>
+              {fees.length === 0 && <tr><td colSpan="5" className="px-4 py-6 text-center text-slate-500">No fee records found.</td></tr>}
+              {fees.map((fee, i) => (
+                <tr key={fee._id} className={`border-b border-white/5 hover:bg-white/5 transition-colors ${i % 2 === 0 ? "bg-slate-900/30" : ""}`}>
+                  <td className="px-4 py-3 font-medium text-white capitalize">{fee.feeType}</td>
                   <td className="px-4 py-3 text-slate-200">₹{fee.amount.toLocaleString()}</td>
                   <td className="px-4 py-3 text-slate-400">
                     <span className="flex items-center gap-1">
                       {fee.status === "overdue" && <MdWarning size={14} className="text-red-400" />}
-                      {fee.due}
+                      {new Date(fee.dueDate).toLocaleDateString()}
                     </span>
                   </td>
                   <td className="px-4 py-3">
-                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_STYLE[fee.status].cls}`}>
-                      {STATUS_STYLE[fee.status].label}
+                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_STYLE[fee.status]?.cls || STATUS_STYLE.pending.cls}`}>
+                      {STATUS_STYLE[fee.status]?.label || "Pending"}
                     </span>
                   </td>
                   <td className="px-4 py-3 flex gap-2">
@@ -137,7 +186,7 @@ export default function FeeOverview() {
                         <MdPayment size={14} /> Pay
                       </button>
                     ) : (
-                      <button className="bg-slate-700 hover:bg-slate-600 text-slate-200 px-3 py-1 rounded-lg text-xs flex items-center gap-1">
+                      <button onClick={() => handleDownloadReceipt(fee._id, fee.receiptNumber)} className="bg-slate-700 hover:bg-slate-600 text-slate-200 px-3 py-1 rounded-lg text-xs flex items-center gap-1">
                         <MdDownload size={14} /> Receipt
                       </button>
                     )}
@@ -166,15 +215,16 @@ export default function FeeOverview() {
                     </tr>
                   </thead>
                   <tbody>
-                    {PAYMENT_HISTORY.map((tx, i) => (
-                      <tr key={tx.id} className={`border-b border-white/5 hover:bg-white/5 transition-colors ${i % 2 === 0 ? "bg-slate-900/30" : ""}`}>
-                        <td className="px-4 py-3 font-mono text-xs text-slate-300">{tx.id}</td>
-                        <td className="px-4 py-3 text-slate-300">{tx.date}</td>
+                    {paidFees.length === 0 && <tr><td colSpan="5" className="px-4 py-6 text-center text-slate-500">No payments yet.</td></tr>}
+                    {paidFees.map((tx, i) => (
+                      <tr key={tx._id} className={`border-b border-white/5 hover:bg-white/5 transition-colors ${i % 2 === 0 ? "bg-slate-900/30" : ""}`}>
+                        <td className="px-4 py-3 font-mono text-xs text-slate-300">{tx.transactionId || tx._id.slice(-8)}</td>
+                        <td className="px-4 py-3 text-slate-300">{new Date(tx.paymentDate || tx.updatedAt).toLocaleDateString()}</td>
                         <td className="px-4 py-3 text-white font-medium">₹{tx.amount.toLocaleString()}</td>
-                        <td className="px-4 py-3 text-slate-400">{tx.method}</td>
+                        <td className="px-4 py-3 text-slate-400 capitalize">{tx.paymentMethod || 'online'}</td>
                         <td className="px-4 py-3">
-                          <button className="text-primary-400 hover:text-primary-300 text-xs flex items-center gap-1 underline underline-offset-2">
-                            <MdDownload size={14} /> {tx.receipt}
+                          <button onClick={() => handleDownloadReceipt(tx._id, tx.receiptNumber)} className="text-primary-400 hover:text-primary-300 text-xs flex items-center gap-1 underline underline-offset-2">
+                            <MdDownload size={14} /> {tx.receiptNumber || 'Download'}
                           </button>
                         </td>
                       </tr>
@@ -202,8 +252,8 @@ export default function FeeOverview() {
                   <div className="p-5 space-y-5">
                     <div className="bg-slate-800 rounded-xl p-4 flex items-center justify-between">
                       <div>
-                        <p className="text-slate-400 text-xs">{payingFee ? payingFee.type : "Total Outstanding"}</p>
-                        <p className="text-2xl font-bold text-white">₹{payingFee ? payingFee.amount.toLocaleString() : totalDue.toLocaleString()}</p>
+                        <p className="text-slate-400 text-xs capitalize">{payingFee?.feeType}</p>
+                        <p className="text-2xl font-bold text-white">₹{payingFee?.amount.toLocaleString()}</p>
                       </div>
                       <MdPayment size={32} className="text-primary-400 opacity-60" />
                     </div>
@@ -249,37 +299,33 @@ export default function FeeOverview() {
                     {method === "netbanking" && (
                       <div>
                         <label className="text-xs text-slate-400 mb-1 block">Select Bank</label>
-                        <select className="w-full bg-slate-800 border border-white/10 rounded-xl px-3 py-2 text-sm text-white focus:outline-none">
-                          {["State Bank of India", "HDFC Bank", "ICICI Bank", "Axis Bank", "Kotak Mahindra"].map(b => <option key={b}>{b}</option>)}
+                        <select className="w-full bg-slate-800 border border-white/10 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-primary-500">
+                          <option>State Bank of India</option><option>HDFC Bank</option><option>ICICI Bank</option><option>Axis Bank</option>
                         </select>
-                        <p className="text-xs text-slate-500 mt-2">You will be redirected to your bank's secure page.</p>
                       </div>
                     )}
                   </div>
                   <div className="p-5 border-t border-white/10">
-                    <button onClick={handlePay} className="w-full bg-primary-600 hover:bg-primary-500 text-white py-3 rounded-xl font-medium text-sm transition-all">
-                      Pay ₹{payingFee ? payingFee.amount.toLocaleString() : totalDue.toLocaleString()}
+                    <button onClick={handlePay} disabled={processing}
+                      className="w-full bg-primary-600 hover:bg-primary-500 disabled:opacity-50 text-white py-3 rounded-xl font-medium transition-colors">
+                      {processing ? "Processing..." : `Pay ₹${payingFee?.amount.toLocaleString()}`}
                     </button>
                   </div>
                 </>
               ) : (
-                <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} className="p-8 flex flex-col items-center text-center">
-                  <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", delay: 0.1 }}>
-                    <MdCheckCircle size={72} className="text-green-400 mb-4" />
+                <div className="p-8 flex flex-col items-center text-center">
+                  <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="w-16 h-16 bg-green-500/20 text-green-400 rounded-full flex items-center justify-center mb-4">
+                    <MdCheckCircle size={40} />
                   </motion.div>
-                  <h3 className="text-xl font-bold text-white mb-1">Payment Successful!</h3>
-                  <p className="text-slate-400 text-sm mb-4">Your payment has been processed successfully.</p>
-                  <div className="bg-slate-800 rounded-xl px-6 py-3 mb-6">
-                    <p className="text-xs text-slate-500">Receipt Number</p>
-                    <p className="text-lg font-mono font-bold text-primary-400">{receiptNo}</p>
+                  <h3 className="text-xl font-bold text-white mb-2">Payment Successful!</h3>
+                  <p className="text-slate-400 text-sm mb-6">Your payment has been processed securely. The receipt has been generated.</p>
+                  <div className="bg-slate-800 rounded-xl p-4 w-full mb-6">
+                    <div className="flex justify-between text-xs text-slate-400 mb-2"><span>Receipt No.</span><span className="text-white">{receiptNo}</span></div>
+                    <div className="flex justify-between text-xs text-slate-400 mb-2"><span>Amount</span><span className="text-white">₹{payingFee?.amount.toLocaleString()}</span></div>
+                    <div className="flex justify-between text-xs text-slate-400"><span>Date</span><span className="text-white">{new Date().toLocaleString()}</span></div>
                   </div>
-                  <div className="flex gap-3">
-                    <button className="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-xl text-sm flex items-center gap-2">
-                      <MdDownload size={16} /> Download Receipt
-                    </button>
-                    <button onClick={() => setShowPayModal(false)} className="bg-primary-600 hover:bg-primary-500 text-white px-4 py-2 rounded-xl text-sm">Done</button>
-                  </div>
-                </motion.div>
+                  <button onClick={() => setShowPayModal(false)} className="w-full bg-slate-800 hover:bg-slate-700 text-white py-3 rounded-xl font-medium transition-colors">Done</button>
+                </div>
               )}
             </motion.div>
           </div>

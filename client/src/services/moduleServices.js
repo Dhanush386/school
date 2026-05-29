@@ -74,3 +74,7 @@ export const notificationService = {
   markRead: (id) => api.put(`/notifications/${id}/read`),
   markAllRead: () => api.put('/notifications/read-all'),
 };
+
+export const userService = {
+  getStudents: () => api.get('/users/students'),
+};
