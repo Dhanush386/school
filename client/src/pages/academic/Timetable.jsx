@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { MdSchedule } from 'react-icons/md';
+import { useAuth } from '../../../context/AuthContext';
 
 const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 const slots = ['08:30-09:30', '09:30-10:30', '10:30-11:30', '11:30-12:30', '01:30-02:30', '02:30-03:30', '03:30-04:30'];
@@ -24,11 +25,20 @@ const colors = {
   'Break': 'bg-white/3 text-slate-600 border-transparent',
 };
 
-const Timetable = () => (
+const Timetable = () => {
+  const { user } = useAuth();
+  
+  const currentYear = new Date().getFullYear();
+  const currentMonth = new Date().getMonth();
+  const academicYear = currentMonth < 5 
+    ? `${currentYear - 1}-${String(currentYear).slice(2)}` 
+    : `${currentYear}-${String(currentYear + 1).slice(2)}`;
+
+  return (
   <div className="space-y-6">
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
       <h1 className="text-slate-900 text-2xl font-bold">Class Timetable</h1>
-      <p className="text-slate-500 text-sm mt-1">Academic Year 2024-25 · Semester 4 · CSE Department</p>
+      <p className="text-slate-500 text-sm mt-1">Academic Year {academicYear} · {user?.department || 'General'} Department</p>
     </motion.div>
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
       className="rounded-2xl border border-slate-200 overflow-hidden" style={{ background: 'rgba(255,255,255,1)' }}>
@@ -71,6 +81,7 @@ const Timetable = () => (
       ))}
     </div>
   </div>
-);
+  );
+};
 
 export default Timetable;

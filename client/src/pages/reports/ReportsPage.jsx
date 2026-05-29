@@ -24,12 +24,19 @@ const stats = [
   { label: 'Fee Collected', value: '₹18.4L', icon: MdAccountBalance, color: 'from-violet-500 to-purple-600', sub: '94% of target' },
 ];
 
-const ReportsPage = () => (
+const ReportsPage = () => {
+  const currentYear = new Date().getFullYear();
+  const currentMonth = new Date().getMonth();
+  const academicYear = currentMonth < 5 
+    ? `${currentYear - 1}-${String(currentYear).slice(2)}` 
+    : `${currentYear}-${String(currentYear + 1).slice(2)}`;
+
+  return (
   <div className="space-y-6">
     <motion.div variants={fadeInUp} initial="initial" animate="animate" className="flex items-start justify-between">
       <div>
         <h1 className="text-white text-2xl font-bold">Reports & Analytics</h1>
-        <p className="text-slate-400 text-sm mt-1">Academic Year 2024-25 · All Departments</p>
+        <p className="text-slate-400 text-sm mt-1">Academic Year {academicYear} · All Departments</p>
       </div>
       <button onClick={() => toast('Generating PDF report...', { icon: '📄' })}
         className="flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-500 text-white rounded-xl text-sm font-medium transition-colors">
@@ -119,6 +126,7 @@ const ReportsPage = () => (
       </div>
     </motion.div>
   </div>
-);
+  );
+};
 
 export default ReportsPage;
