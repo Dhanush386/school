@@ -45,6 +45,7 @@ const complaintsRoutes = require('./routes/complaint.routes');
 const paymentRoutes    = require('./routes/paymentRoutes');
 const cronRoutes       = require('./routes/cron.routes');
 const userRoutes       = require('./routes/user.routes');
+const notificationRoutes = require('./routes/notification.routes');
 const { initCronJobs } = require('./cron/reminderJobs');
 
 // ---------------------------------------------------------------------------
@@ -126,6 +127,7 @@ app.use('/api/complaints', complaintsRoutes);
 app.use('/api/payment',    paymentRoutes);
 app.use('/api/cron',       cronRoutes);
 app.use('/api/users',      userRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 
 

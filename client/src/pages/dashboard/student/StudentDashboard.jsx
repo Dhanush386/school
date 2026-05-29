@@ -2,57 +2,16 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
-  AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid,
-  Tooltip, ResponsiveContainer, PieChart, Pie, Cell,
-} from 'recharts';
-import {
-  MdSchool, MdAssignment, MdPayment, MdHotel, MdLocalLibrary,
+  MdSchool, MdPayment, MdHotel, MdLocalLibrary,
   MdDirectionsBus, MdReport, MdNotifications, MdCalendarToday,
-  MdTrendingUp, MdCheckCircle, MdWarning, MdArrowForward,
-  MdMenuBook, MdTimelapse, MdStar, MdPerson,
+  MdCheckCircle, MdArrowForward,
 } from 'react-icons/md';
 import { useAuth } from '../../../context/AuthContext';
 import { staggerContainer, staggerItem } from '../../../animations/stagger';
 import { fadeInUp } from '../../../animations/fadeIn';
+import { feesService, attendanceService, libraryService, notificationService } from '../../../services/moduleServices';
 
-// ─── Mock Data ────────────────────────────────────────────────────────────────
-const attendanceData = [
-  { month: 'Jan', present: 22, absent: 2 },
-  { month: 'Feb', present: 19, absent: 3 },
-  { month: 'Mar', present: 24, absent: 1 },
-  { month: 'Apr', present: 21, absent: 2 },
-  { month: 'May', present: 20, absent: 3 },
-  { month: 'Jun', present: 23, absent: 0 },
-];
-
-const subjectAttendance = [
-  { name: 'Tamil', value: 92, color: '#6366f1' },
-  { name: 'English', value: 95, color: '#10b981' },
-  { name: 'Maths', value: 88, color: '#f59e0b' },
-  { name: 'Science', value: 85, color: '#06b6d4' },
-  { name: 'Social', value: 78, color: '#8b5cf6' },
-];
-
-const gradeData = [
-  { subject: 'Tamil', grade: 91 },
-  { subject: 'English', grade: 88 },
-  { subject: 'Maths', grade: 96 },
-  { subject: 'Science', grade: 85 },
-  { subject: 'Social', grade: 82 },
-];
-
-const upcomingAssignments = [
-  { id: 1, title: 'Tamil Grammar Worksheet', subject: 'Tamil', due: '2024-06-28', status: 'pending' },
-  { id: 2, title: 'Algebra Practice Questions', subject: 'Maths', due: '2024-06-30', status: 'submitted' },
-  { id: 3, title: 'Science Project Draft', subject: 'Science', due: '2024-07-02', status: 'pending' },
-];
-
-const recentNotifications = [
-  { id: 1, title: 'Fee Payment Reminder', message: 'Semester fee due on June 30', type: 'warning', time: '2h ago' },
-  { id: 2, title: 'Assignment Graded', message: 'Math assignment scored 88/100', type: 'success', time: '5h ago' },
-  { id: 3, title: 'Library Book Due', message: '"Clean Code" due tomorrow', type: 'info', time: '1d ago' },
-];
-
+// ─── Quick Actions ────────────────────────────────────────────────────────────
 const quickActions = [
   { label: 'Pay Fees', icon: MdPayment, path: '/fees', color: 'from-green-500 to-emerald-600' },
   { label: 'Library', icon: MdLocalLibrary, path: '/library', color: 'from-blue-500 to-cyan-600' },
@@ -63,7 +22,7 @@ const quickActions = [
 ];
 
 // ─── Sub-Components ───────────────────────────────────────────────────────────
-const StatCard = ({ icon: Icon, label, value, sub, color, trend }) => (
+const StatCard = ({ icon: Icon, label, value, sub, color }) => (
   <motion.div
     variants={staggerItem}
     whileHover={{ y: -4, scale: 1.02 }}
@@ -76,12 +35,6 @@ const StatCard = ({ icon: Icon, label, value, sub, color, trend }) => (
         <p className="text-slate-500 text-xs font-medium uppercase tracking-wider">{label}</p>
         <p className="text-slate-900 text-3xl font-bold mt-1">{value}</p>
         {sub && <p className="text-slate-500 text-xs mt-1">{sub}</p>}
-        {trend && (
-          <div className={`flex items-center gap-1 mt-2 text-xs font-medium ${trend > 0 ? 'text-green-400' : 'text-red-400'}`}>
-            <MdTrendingUp className={trend < 0 ? 'rotate-180' : ''} />
-            {Math.abs(trend)}% from last month
-          </div>
-        )}
       </div>
       <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${color} flex items-center justify-center shadow-lg`}>
         <Icon className="text-slate-900 text-xl" />
@@ -90,26 +43,47 @@ const StatCard = ({ icon: Icon, label, value, sub, color, trend }) => (
   </motion.div>
 );
 
-const CustomTooltip = ({ active, payload, label }) => {
-  if (active && payload?.length) {
-    return (
-      <div className="bg-white border border-slate-200 rounded-xl px-3 py-2 shadow-xl">
-        <p className="text-slate-500 text-xs mb-1">{label}</p>
-        {payload.map(p => (
-          <p key={p.name} className="text-slate-900 text-sm font-semibold">
-            {p.name}: <span style={{ color: p.color }}>{p.value}</span>
-          </p>
-        ))}
-      </div>
-    );
-  }
-  return null;
-};
-
 // ─── Main Dashboard ────────────────────────────────────────────────────────────
 const StudentDashboard = () => {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState('overview');
+  
+  const [loading, setLoading] = useState(true);
+  const [feesData, setFeesData] = useState({ totalAmount: 0, totalPaid: 0, totalPending: 0 });
+  const [attendanceData, setAttendanceData] = useState({ total: 0, present: 0, overallPercentage: '0.00' });
+  const [libraryData, setLibraryData] = useState([]);
+  const [notifications, setNotifications] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [feesRes, attRes, libRes, notifRes] = await Promise.all([
+          feesService.getStudentFees().catch(() => ({ data: { summary: { totalAmount: 0, totalPaid: 0, totalPending: 0 } } })),
+          attendanceService.getMy().catch(() => ({ data: { summary: { total: 0, present: 0, overallPercentage: '0.00' } } })),
+          libraryService.getIssuedBooks().catch(() => ({ data: { data: [] } })),
+          notificationService.getAll().catch(() => ({ data: { data: [] } }))
+        ]);
+        
+        setFeesData(feesRes?.summary || feesRes?.data?.summary || { totalAmount: 0, totalPaid: 0, totalPending: 0 });
+        setAttendanceData(attRes?.summary || attRes?.data?.summary || { total: 0, present: 0, overallPercentage: '0.00' });
+        setLibraryData(libRes?.data || libRes?.data?.data || []);
+        setNotifications(notifRes?.data || notifRes?.data?.data || []);
+      } catch (err) {
+        console.error('Error fetching dashboard data:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64 text-slate-500">
+        <div className="w-6 h-6 border-2 border-primary-500 border-t-transparent rounded-full animate-spin mr-3"></div>
+        Loading your dashboard...
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -144,23 +118,12 @@ const StudentDashboard = () => {
               </div>
             </div>
           </div>
-          <div className="hidden md:flex flex-col items-end gap-2">
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary-400 to-violet-500 flex items-center justify-center shadow-2xl">
-              <span className="text-slate-900 text-3xl font-black">{user?.name?.charAt(0)}</span>
-            </div>
-            <div className="text-center">
-              <div className="text-slate-900 text-xl font-bold">87.4%</div>
-              <div className="text-slate-500 text-xs">Overall Score</div>
-            </div>
-          </div>
         </div>
 
         {/* Progress bars */}
-        <div className="relative z-10 mt-5 grid grid-cols-3 gap-4">
+        <div className="relative z-10 mt-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {[
-            { label: 'Attendance', value: 88, color: '#6366f1' },
-            { label: 'Homework', value: 73, color: '#8b5cf6' },
-            { label: 'Grade', value: 87, color: '#06b6d4' },
+            { label: 'Attendance', value: Number(attendanceData.overallPercentage), color: '#6366f1' },
           ].map(item => (
             <div key={item.label}>
               <div className="flex justify-between mb-1">
@@ -186,58 +149,20 @@ const StudentDashboard = () => {
         variants={staggerContainer}
         initial="initial"
         animate="animate"
-        className="grid grid-cols-2 lg:grid-cols-4 gap-4"
+        className="grid grid-cols-1 md:grid-cols-3 gap-4"
       >
-        <StatCard icon={MdCheckCircle} label="Attendance" value="88%" sub="23/26 days" color="from-primary-500 to-indigo-600" trend={3} />
-        <StatCard icon={MdAssignment} label="Homework" value="11/15" sub="4 pending" color="from-violet-500 to-purple-600" trend={-5} />
-        <StatCard icon={MdPayment} label="Fees Due" value="₹8,500" sub="Due Jun 30" color="from-amber-500 to-orange-600" />
-        <StatCard icon={MdLocalLibrary} label="Books Issued" value="3" sub="1 overdue" color="from-cyan-500 to-blue-600" />
+        <StatCard icon={MdCheckCircle} label="Attendance" value={`${attendanceData.overallPercentage}%`} sub={`${attendanceData.present}/${attendanceData.total} days`} color="from-primary-500 to-indigo-600" />
+        <StatCard icon={MdPayment} label="Fees Due" value={`₹${feesData.totalPending.toLocaleString('en-IN')}`} sub="Pending amount" color="from-amber-500 to-orange-600" />
+        <StatCard icon={MdLocalLibrary} label="Books Issued" value={libraryData.length} sub="Currently issued" color="from-cyan-500 to-blue-600" />
       </motion.div>
 
       {/* Main Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Attendance Chart */}
-        <motion.div
-          variants={fadeInUp}
-          className="lg:col-span-2 rounded-2xl p-5 border border-slate-200"
-          style={{ background: 'rgba(255,255,255,1)' }}
-        >
-          <div className="flex items-center justify-between mb-5">
-            <div>
-              <h3 className="text-slate-900 font-semibold">Attendance Overview</h3>
-              <p className="text-slate-500 text-xs mt-0.5">Monthly present/absent breakdown</p>
-            </div>
-            <select className="bg-slate-50 border border-slate-200 text-slate-700 text-xs rounded-lg px-2 py-1.5 outline-none">
-              <option>2024</option>
-              <option>2023</option>
-            </select>
-          </div>
-          <ResponsiveContainer width="100%" height={200}>
-            <AreaChart data={attendanceData}>
-              <defs>
-                <linearGradient id="presentGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
-                </linearGradient>
-                <linearGradient id="absentGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-              <XAxis dataKey="month" tick={{ fill: '#64748b', fontSize: 12 }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fill: '#64748b', fontSize: 12 }} axisLine={false} tickLine={false} />
-              <Tooltip content={<CustomTooltip />} cursor={false} />
-              <Area type="monotone" dataKey="present" name="Present" stroke="#6366f1" fill="url(#presentGrad)" strokeWidth={2} />
-              <Area type="monotone" dataKey="absent" name="Absent" stroke="#ef4444" fill="url(#absentGrad)" strokeWidth={2} />
-            </AreaChart>
-          </ResponsiveContainer>
-        </motion.div>
 
         {/* Notifications */}
         <motion.div
           variants={fadeInUp}
-          className="rounded-2xl p-5 border border-slate-200"
+          className="lg:col-span-2 rounded-2xl p-5 border border-slate-200"
           style={{ background: 'rgba(255,255,255,1)' }}
         >
           <div className="flex items-center justify-between mb-4">
@@ -245,50 +170,37 @@ const StudentDashboard = () => {
             <span className="text-slate-500 text-xs">Recent</span>
           </div>
           <div className="space-y-3">
-            {recentNotifications.map(n => {
-              const colors = { warning: 'text-amber-400 bg-amber-400/10', success: 'text-green-400 bg-green-400/10', info: 'text-blue-400 bg-blue-400/10' };
-              return (
-                <div key={n.id} className="flex items-start gap-3 p-3 rounded-xl bg-white/3 border border-slate-200 hover:bg-slate-50 transition-colors">
-                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${colors[n.type]}`}>
-                    <MdNotifications />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-slate-900 text-xs font-semibold truncate">{n.title}</p>
-                    <p className="text-slate-500 text-xs mt-0.5 line-clamp-1">{n.message}</p>
-                    <p className="text-slate-600 text-xs mt-1">{n.time}</p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </motion.div>
-      </div>
+            {notifications.length === 0 ? (
+              <p className="text-slate-500 text-sm text-center py-4">No recent notifications</p>
+            ) : (
+              notifications.slice(0, 5).map(n => {
+                let colorClass = 'text-blue-400 bg-blue-400/10';
+                if (n.type === 'success') colorClass = 'text-green-400 bg-green-400/10';
+                if (n.type === 'warning') colorClass = 'text-amber-400 bg-amber-400/10';
+                if (n.type === 'error') colorClass = 'text-red-400 bg-red-400/10';
 
-      {/* Subject Grades + Quick Actions */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Grades Bar Chart */}
-        <motion.div
-          variants={fadeInUp}
-          className="lg:col-span-2 rounded-2xl p-5 border border-slate-200"
-          style={{ background: 'rgba(255,255,255,1)' }}
-        >
-          <div className="flex items-center justify-between mb-5">
-            <h3 className="text-slate-900 font-semibold">Subject Performance</h3>
-            <span className="text-slate-500 text-xs">Term 1</span>
+                return (
+                  <div key={n._id} className="flex gap-4 p-3 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-100 transition-colors cursor-pointer group">
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${colorClass}`}>
+                      <MdNotifications className="text-lg" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex justify-between items-start">
+                        <h4 className="text-slate-900 text-sm font-semibold">{n.title}</h4>
+                        <span className="text-slate-400 text-[10px]">{new Date(n.createdAt).toLocaleDateString()}</span>
+                      </div>
+                      <p className="text-slate-500 text-xs mt-0.5 line-clamp-2">{n.message}</p>
+                    </div>
+                  </div>
+                );
+              })
+            )}
           </div>
-          <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={gradeData} barSize={28}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-              <XAxis dataKey="subject" tick={{ fill: '#64748b', fontSize: 12 }} axisLine={false} tickLine={false} />
-              <YAxis domain={[0, 100]} tick={{ fill: '#64748b', fontSize: 12 }} axisLine={false} tickLine={false} />
-              <Tooltip content={<CustomTooltip />} cursor={false} />
-              <Bar dataKey="grade" name="Grade" radius={[6, 6, 0, 0]}>
-                {gradeData.map((entry, i) => (
-                  <Cell key={i} fill={`hsl(${220 + i * 15}, 70%, ${55 + i * 3}%)`} />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
+          {notifications.length > 5 && (
+            <button className="w-full mt-4 py-2 text-primary-600 text-xs font-semibold hover:bg-primary-50 rounded-lg transition-colors">
+              View All Notifications
+            </button>
+          )}
         </motion.div>
 
         {/* Quick Actions */}
@@ -297,95 +209,21 @@ const StudentDashboard = () => {
           className="rounded-2xl p-5 border border-slate-200"
           style={{ background: 'rgba(255,255,255,1)' }}
         >
-          <h3 className="text-slate-900 font-semibold mb-4">Quick Actions</h3>
+          <h3 className="text-slate-900 font-semibold mb-4">Quick Links</h3>
           <div className="grid grid-cols-2 gap-3">
-            {quickActions.map(action => {
-              const Icon = action.icon;
-              return (
-                <Link key={action.label} to={action.path}>
-                  <motion.div
-                    whileHover={{ scale: 1.05, y: -2 }}
-                    whileTap={{ scale: 0.95 }}
-                    className={`rounded-xl p-3 bg-gradient-to-br ${action.color} flex flex-col items-center justify-center gap-2 h-20 cursor-pointer shadow-lg`}
-                  >
-                    <Icon className="text-slate-900 text-2xl" />
-                    <span className="text-slate-900 text-xs font-semibold text-center">{action.label}</span>
-                  </motion.div>
-                </Link>
-              );
-            })}
-          </div>
-        </motion.div>
-      </div>
-
-      {/* Assignments + Subject Attendance */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Assignments */}
-        <motion.div
-          variants={fadeInUp}
-          className="rounded-2xl p-5 border border-slate-200"
-          style={{ background: 'rgba(255,255,255,1)' }}
-        >
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-slate-900 font-semibold">Upcoming Homework</h3>
-            <Link to="/academic/assignments" className="text-primary-400 text-xs hover:text-primary-300 flex items-center gap-1">
-              View all <MdArrowForward />
-            </Link>
-          </div>
-          <div className="space-y-3">
-            {upcomingAssignments.map(a => (
-              <div key={a.id} className="flex items-center gap-3 p-3 rounded-xl bg-white/3 border border-slate-200">
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${a.status === 'submitted' ? 'bg-green-500/20 text-green-400' : 'bg-amber-500/20 text-amber-400'}`}>
-                  {a.status === 'submitted' ? <MdCheckCircle className="text-xl" /> : <MdTimelapse className="text-xl" />}
+            {quickActions.map(action => (
+              <Link
+                key={action.label}
+                to={action.path}
+                className="group p-4 rounded-xl border border-slate-200 hover:border-primary-200 bg-slate-50 hover:bg-primary-50 transition-all text-center flex flex-col items-center justify-center gap-2"
+              >
+                <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${action.color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
+                  <action.icon className="text-white text-lg" />
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-slate-900 text-sm font-medium truncate">{a.title}</p>
-                  <p className="text-slate-500 text-xs mt-0.5">{a.subject} · Due: {a.due}</p>
-                </div>
-                <span className={`text-xs px-2 py-1 rounded-lg font-medium flex-shrink-0 ${a.status === 'submitted' ? 'bg-green-500/20 text-green-400' : 'bg-amber-500/20 text-amber-400'}`}>
-                  {a.status === 'submitted' ? 'Done' : 'Pending'}
-                </span>
-              </div>
+                <span className="text-slate-700 font-medium text-xs group-hover:text-primary-700 transition-colors">{action.label}</span>
+              </Link>
             ))}
           </div>
-        </motion.div>
-
-        {/* Subject Attendance Donut */}
-        <motion.div
-          variants={fadeInUp}
-          className="rounded-2xl p-5 border border-slate-200"
-          style={{ background: 'rgba(255,255,255,1)' }}
-        >
-          <h3 className="text-slate-900 font-semibold mb-4">Subject-wise Attendance</h3>
-          <div className="flex items-center gap-4">
-            <ResponsiveContainer width="50%" height={160}>
-              <PieChart>
-                <Pie data={subjectAttendance} cx="50%" cy="50%" innerRadius={45} outerRadius={70} dataKey="value" paddingAngle={3}>
-                  {subjectAttendance.map((entry, i) => (
-                    <Cell key={i} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip formatter={(v) => `${v}%`} />
-              </PieChart>
-            </ResponsiveContainer>
-            <div className="flex-1 space-y-2">
-              {subjectAttendance.map(s => (
-                <div key={s.name} className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: s.color }} />
-                  <span className="text-slate-500 text-xs flex-1 truncate">{s.name}</span>
-                  <span className={`text-xs font-bold ${s.value < 75 ? 'text-red-400' : s.value < 85 ? 'text-amber-400' : 'text-green-400'}`}>
-                    {s.value}%
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-          {subjectAttendance.some(s => s.value < 75) && (
-            <div className="mt-4 flex items-start gap-2 p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-xs">
-              <MdWarning className="text-base flex-shrink-0 mt-0.5" />
-              <span>Physics attendance is below 75%. Contact your tutor immediately.</span>
-            </div>
-          )}
         </motion.div>
       </div>
     </div>

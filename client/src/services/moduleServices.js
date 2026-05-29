@@ -1,7 +1,7 @@
 import api from '../api/axiosInstance';
 
 export const feesService = {
-  getStudentFees: (studentId) => api.get(`/fees/student/${studentId}`),
+  getStudentFees: () => api.get(`/fees/my`),
   payFee: (feeId, paymentData) => api.post(`/fees/${feeId}/pay`, paymentData),
   getAll: (params) => api.get('/fees', { params }),
   createRecord: (data) => api.post('/fees', data),
@@ -21,7 +21,7 @@ export const hostelService = {
 export const libraryService = {
   getBooks: (params) => api.get('/library/books', { params }),
   searchBooks: (query) => api.get('/library/search', { params: { q: query } }),
-  getIssuedBooks: () => api.get('/library/issued'),
+  getIssuedBooks: () => api.get('/library/my-books'),
   getEbooks: () => api.get('/library/ebooks'),
   issueBook: (data) => api.post('/library/issue', data),
   returnBook: (issueId) => api.put(`/library/return/${issueId}`),
@@ -64,7 +64,7 @@ export const certificateService = {
 
 export const attendanceService = {
   mark: (data) => api.post('/academic/attendance', data),
-  getMy: () => api.get('/academic/attendance/mine'),
+  getMy: () => api.get('/academic/attendance/my'),
   getClass: (params) => api.get('/academic/attendance/class', { params }),
   getReport: (params) => api.get('/academic/attendance/report', { params }),
 };
