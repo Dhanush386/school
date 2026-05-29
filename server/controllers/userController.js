@@ -56,14 +56,10 @@ const createStudent = async (req, res) => {
       return res.status(400).json({ success: false, message: 'A user with this Login ID / Roll No already exists' });
     }
 
-    // Hash default password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash('password123', salt);
-
     const student = await User.create({
       name,
       loginId: loginId.trim().toUpperCase(),
-      password: hashedPassword,
+      password: 'password123',
       role: role || 'student',
       department,
       section: section || 'A',
