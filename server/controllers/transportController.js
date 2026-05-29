@@ -191,15 +191,11 @@ const addRoute = async (req, res) => {
     const route = await TransportRoute.create({
       routeNumber,
       routeName,
-      startPoint,
-      endPoint,
       stops: stops || [],
       driverName,
-      driverContact,
-      vehicleNumber,
-      capacity: capacity || 40,
+      driverPhone: driverContact,
+      busNumber: vehicleNumber,
       isActive: true,
-      createdBy: req.user.id,
     });
 
     return res.status(201).json({ success: true, message: 'Route added successfully', data: route });
@@ -217,7 +213,12 @@ const updateRoute = async (req, res) => {
     const route = await TransportRoute.findById(req.params.id);
     if (!route) return res.status(404).json({ success: false, message: 'Route not found' });
 
-    const allowedFields = ['routeName', 'startPoint', 'endPoint', 'stops', 'driverName', 'driverContact', 'vehicleNumber', 'capacity', 'isActive'];
+    const allowedFields = ['routeName', 'stops', 'driverName', 'driverPhone', 'busNumber', 'isActive'];
+    
+    // Support mapping from UI names if provided
+    if (req.body.vehicleNumber !== undefined) route.busNumber = req.body.vehicleNumber;
+    if (req.body.driverContact !== undefined) route.driverPhone = req.body.driverContact;
+    
     allowedFields.forEach(field => {
       if (req.body[field] !== undefined) route[field] = req.body[field];
     });
