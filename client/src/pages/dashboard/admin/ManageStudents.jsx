@@ -19,7 +19,7 @@ export default function ManageStudents() {
   const [selectedStudent, setSelectedStudent] = useState(null);
 
   // Form states
-  const [studentForm, setStudentForm] = useState({ name: '', loginId: '', department: '10', role: 'student', section: 'A' });
+  const [studentForm, setStudentForm] = useState({ name: '', loginId: '', department: '1', role: 'student', section: 'A', phone: '' });
   const [feeForm, setFeeForm] = useState({ feeType: 'Tuition Fee', amount: '', dueDate: '', academicYear: '2024-25' });
 
   // Filters
@@ -55,7 +55,7 @@ export default function ManageStudents() {
       if (data.success) {
         toast.success(data.message);
         setShowAddStudent(false);
-        setStudentForm({ name: '', loginId: '', department: '', role: 'student', section: 'A' });
+        setStudentForm({ name: '', loginId: '', department: '1', role: 'student', section: 'A', phone: '' });
         fetchStudents();
       }
     } catch (error) {
@@ -296,6 +296,16 @@ export default function ManageStudents() {
                         <option key={i} value={i + 1}>Class {i + 1}</option>
                       ))}
                     </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-slate-600 mb-1.5">Phone Number (Optional)</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. +91 9876543210"
+                      value={studentForm.phone}
+                      onChange={(e) => setStudentForm({ ...studentForm, phone: e.target.value })}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+                    />
                   </div>
                   
                   <div className="bg-blue-50 border border-blue-100 rounded-xl p-3 flex items-start gap-2">

@@ -45,7 +45,7 @@ const getStudents = async (req, res) => {
 // ── @access  Admin
 const createStudent = async (req, res) => {
   try {
-    const { name, loginId, department, role, section } = req.body;
+    const { name, loginId, department, role, section, phone } = req.body;
 
     if (!name || !loginId || !department) {
       return res.status(400).json({ success: false, message: 'Name, loginId (Roll No), and department are required' });
@@ -64,6 +64,7 @@ const createStudent = async (req, res) => {
       role: role || 'student',
       department,
       section: section || 'A',
+      phone: phone || null,
       mustChangePassword: true,
       isActive: true,
     });
