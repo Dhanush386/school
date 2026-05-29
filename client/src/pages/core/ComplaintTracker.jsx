@@ -9,10 +9,7 @@ import { staggerContainer, staggerItem } from '../../animations/stagger';
 import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
 
-const mockComplaints = [
-  { id: 1, title: 'Lab PC not working', category: 'infrastructure', priority: 'high', status: 'resolved', date: '2024-06-10', description: 'Computer in Lab 2, Row 3 is not starting.', reply: 'Issue resolved — PC replaced on June 12.', resolvedAt: '2024-06-12' },
-  { id: 2, title: 'Wi-Fi speed very slow', category: 'infrastructure', priority: 'medium', status: 'in_progress', date: '2024-06-15', description: 'Hostel Block-B Wi-Fi drops frequently after 9 PM.', reply: 'ISP has been contacted. Work in progress.', resolvedAt: null },
-];
+const mockComplaints = [];
 
 const categories = ['academic', 'infrastructure', 'hostel', 'transport', 'other'];
 const priorities = ['low', 'medium', 'high'];

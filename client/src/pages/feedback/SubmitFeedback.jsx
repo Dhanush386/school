@@ -5,19 +5,9 @@ import { fadeInUp } from '../../animations/fadeIn';
 import { staggerContainer, staggerItem } from '../../animations/stagger';
 import toast from 'react-hot-toast';
 
-const activeForms = [
-  { id: 1, title: 'Semester End Feedback', description: 'Rate your experience this semester across all facilities.', dueDate: '2024-06-30', questions: 6, targetRole: 'student' },
-  { id: 2, title: 'Canteen Quality Survey', description: 'Help us improve food quality and service at the canteen.', dueDate: '2024-06-25', questions: 4, targetRole: 'all' },
-];
+const activeForms = [];
 
-const formQuestions = [
-  { id: 1, question: 'How would you rate the teaching quality overall?', type: 'rating' },
-  { id: 2, question: 'Rate the library facilities and resources.', type: 'rating' },
-  { id: 3, question: 'How satisfied are you with the hostel facilities?', type: 'rating' },
-  { id: 4, question: 'Rate the overall campus cleanliness and maintenance.', type: 'rating' },
-  { id: 5, question: 'What improvements would you suggest for the canteen?', type: 'text' },
-  { id: 6, question: 'How likely are you to recommend our college to others?', type: 'multiple_choice', options: ['Definitely', 'Probably', 'Unsure', 'Probably Not', 'Definitely Not'] },
-];
+const formQuestions = [];
 
 const StarRating = ({ value, onChange }) => (
   <div className="flex gap-1">

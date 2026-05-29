@@ -7,19 +7,9 @@ import {
 import { fadeInUp } from '../../animations/fadeIn';
 import { staggerContainer, staggerItem } from '../../animations/stagger';
 
-const books = [
-  { id: 1, title: 'Introduction to Algorithms', author: 'Cormen et al.', category: 'CS', isbn: '978-0-262-03384-8', total: 5, available: 2, isEbook: true, color: 'from-blue-500 to-cyan-600' },
-  { id: 2, title: 'Clean Code', author: 'Robert C. Martin', category: 'CS', isbn: '978-0-13-235088-4', total: 3, available: 0, isEbook: true, color: 'from-green-500 to-emerald-600' },
-  { id: 3, title: 'Engineering Mathematics', author: 'K.A. Stroud', category: 'Math', isbn: '978-1-137-03120-4', total: 8, available: 5, isEbook: false, color: 'from-violet-500 to-purple-600' },
-  { id: 4, title: 'Physics for Scientists', author: 'Raymond Serway', category: 'Physics', isbn: '978-1-337-09334-4', total: 6, available: 3, isEbook: false, color: 'from-amber-500 to-orange-600' },
-  { id: 5, title: 'Database System Concepts', author: 'Silberschatz et al.', category: 'CS', isbn: '978-0-07-352332-3', total: 4, available: 1, isEbook: true, color: 'from-pink-500 to-rose-600' },
-  { id: 6, title: 'Operating System Concepts', author: 'Silberschatz et al.', category: 'CS', isbn: '978-1-119-32091-3', total: 7, available: 4, isEbook: true, color: 'from-indigo-500 to-blue-600' },
-];
+const books = [];
 
-const issuedBooks = [
-  { id: 1, title: 'Clean Code', author: 'Robert C. Martin', issuedAt: '2024-06-10', dueDate: '2024-06-24', fine: 0, status: 'overdue' },
-  { id: 2, title: 'Introduction to Algorithms', author: 'Cormen et al.', issuedAt: '2024-06-15', dueDate: '2024-06-29', fine: 0, status: 'issued' },
-];
+const issuedBooks = [];
 
 const BookCard = ({ book, onView }) => (
   <motion.div variants={staggerItem} whileHover={{ y: -4, scale: 1.02 }}

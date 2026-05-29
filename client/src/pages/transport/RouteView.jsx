@@ -7,14 +7,7 @@ import {
 import { fadeInUp } from '../../animations/fadeIn';
 import { staggerContainer, staggerItem } from '../../animations/stagger';
 
-const routes = [
-  { id: 1, routeNumber: 'R-01', routeName: 'City Center Route', busNumber: 'TN-07-AB-1234', driverName: 'Ravi Kumar', driverPhone: '9876543210', fee: 2500,
-    stops: [{ name: 'Railway Station', time: '07:00' }, { name: 'Gandhi Park', time: '07:15' }, { name: 'Nehru Street', time: '07:25' }, { name: 'College Gate', time: '07:45' }] },
-  { id: 2, routeNumber: 'R-02', routeName: 'North Side Express', busNumber: 'TN-07-CD-5678', driverName: 'Selvam P.', driverPhone: '9876543211', fee: 3000,
-    stops: [{ name: 'North Bus Stand', time: '07:05' }, { name: 'Annex Market', time: '07:20' }, { name: 'Old Town Circle', time: '07:35' }, { name: 'College Gate', time: '07:55' }] },
-  { id: 3, routeNumber: 'R-03', routeName: 'West Campus Link', busNumber: 'TN-07-EF-9012', driverName: 'Murugan S.', driverPhone: '9876543212', fee: 1800,
-    stops: [{ name: 'West Gate Colony', time: '07:10' }, { name: 'TV Tower Road', time: '07:22' }, { name: 'Housing Board', time: '07:32' }, { name: 'College Gate', time: '07:50' }] },
-];
+const routes = [];
 
 const RouteView = () => {
   const [myRequest, setMyRequest] = useState(null);
