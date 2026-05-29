@@ -7,7 +7,7 @@ import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
 import { attendanceService, userService } from '../../services/moduleServices';
 
-const subjects = ['Data Structures', 'Algorithm Design', 'Database Lab', 'OS Concepts', 'Software Eng'];
+const subjects = ['Mathematics', 'Science', 'English', 'History', 'Computer Sci'];
 
 const Attendance = () => {
   const { user } = useAuth();

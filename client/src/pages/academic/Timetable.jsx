@@ -13,14 +13,14 @@ const timetable = {
 };
 
 const colors = {
-  'Data Structures': 'bg-blue-500/20 text-blue-300 border-blue-500/20',
-  'Algorithm Design': 'bg-violet-500/20 text-violet-300 border-violet-500/20',
-  'Database Lab': 'bg-green-500/20 text-green-300 border-green-500/20',
-  'OS Concepts': 'bg-amber-500/20 text-amber-300 border-amber-500/20',
-  'Software Eng': 'bg-pink-500/20 text-pink-300 border-pink-500/20',
-  'Elective': 'bg-cyan-500/20 text-cyan-300 border-cyan-500/20',
-  'Project': 'bg-orange-500/20 text-orange-300 border-orange-500/20',
-  'Seminar': 'bg-indigo-500/20 text-indigo-300 border-indigo-500/20',
+  'Mathematics': 'bg-blue-500/20 text-blue-300 border-blue-500/20',
+  'Science': 'bg-violet-500/20 text-violet-300 border-violet-500/20',
+  'English': 'bg-green-500/20 text-green-300 border-green-500/20',
+  'History': 'bg-amber-500/20 text-amber-300 border-amber-500/20',
+  'Geography': 'bg-pink-500/20 text-pink-300 border-pink-500/20',
+  'Art': 'bg-cyan-500/20 text-cyan-300 border-cyan-500/20',
+  'Physical Ed': 'bg-orange-500/20 text-orange-300 border-orange-500/20',
+  'Computer Sci': 'bg-indigo-500/20 text-indigo-300 border-indigo-500/20',
   'Break': 'bg-white/3 text-slate-600 border-transparent',
 };
 

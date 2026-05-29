@@ -7,10 +7,10 @@ import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
 
 const mockAssignments = [
-  { id: 1, title: 'Data Structures Lab Report', subject: 'Data Structures', dueDate: '2024-06-20', status: 'submitted', submittedAt: '2024-06-18', grade: 'A', feedback: 'Excellent work! Well structured report.', teacher: 'Bob Smith' },
-  { id: 2, title: 'Algorithm Analysis Essay', subject: 'Algorithm Design', dueDate: '2024-06-25', status: 'pending', submittedAt: null, grade: null, feedback: null, teacher: 'Bob Smith' },
-  { id: 3, title: 'Database Schema Design', subject: 'Database Lab', dueDate: '2024-06-15', status: 'overdue', submittedAt: null, grade: null, feedback: null, teacher: 'Bob Smith' },
-  { id: 4, title: 'OS Process Scheduling Report', subject: 'OS Concepts', dueDate: '2024-06-30', status: 'pending', submittedAt: null, grade: null, feedback: null, teacher: 'Bob Smith' },
+  { id: 1, title: 'Math Worksheet 1', subject: 'Mathematics', dueDate: '2024-06-20', status: 'submitted', submittedAt: '2024-06-18', grade: 'A', feedback: 'Excellent work!', teacher: 'Mr. Smith' },
+  { id: 2, title: 'Science Fair Proposal', subject: 'Science', dueDate: '2024-06-25', status: 'pending', submittedAt: null, grade: null, feedback: null, teacher: 'Mrs. Davis' },
+  { id: 3, title: 'History Essay Draft', subject: 'History', dueDate: '2024-06-15', status: 'overdue', submittedAt: null, grade: null, feedback: null, teacher: 'Mr. Johnson' },
+  { id: 4, title: 'English Reading Log', subject: 'English', dueDate: '2024-06-30', status: 'pending', submittedAt: null, grade: null, feedback: null, teacher: 'Ms. Taylor' },
 ];
 
 const statusConfig = {

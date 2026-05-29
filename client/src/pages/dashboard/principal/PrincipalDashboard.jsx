@@ -15,14 +15,14 @@ import { staggerContainer, staggerItem } from '../../../animations/stagger';
 import { fadeInUp } from '../../../animations/fadeIn';
 
 const deptAttendance = [
-  { dept: 'CSE', pct: 88 }, { dept: 'ECE', pct: 82 }, { dept: 'MECH', pct: 79 },
-  { dept: 'CIVIL', pct: 85 }, { dept: 'MBA', pct: 91 }, { dept: 'MCA', pct: 86 },
+  { dept: 'Grade 8', pct: 88 }, { dept: 'Grade 9', pct: 82 }, { dept: 'Grade 10', pct: 79 },
+  { dept: 'Grade 11', pct: 85 }, { dept: 'Grade 12', pct: 91 }, { dept: 'Grade 7', pct: 86 },
 ];
 
 const pendingQuestions = [
-  { id: 1, teacher: 'Prof. Ramesh', subject: 'Data Structures', class: 'CSE-4A', submitted: '2024-06-18', total: 20 },
-  { id: 2, teacher: 'Dr. Priya', subject: 'Thermodynamics', class: 'MECH-3B', submitted: '2024-06-17', total: 15 },
-  { id: 3, teacher: 'Prof. Anand', subject: 'DBMS', class: 'CSE-3A', submitted: '2024-06-19', total: 18 },
+  { id: 1, teacher: 'Mr. Ramesh', subject: 'Mathematics', class: '10-A', submitted: '2024-06-18', total: 20 },
+  { id: 2, teacher: 'Mrs. Priya', subject: 'Science', class: '9-B', submitted: '2024-06-17', total: 15 },
+  { id: 3, teacher: 'Mr. Anand', subject: 'Social Studies', class: '8-A', submitted: '2024-06-19', total: 18 },
 ];
 
 const recentComplaints = [
@@ -58,7 +58,7 @@ const PrincipalDashboard = () => {
 
   const stats = [
     { label: 'Total Students', value: '1,247', icon: MdPeople, color: 'from-primary-500 to-indigo-600', sub: '+12 this month' },
-    { label: 'Total Staff', value: '89', icon: MdPeople, color: 'from-violet-500 to-purple-600', sub: '12 departments' },
+    { label: 'Total Staff', value: '89', icon: MdPeople, color: 'from-violet-500 to-purple-600', sub: '12 grades' },
     { label: 'Pending Approvals', value: pendingQuestions.length, icon: MdQuiz, color: 'from-amber-500 to-orange-600', sub: 'Question papers' },
     { label: 'Open Complaints', value: recentComplaints.filter(c => c.status === 'open').length, icon: MdReport, color: 'from-red-500 to-rose-600', sub: 'Need attention' },
   ];
@@ -190,7 +190,7 @@ const PrincipalDashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Dept Attendance Chart */}
         <motion.div variants={fadeInUp} className="rounded-2xl p-5 border border-slate-200" style={{ background: 'rgba(255,255,255,1)' }}>
-          <h3 className="text-slate-900 font-semibold mb-4">Department-wise Attendance</h3>
+          <h3 className="text-slate-900 font-semibold mb-4">Grade-wise Attendance</h3>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={deptAttendance} barSize={28}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />

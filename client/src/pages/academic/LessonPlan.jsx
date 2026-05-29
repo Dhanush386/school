@@ -5,15 +5,15 @@ import { fadeInUp } from '../../animations/fadeIn';
 import { staggerContainer, staggerItem } from '../../animations/stagger';
 import toast from 'react-hot-toast';
 
-const subjects = ['Data Structures', 'Algorithm Design', 'Database Lab', 'OS Concepts', 'Software Eng'];
-const classes = ['CSE-4A', 'CSE-4B', 'CSE-3A'];
+const subjects = ['Mathematics', 'Science', 'English', 'History', 'Computer Sci'];
+const classes = ['10-A', '10-B', '12-A'];
 
 const mockPlans = [
-  { id: 1, subject: 'Data Structures', class: 'CSE-4A', topic: 'AVL Trees — Rotations & Balancing', outcomes: 'Students will understand self-balancing BST operations', date: '2024-06-18', status: 'completed' },
-  { id: 2, subject: 'Algorithm Design', class: 'CSE-4A', topic: 'Dynamic Programming — Knapsack Problem', outcomes: 'Students can solve optimization problems using DP', date: '2024-06-19', status: 'completed' },
-  { id: 3, subject: 'Database Lab', class: 'CSE-4B', topic: 'Advanced SQL Joins & Subqueries', outcomes: 'Students will write complex SQL queries with joins', date: '2024-06-20', status: 'planned' },
-  { id: 4, subject: 'OS Concepts', class: 'CSE-3A', topic: 'Process Scheduling Algorithms', outcomes: 'Students understand FCFS, SJF, Round Robin scheduling', date: '2024-06-21', status: 'planned' },
-  { id: 5, subject: 'Software Eng', class: 'CSE-4A', topic: 'Agile & Scrum Methodology', outcomes: 'Students can plan sprints and manage backlogs', date: '2024-06-22', status: 'cancelled' },
+  { id: 1, subject: 'Mathematics', class: '10-A', topic: 'Quadratic Equations', outcomes: 'Students will solve quadratic equations using formulas', date: '2024-06-18', status: 'completed' },
+  { id: 2, subject: 'Science', class: '10-A', topic: 'Laws of Motion', outcomes: 'Students understand Newton\'s 3 laws of motion', date: '2024-06-19', status: 'completed' },
+  { id: 3, subject: 'English', class: '10-B', topic: 'Creative Writing Workshop', outcomes: 'Students will write short narrative essays', date: '2024-06-20', status: 'planned' },
+  { id: 4, subject: 'History', class: '12-A', topic: 'World War II Causes', outcomes: 'Students understand primary geopolitical triggers', date: '2024-06-21', status: 'planned' },
+  { id: 5, subject: 'Computer Sci', class: '10-A', topic: 'Intro to Python', outcomes: 'Students can write basic print statements and loops', date: '2024-06-22', status: 'cancelled' },
 ];
 
 const statusConfig = {
