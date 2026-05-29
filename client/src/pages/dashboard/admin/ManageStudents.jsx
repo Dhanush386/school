@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MdPeople, MdAdd, MdClose, MdPayment, MdCheckCircle, MdSchool, MdWarning } from 'react-icons/md';
-import api from '../../../services/api';
+import api from '../../../api/axiosInstance';
 import toast from 'react-hot-toast';
 
 const fadeInUp = {
