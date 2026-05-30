@@ -209,6 +209,73 @@ const createFeeRecord = async (req, res) => {
   }
 };
 
+// ── @desc    Bulk assign fees to all students in a class
+// ── @route   POST /api/fees/bulk
+// ── @access  Admin / Cashier
+const assignClassFees = async (req, res) => {
+  try {
+    const { department, feeType, amount, dueDate, academicYear, semester } = req.body;
+
+    if (!department || !feeType || !amount || !dueDate || !academicYear) {
+      return res.status(400).json({ success: false, message: 'Please provide all required fields' });
+    }
+
+    // Find all students in this class
+    const students = await User.find({ role: 'student', department });
+    
+    if (students.length === 0) {
+      return res.status(404).json({ success: false, message: `No students found in class ${department}` });
+    }
+
+    let assigned = 0;
+    let skipped = 0;
+    const feeRecordsToInsert = [];
+
+    // Check existing fees for this class to avoid duplicates
+    // Fetch all existing fees for this feeType, academicYear, semester for these students
+    const existingFees = await Fee.find({
+      studentId: { $in: students.map(s => s._id) },
+      feeType,
+      academicYear,
+      semester: semester || null,
+    });
+
+    const existingFeeSet = new Set(existingFees.map(f => f.studentId.toString()));
+
+    for (const student of students) {
+      if (existingFeeSet.has(student._id.toString())) {
+        skipped++;
+      } else {
+        feeRecordsToInsert.push({
+          studentId: student._id,
+          feeType,
+          amount,
+          dueDate,
+          academicYear,
+          semester: semester || null,
+          status: 'pending',
+          assignedBy: req.user.id,
+        });
+        assigned++;
+      }
+    }
+
+    if (feeRecordsToInsert.length > 0) {
+      await Fee.insertMany(feeRecordsToInsert);
+    }
+
+    return res.status(201).json({
+      success: true,
+      assigned,
+      skipped,
+      message: `Successfully assigned fees`,
+    });
+  } catch (error) {
+    console.error('assignClassFees error:', error);
+    return res.status(500).json({ success: false, message: 'Server error', error: error.message });
+  }
+};
+
 // ── @desc    Download a fee receipt PDF
 // ── @route   GET /api/fees/:id/receipt
 // ── @access  Student (owner) / Admin
@@ -251,6 +318,7 @@ module.exports = {
   getFeeStructure,
   getAllFees,
   createFeeRecord,
+  assignClassFees,
   downloadReceipt,
 };
 

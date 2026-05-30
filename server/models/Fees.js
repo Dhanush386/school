@@ -66,6 +66,11 @@ const feesSchema = new mongoose.Schema(
       max: [8, 'Semester cannot exceed 8'],
       default: null,
     },
+    assignedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      default: null,
+    },
   },
   {
     timestamps: true,

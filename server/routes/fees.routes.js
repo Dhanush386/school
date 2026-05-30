@@ -8,6 +8,7 @@ const {
   getFeeStructure,
   getAllFees,
   createFeeRecord,
+  assignClassFees,
   downloadReceipt,
 } = require('../controllers/feesController');
 
@@ -56,6 +57,17 @@ router.post(
   '/',
   authorize('admin'),
   createFeeRecord
+);
+
+/**
+ * @route   POST /api/fees/bulk
+ * @desc    Admin bulk assigns fees to a class
+ * @access  Admin, Cashier
+ */
+router.post(
+  '/bulk',
+  authorize('admin', 'cashier'),
+  assignClassFees
 );
 
 /**
