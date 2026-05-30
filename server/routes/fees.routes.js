@@ -62,11 +62,11 @@ router.post(
 /**
  * @route   POST /api/fees/bulk
  * @desc    Admin bulk assigns fees to a class
- * @access  Admin, Cashier
+ * @access  Admin
  */
 router.post(
   '/bulk',
-  authorize('admin', 'cashier'),
+  authorize('admin'),
   assignClassFees
 );
 

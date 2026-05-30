@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { MdSearch, MdPayment, MdCheckCircle, MdMoney, MdPrint } from 'react-icons/md';
 import api from '../../../api/axiosInstance';
 import toast from 'react-hot-toast';
+import { useAuth } from '../../../context/AuthContext';
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -10,6 +11,7 @@ const fadeInUp = {
 };
 
 const CashierDashboard = () => {
+  const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [fees, setFees] = useState([]);
@@ -127,12 +129,14 @@ const CashierDashboard = () => {
             <p className="text-slate-500 text-sm mt-1">Collect offline payments and generate receipts.</p>
           </div>
           <div className="flex items-center gap-4">
-            <button
-              onClick={() => setIsBulkModalOpen(true)}
-              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold transition-colors shadow-lg shadow-indigo-600/20 text-sm"
-            >
-              Bulk Assign Fees
-            </button>
+            {user?.role === 'admin' && (
+              <button
+                onClick={() => setIsBulkModalOpen(true)}
+                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold transition-colors shadow-lg shadow-indigo-600/20 text-sm"
+              >
+                Bulk Assign Fees
+              </button>
+            )}
             <div className="w-12 h-12 rounded-xl bg-green-50 text-green-600 flex items-center justify-center text-2xl shadow-sm border border-green-100">
               <MdMoney />
             </div>
