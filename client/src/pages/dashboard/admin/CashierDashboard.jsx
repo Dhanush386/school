@@ -242,7 +242,6 @@ const CashierDashboard = () => {
               </div>
             )}
           </motion.div>
-          </motion.div>
         )}
       </AnimatePresence>
 
