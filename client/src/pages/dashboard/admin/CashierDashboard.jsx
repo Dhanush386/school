@@ -84,6 +84,8 @@ const CashierDashboard = () => {
     } catch (error) {
       toast.error('Failed to download receipt');
     }
+  };
+
   const handleBulkSubmit = async (e) => {
     e.preventDefault();
     setBulkLoading(true);
