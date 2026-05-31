@@ -390,7 +390,7 @@ export default function QuestionBank() {
   const isReviewer = ['principal', 'admin', 'coordinator', 'hod'].includes(role);
 
   return (
-    <div className="min-h-screen bg-slate-950 p-6">
+    <div className="min-h-screen bg-slate-50 p-6">
       <motion.div variants={fadeInUp} initial="hidden" animate="visible" className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex items-start justify-between mb-8">
