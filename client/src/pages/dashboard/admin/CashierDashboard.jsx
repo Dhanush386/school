@@ -316,11 +316,9 @@ const CashierDashboard = () => {
                     <label className="block text-xs font-semibold text-slate-700 mb-1">Fee Type *</label>
                     <select required value={bulkForm.feeType} onChange={e => setBulkForm({...bulkForm, feeType: e.target.value})} className="w-full p-2 border rounded-xl outline-none focus:border-indigo-500 text-sm">
                       <option value="">Select Fee Type</option>
-                      <option value="Tuition Fee">Tuition Fee</option>
+                      <option value="School Fee">School Fee</option>
                       <option value="Hostel Fee">Hostel Fee</option>
                       <option value="Transport Fee">Transport Fee</option>
-                      <option value="Exam Fee">Exam Fee</option>
-                      <option value="Library Fee">Library Fee</option>
                     </select>
                   </div>
                 </div>

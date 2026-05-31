@@ -21,7 +21,7 @@ export default function ManageStudents() {
 
   // Form states
   const [studentForm, setStudentForm] = useState({ name: '', loginId: '', department: 'LKG', role: 'student', section: 'A', phone: '' });
-  const [feeForm, setFeeForm] = useState({ feeType: 'Tuition Fee', amount: '', dueDate: '', academicYear: '2024-25' });
+  const [feeForm, setFeeForm] = useState({ feeType: 'School Fee', amount: '', dueDate: '', academicYear: '2024-25' });
 
   // Filters
   const [classFilter, setClassFilter] = useState('');
@@ -77,7 +77,7 @@ export default function ManageStudents() {
       if (data.success) {
         toast.success('Fee assigned successfully!');
         setShowAssignFee(false);
-        setFeeForm({ feeType: 'Tuition Fee', amount: '', dueDate: '', academicYear: '2024-25' });
+        setFeeForm({ feeType: 'School Fee', amount: '', dueDate: '', academicYear: '2024-25' });
       }
     } catch (error) {
       toast.error(error.response?.data?.message || 'Error assigning fee');
@@ -364,9 +364,8 @@ export default function ManageStudents() {
                       onChange={(e) => setFeeForm({ ...feeForm, feeType: e.target.value })}
                       className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary-500"
                     >
-                      <option value="Tuition Fee">Tuition Fee</option>
+                      <option value="School Fee">School Fee</option>
                       <option value="Lab Fee">Lab Fee</option>
-                      <option value="Library Fee">Library Fee</option>
                       <option value="Transport Fee">Transport Fee</option>
                       <option value="Hostel Fee">Hostel Fee</option>
                       <option value="Sports Fee">Sports Fee</option>
