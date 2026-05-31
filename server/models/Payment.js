@@ -33,7 +33,7 @@ const paymentSchema = new mongoose.Schema({
     default: 'created'
   },
   feeDetails: [{
-    feeId: Number,
+    feeId: String,
     category: String,
     amount: Number
   }]

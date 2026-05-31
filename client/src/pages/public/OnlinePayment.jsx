@@ -9,22 +9,18 @@ const OnlinePayment = () => {
   const [paymentStatus, setPaymentStatus] = useState('idle'); // 'idle', 'processing', 'success'
   const [transactionId, setTransactionId] = useState('');
 
-  const mockFees = [
-    { id: 1, category: 'Term 1 Tuition Fee', term: 'June to Sep 2026', due: '30-Jun-2026', amount: 12500 },
-    { id: 2, category: 'Transport Fee', term: 'June 2026', due: '15-Jun-2026', amount: 1200 },
-  ];
+  const [studentDetails, setStudentDetails] = useState(null);
+  const [realFees, setRealFees] = useState([]);
 
-  const [selectedFees, setSelectedFees] = useState(mockFees.map(f => f.id));
-  const [feeAmounts, setFeeAmounts] = useState(
-    mockFees.reduce((acc, fee) => ({ ...acc, [fee.id]: fee.amount }), {})
-  );
+  const [selectedFees, setSelectedFees] = useState([]);
+  const [feeAmounts, setFeeAmounts] = useState({});
 
-  const totalAmount = mockFees
-    .filter(f => selectedFees.includes(f.id))
-    .reduce((sum, f) => sum + (Number(feeAmounts[f.id]) || 0), 0);
+  const totalAmount = realFees
+    .filter(f => selectedFees.includes(f._id))
+    .reduce((sum, f) => sum + (Number(feeAmounts[f._id]) || 0), 0);
 
   const handleAmountChange = (id, value) => {
-    const fee = mockFees.find(f => f.id === id);
+    const fee = realFees.find(f => f._id === id);
     let finalValue = value;
     
     if (value !== '') {
@@ -48,10 +44,31 @@ const OnlinePayment = () => {
     }
   };
 
-  const handleViewFees = (e) => {
+  const handleViewFees = async (e) => {
     e.preventDefault();
     if (username && password) {
-      setShowDetails(true);
+      try {
+        const { data } = await axiosInstance.post('/fees/public-lookup', {
+          loginId: username,
+          password: password
+        });
+        if (data.success) {
+          setStudentDetails(data.studentDetails);
+          setRealFees(data.fees);
+          
+          // Select all by default
+          const allFeeIds = data.fees.map(f => f._id);
+          setSelectedFees(allFeeIds);
+          
+          const initialAmounts = data.fees.reduce((acc, fee) => ({ ...acc, [fee._id]: fee.amount }), {});
+          setFeeAmounts(initialAmounts);
+          
+          setShowDetails(true);
+        }
+      } catch (error) {
+        alert(error.response?.data?.message || 'Failed to retrieve fees');
+        setShowDetails(false);
+      }
     }
   };
 
@@ -75,11 +92,12 @@ const OnlinePayment = () => {
       // 1. Create order on backend
       const { data: orderData } = await axiosInstance.post('/payment/create-order', {
         amount: totalAmount,
-        studentId: username || 'anonymous',
-        studentName: username || 'Unknown Student',
-        feeDetails: mockFees.filter(f => selectedFees.includes(f.id)).map(f => ({
-          ...f,
-          amount: Number(feeAmounts[f.id]) || 0
+        studentId: studentDetails?.id || 'anonymous',
+        studentName: studentDetails?.name || 'Unknown Student',
+        feeDetails: realFees.filter(f => selectedFees.includes(f._id)).map(f => ({
+          feeId: f._id,
+          category: f.feeType,
+          amount: Number(feeAmounts[f._id]) || 0
         }))
       });
 
@@ -160,8 +178,10 @@ const OnlinePayment = () => {
 
   const handleCloseModal = () => {
     setPaymentStatus('idle');
-    // Reset selections and total after "successful" mock payment
+    // Remove paid fees from the view
+    setRealFees(prev => prev.filter(f => !selectedFees.includes(f._id)));
     setSelectedFees([]);
+    setFeeAmounts({});
   };
 
   return (
@@ -231,11 +251,11 @@ const OnlinePayment = () => {
           {showDetails && <div className="border-t border-black mb-6 w-full"></div>}
 
           {/* Student Details Section */}
-          {showDetails && (
+          {showDetails && studentDetails && (
             <div className="flex flex-col md:flex-row gap-10 items-start pb-8">
               {/* Photo placeholder */}
               <div className="w-32 h-40 bg-gray-200 shrink-0 ml-4 border flex items-center justify-center overflow-hidden">
-                <img src={`https://ui-avatars.com/api/?name=${username}&background=random&size=150`} alt="Student" className="w-full h-full object-cover" />
+                <img src={`https://ui-avatars.com/api/?name=${studentDetails.name}&background=random&size=150`} alt="Student" className="w-full h-full object-cover" />
               </div>
 
               {/* Info Grid */}
@@ -246,19 +266,19 @@ const OnlinePayment = () => {
                 </div>
                 <div className="flex">
                   <div className="w-32 font-bold">Student Name</div>
-                  <div>: {username.toUpperCase() || 'DHANUSH V'}</div>
+                  <div>: {studentDetails.name.toUpperCase()}</div>
                 </div>
                 <div className="flex">
                   <div className="w-32 font-bold">Department</div>
-                  <div>: Computer Science</div>
+                  <div>: {studentDetails.department}</div>
                 </div>
                 <div className="flex">
-                  <div className="w-32 font-bold">Course</div>
-                  <div>: Matriculation</div>
+                  <div className="w-32 font-bold">Section</div>
+                  <div>: {studentDetails.section}</div>
                 </div>
                 <div className="flex">
                   <div className="w-32 font-bold">Batch</div>
-                  <div>: 2026-2027</div>
+                  <div>: {studentDetails.academicYear}</div>
                 </div>
               </div>
             </div>
@@ -279,9 +299,9 @@ const OnlinePayment = () => {
                     <input 
                       type="checkbox" 
                       className="cursor-pointer h-4 w-4"
-                      checked={selectedFees.length === mockFees.length}
+                      checked={selectedFees.length > 0 && selectedFees.length === realFees.length}
                       onChange={(e) => {
-                        if (e.target.checked) setSelectedFees(mockFees.map(f => f.id));
+                        if (e.target.checked) setSelectedFees(realFees.map(f => f._id));
                         else setSelectedFees([]);
                       }}
                     />
@@ -295,33 +315,38 @@ const OnlinePayment = () => {
                 </tr>
               </thead>
               <tbody>
-                {mockFees.map((fee, index) => (
-                  <tr key={fee.id}>
+                {realFees.length === 0 && (
+                  <tr>
+                    <td colSpan="7" className="text-center py-6 text-slate-500 font-medium">No pending fees found.</td>
+                  </tr>
+                )}
+                {realFees.map((fee, index) => (
+                  <tr key={fee._id}>
                     <td className="border border-slate-300 px-4 py-2 text-center">
                       <input 
                         type="checkbox" 
                         className="cursor-pointer h-4 w-4"
-                        checked={selectedFees.includes(fee.id)}
-                        onChange={() => toggleFee(fee.id)}
+                        checked={selectedFees.includes(fee._id)}
+                        onChange={() => toggleFee(fee._id)}
                       />
                     </td>
                     <td className="border border-slate-300 px-4 py-2">{index + 1}</td>
-                    <td className="border border-slate-300 px-4 py-2 font-medium">{fee.category}</td>
-                    <td className="border border-slate-300 px-4 py-2">{fee.term}</td>
-                    <td className="border border-slate-300 px-4 py-2 text-red-600 font-medium">{fee.due}</td>
+                    <td className="border border-slate-300 px-4 py-2 font-medium">{fee.feeType}</td>
+                    <td className="border border-slate-300 px-4 py-2">{fee.academicYear}</td>
+                    <td className="border border-slate-300 px-4 py-2 text-red-600 font-medium">{new Date(fee.dueDate).toLocaleDateString()}</td>
                     <td className="border border-slate-300 px-4 py-2 text-right font-medium">
                       {fee.amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                     </td>
                     <td className="border border-slate-300 px-4 py-2 text-right">
                       <div className="flex items-center justify-end gap-1">
-                        <span className={!selectedFees.includes(fee.id) ? 'text-slate-400' : 'text-slate-800'}>₹</span>
+                        <span className={!selectedFees.includes(fee._id) ? 'text-slate-400' : 'text-slate-800'}>₹</span>
                         <input
                           type="number"
                           min="1"
                           max={fee.amount}
-                          value={feeAmounts[fee.id]}
-                          onChange={(e) => handleAmountChange(fee.id, e.target.value)}
-                          disabled={!selectedFees.includes(fee.id)}
+                          value={feeAmounts[fee._id] || ''}
+                          onChange={(e) => handleAmountChange(fee._id, e.target.value)}
+                          disabled={!selectedFees.includes(fee._id)}
                           className="w-24 text-right border border-slate-300 px-2 py-1 rounded focus:outline-none focus:border-[#0033cc] disabled:bg-slate-100 disabled:text-slate-400 font-medium"
                         />
                       </div>

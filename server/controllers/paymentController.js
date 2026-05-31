@@ -1,6 +1,7 @@
 const Razorpay = require('razorpay');
 const crypto = require('crypto');
 const Payment = require('../models/Payment');
+const Fee = require('../models/Fees');
 
 // We will use test keys if env vars are not set
 // In a real scenario, these must be inside the .env file.
@@ -78,14 +79,31 @@ const verifyPayment = async (req, res) => {
     // Payment is successful
     try {
       // Find the payment record in DB and update it
-      await Payment.findOneAndUpdate(
+      const paymentRecord = await Payment.findOneAndUpdate(
         { razorpayOrderId: razorpay_order_id },
         { 
           razorpayPaymentId: razorpay_payment_id, 
           razorpaySignature: razorpay_signature,
           status: 'successful'
-        }
+        },
+        { new: true }
       );
+
+      // Update actual Fee records to 'paid'
+      if (paymentRecord && paymentRecord.feeDetails && paymentRecord.feeDetails.length > 0) {
+        const feeIds = paymentRecord.feeDetails.map(f => f.feeId);
+        await Fee.updateMany(
+          { _id: { $in: feeIds } },
+          { 
+            $set: { 
+              status: 'paid', 
+              paidAt: new Date(), 
+              transactionId: razorpay_payment_id,
+              paymentMethod: 'netbanking'
+            } 
+          }
+        );
+      }
 
       res.status(200).json({
         success: true,

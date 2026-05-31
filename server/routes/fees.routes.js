@@ -10,9 +10,15 @@ const {
   createFeeRecord,
   assignClassFees,
   downloadReceipt,
+  publicFeeLookup,
 } = require('../controllers/feesController');
 
-// All routes require authentication
+// ── @route   POST /api/fees/public-lookup
+// ── @desc    Public lookup for fees by username and password
+// ── @access  Public
+router.post('/public-lookup', publicFeeLookup);
+
+// All routes below require authentication
 router.use(protect);
 
 /**

@@ -326,6 +326,58 @@ const downloadReceipt = async (req, res) => {
   }
 };
 
+// ── @desc    Public Fee Lookup (Unauthenticated Endpoint for Payment Gateway)
+// ── @route   POST /api/fees/public-lookup
+// ── @access  Public
+const publicFeeLookup = async (req, res) => {
+  try {
+    const { loginId, password } = req.body;
+    
+    if (!loginId || !password) {
+      return res.status(400).json({ success: false, message: 'Please provide User Name and Password' });
+    }
+
+    // Find user by loginId
+    const student = await User.findOne({ loginId: loginId.toUpperCase() });
+    if (!student) {
+      return res.status(404).json({ success: false, message: 'Invalid User Name or Password' });
+    }
+
+    // Check if role is student
+    if (student.role !== 'student') {
+      return res.status(403).json({ success: false, message: 'Access denied. Only students can pay fees here.' });
+    }
+
+    // Verify password
+    const isMatch = await student.comparePassword(password);
+    if (!isMatch) {
+      return res.status(401).json({ success: false, message: 'Invalid User Name or Password' });
+    }
+
+    // Fetch pending and overdue fees for this student
+    const fees = await Fee.find({
+      studentId: student._id,
+      status: { $in: ['pending', 'overdue'] }
+    }).sort({ dueDate: 1 });
+
+    res.status(200).json({
+      success: true,
+      studentDetails: {
+        id: student._id,
+        name: student.name,
+        loginId: student.loginId,
+        department: student.department,
+        section: student.section,
+        academicYear: '2024-25', // Should ideally come from settings
+      },
+      fees
+    });
+  } catch (error) {
+    console.error('publicFeeLookup error:', error);
+    res.status(500).json({ success: false, message: 'Server Error', error: error.message });
+  }
+};
+
 module.exports = {
   getStudentFees,
   payFee,
@@ -334,5 +386,5 @@ module.exports = {
   createFeeRecord,
   assignClassFees,
   downloadReceipt,
+  publicFeeLookup,
 };
-
