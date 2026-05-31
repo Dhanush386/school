@@ -11,12 +11,18 @@ const {
   assignClassFees,
   downloadReceipt,
   publicFeeLookup,
+  publicDownloadReceipt,
 } = require('../controllers/feesController');
 
 // ── @route   POST /api/fees/public-lookup
 // ── @desc    Public lookup for fees by username and password
 // ── @access  Public
 router.post('/public-lookup', publicFeeLookup);
+
+// ── @route   GET /api/fees/public-receipt/:transactionId
+// ── @desc    Download receipt for a public transaction
+// ── @access  Public
+router.get('/public-receipt/:transactionId', publicDownloadReceipt);
 
 // All routes below require authentication
 router.use(protect);

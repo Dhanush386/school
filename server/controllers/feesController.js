@@ -378,6 +378,75 @@ const publicFeeLookup = async (req, res) => {
   }
 };
 
+// ── @desc    Download a public fee receipt PDF by transaction ID
+// ── @route   GET /api/fees/public-receipt/:transactionId
+// ── @access  Public
+const publicDownloadReceipt = async (req, res) => {
+  try {
+    const { transactionId } = req.params;
+    const Payment = require('../models/Payment');
+    
+    // Find the payment
+    const payment = await Payment.findOne({ razorpayPaymentId: transactionId, status: 'successful' });
+    
+    if (!payment) {
+      // Maybe they used the mock payment bypass which generates a TXN... id
+      // For mock bypass, we don't have it in the DB, so we can't reliably generate a real receipt.
+      // But let's check Fees just in case
+      const fee = await Fee.findOne({ transactionId }).populate('student');
+      if (!fee) {
+        return res.status(404).json({ success: false, message: 'Payment record not found' });
+      }
+
+      const pdfBytes = await generateReceipt({
+        studentName: fee.student.name,
+        studentId: fee.student.loginId,
+        department: fee.student.department,
+        feeType: fee.feeType,
+        amount: fee.amount,
+        transactionId: fee.transactionId,
+        paymentMethod: fee.paymentMethod || 'Online',
+        paymentDate: fee.paidAt || new Date(),
+      });
+
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename=receipt_${fee.transactionId}.pdf`);
+      return res.send(Buffer.from(pdfBytes));
+    }
+
+    // Since payment details are in `payment`
+    // We fetch one of the fees to get student details like department
+    const fee = await Fee.findOne({ transactionId: payment.razorpayPaymentId }).populate('student');
+    
+    let department = 'N/A';
+    let loginId = payment.studentId;
+    if (fee && fee.student) {
+      department = fee.student.department;
+      loginId = fee.student.loginId;
+    }
+
+    const categories = payment.feeDetails.map(f => f.category).join(', ') || 'Online Fee Payment';
+
+    const pdfBytes = await generateReceipt({
+      studentName: payment.studentName,
+      studentId: loginId,
+      department: department,
+      feeType: categories,
+      amount: payment.amount,
+      transactionId: payment.razorpayPaymentId,
+      paymentMethod: 'Netbanking/Online',
+      paymentDate: payment.updatedAt || new Date(),
+    });
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename=receipt_${payment.razorpayPaymentId}.pdf`);
+    return res.send(Buffer.from(pdfBytes));
+  } catch (error) {
+    console.error('publicDownloadReceipt error:', error);
+    return res.status(500).json({ success: false, message: 'Server error', error: error.message });
+  }
+};
+
 module.exports = {
   getStudentFees,
   payFee,
@@ -387,4 +456,5 @@ module.exports = {
   assignClassFees,
   downloadReceipt,
   publicFeeLookup,
+  publicDownloadReceipt,
 };

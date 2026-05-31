@@ -425,7 +425,7 @@ const OnlinePayment = () => {
 
                 <div className="w-full flex gap-3">
                   <button 
-                    onClick={() => alert('Downloading receipt...')}
+                    onClick={() => window.open(`${axiosInstance.defaults.baseURL}/fees/public-receipt/${transactionId}`, '_blank')}
                     className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 px-4 rounded-xl transition-colors"
                   >
                     Download Receipt
