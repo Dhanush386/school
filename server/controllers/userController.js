@@ -40,6 +40,43 @@ const getStudents = async (req, res) => {
   }
 };
 
+// ── @desc    Get all staff (non-students)
+// ── @route   GET /api/users/staff
+// ── @access  Admin, Principal, HRD
+const getStaff = async (req, res) => {
+  try {
+    const { search, department, role, limit = 50, page = 1 } = req.query;
+    
+    const filter = { role: { $ne: 'student' } }; // Get everyone who is not a student
+    
+    if (role) filter.role = role;
+    if (department) filter.department = department;
+    
+    if (search) {
+      filter.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { loginId: { $regex: search, $options: 'i' } }
+      ];
+    }
+
+    const total = await User.countDocuments(filter);
+    const staff = await User.find(filter)
+      .select('-password -__v')
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(Number(limit));
+
+    return res.status(200).json({
+      success: true,
+      data: staff,
+      pagination: { total, page: Number(page), limit: Number(limit), pages: Math.ceil(total / limit) },
+    });
+  } catch (error) {
+    console.error('getStaff error:', error);
+    return res.status(500).json({ success: false, message: 'Server error', error: error.message });
+  }
+};
+
 // ── @desc    Create a new user (Student or Teacher)
 // ── @route   POST /api/users/students (keeping route name for now)
 // ── @access  Admin
@@ -159,6 +196,7 @@ const updateProfile = async (req, res) => {
 
 module.exports = {
   getStudents,
+  getStaff,
   createStudent,
   deleteStudent,
   updateProfile,
