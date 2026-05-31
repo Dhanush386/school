@@ -5,7 +5,7 @@ import {
   MdCancel, MdSchool, MdOutlineLibraryBooks,
 } from "react-icons/md";
 import { useAuth } from "../../context/AuthContext";
-import axiosInstance from "../../utils/axiosInstance";
+import axiosInstance from "../../api/axiosInstance";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 24 },

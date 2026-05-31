@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { MdPeople, MdWork, MdAssignment, MdBarChart } from 'react-icons/md';
 import { staggerContainer, staggerItem } from '../../animations/stagger';
-import axiosInstance from '../../utils/axiosInstance';
+import axiosInstance from '../../api/axiosInstance';
 
 const HRDPage = () => {
   const [staff, setStaff] = useState([]);
