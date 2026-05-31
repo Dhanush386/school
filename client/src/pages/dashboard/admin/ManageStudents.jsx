@@ -20,7 +20,7 @@ export default function ManageStudents() {
   const [selectedStudent, setSelectedStudent] = useState(null);
 
   // Form states
-  const [studentForm, setStudentForm] = useState({ name: '', loginId: '', department: 'LKG', role: 'student', section: 'A', phone: '' });
+  const [studentForm, setStudentForm] = useState({ name: '', loginId: '', department: 'LKG', role: 'student', section: 'A', phone: '', facilityMode: 'none' });
   const [feeForm, setFeeForm] = useState({ feeType: 'School Fee', amount: '', dueDate: '', academicYear: '2024-25' });
 
   // Filters
@@ -56,7 +56,7 @@ export default function ManageStudents() {
       if (data.success) {
         toast.success(data.message);
         setShowAddStudent(false);
-        setStudentForm({ name: '', loginId: '', department: 'LKG', role: 'student', section: 'A', phone: '' });
+        setStudentForm({ name: '', loginId: '', department: 'LKG', role: 'student', section: 'A', phone: '', facilityMode: 'none' });
         fetchStudents();
       }
     } catch (error) {
@@ -310,6 +310,21 @@ export default function ManageStudents() {
                     />
                   </div>
                   
+                  {studentForm.role === 'student' && (
+                    <div>
+                      <label className="block text-xs font-medium text-slate-600 mb-1.5">Facility Mode</label>
+                      <select
+                        value={studentForm.facilityMode}
+                        onChange={(e) => setStudentForm({ ...studentForm, facilityMode: e.target.value })}
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary-500"
+                      >
+                        <option value="none">Day Scholar (None)</option>
+                        <option value="hostel">Hosteller</option>
+                        <option value="transport">School Transport</option>
+                      </select>
+                    </div>
+                  )}
+
                   <div className="bg-blue-50 border border-blue-100 rounded-xl p-3 flex items-start gap-2">
                     <MdWarning className="text-blue-500 mt-0.5 flex-shrink-0" />
                     <p className="text-xs text-blue-700">

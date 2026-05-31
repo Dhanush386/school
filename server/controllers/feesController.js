@@ -247,6 +247,16 @@ const assignClassFees = async (req, res) => {
     const existingFeeSet = new Set(existingFees.map(f => f.studentId.toString()));
 
     for (const student of students) {
+      // Skip assigning Hostel/Transport fee if the student isn't registered for it
+      if (feeType === 'Hostel Fee' && student.facilityMode !== 'hostel') {
+        skipped++;
+        continue;
+      }
+      if (feeType === 'Transport Fee' && student.facilityMode !== 'transport') {
+        skipped++;
+        continue;
+      }
+
       if (existingFeeSet.has(student._id.toString())) {
         skipped++;
       } else {

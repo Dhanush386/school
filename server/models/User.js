@@ -59,6 +59,11 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    facilityMode: {
+      type: String,
+      enum: ['none', 'hostel', 'transport'],
+      default: 'none',
+    },
     isActive: {
       type: Boolean,
       default: true,
