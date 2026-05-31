@@ -29,8 +29,7 @@ const CashierDashboard = () => {
     feeType: '',
     amount: '',
     dueDate: '',
-    academicYear: '',
-    semester: ''
+    academicYear: ''
   });
 
   const handleSearch = async (e) => {
@@ -100,7 +99,6 @@ const CashierDashboard = () => {
       const payload = {
         ...bulkForm,
         amount: Number(bulkForm.amount),
-        semester: bulkForm.semester ? Number(bulkForm.semester) : null,
       };
       const res = await api.post('/fees/bulk', payload);
       
@@ -114,7 +112,7 @@ const CashierDashboard = () => {
       
       setIsBulkModalOpen(false);
       setBulkForm({
-        department: '', feeType: '', amount: '', dueDate: '', academicYear: '', semester: ''
+        department: '', feeType: '', amount: '', dueDate: '', academicYear: ''
       });
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to bulk assign fees');
@@ -336,15 +334,9 @@ const CashierDashboard = () => {
                     <input type="date" min={new Date().toISOString().split('T')[0]} required value={bulkForm.dueDate} onChange={e => setBulkForm({...bulkForm, dueDate: e.target.value})} className="w-full p-2 border rounded-xl outline-none focus:border-indigo-500 text-sm" />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">Academic Year *</label>
-                    <input type="text" pattern="^\d{4}-\d{2}$" title="Format: YYYY-YY (e.g. 2024-25)" required value={bulkForm.academicYear} onChange={e => setBulkForm({...bulkForm, academicYear: e.target.value})} className="w-full p-2 border rounded-xl outline-none focus:border-indigo-500 text-sm" placeholder="2024-25" />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 mb-1">Semester *</label>
-                    <input type="number" min="1" max="8" required value={bulkForm.semester} onChange={e => setBulkForm({...bulkForm, semester: e.target.value})} className="w-full p-2 border rounded-xl outline-none focus:border-indigo-500 text-sm" placeholder="e.g. 1" />
-                  </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Academic Year *</label>
+                  <input type="text" pattern="^\d{4}-\d{2}$" title="Format: YYYY-YY (e.g. 2024-25)" required value={bulkForm.academicYear} onChange={e => setBulkForm({...bulkForm, academicYear: e.target.value})} className="w-full p-2 border rounded-xl outline-none focus:border-indigo-500 text-sm" placeholder="2024-25" />
                 </div>
                 
                 <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-100 mt-4">
