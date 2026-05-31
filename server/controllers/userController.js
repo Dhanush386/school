@@ -113,8 +113,48 @@ const deleteStudent = async (req, res) => {
   }
 };
 
+// ── @desc    Update user profile
+// ── @route   PUT /api/users/profile
+// ── @access  Private
+const updateProfile = async (req, res) => {
+  try {
+    const { name, email, phone } = req.body;
+    
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    if (name) user.name = name;
+    if (email !== undefined) user.email = email;
+    if (phone) user.phone = phone;
+
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        id: user._id,
+        name: user.name,
+        loginId: user.loginId,
+        role: user.role,
+        department: user.department,
+        section: user.section,
+        email: user.email,
+        phone: user.phone,
+        profileImage: user.profileImage,
+      },
+      message: 'Profile updated successfully'
+    });
+  } catch (error) {
+    console.error('updateProfile error:', error);
+    return res.status(500).json({ success: false, message: 'Server error', error: error.message });
+  }
+};
+
 module.exports = {
   getStudents,
   createStudent,
   deleteStudent,
+  updateProfile,
 };

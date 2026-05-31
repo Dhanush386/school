@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { protect, authorize } = require('../middleware/auth');
-const { createStudent, getStudents, deleteStudent } = require('../controllers/userController');
+const { createStudent, getStudents, deleteStudent, updateProfile } = require('../controllers/userController');
 
 // TEMPORARY: Clean up fake users (Alice, Bob, etc.)
 router.get('/clean-fake-users', async (req, res) => {
@@ -27,6 +27,11 @@ router.get('/clean-fake-users', async (req, res) => {
 
 // All routes require authentication
 router.use(protect);
+
+// ── @desc    Update current user profile
+// ── @route   PUT /api/users/profile
+// ── @access  Private
+router.put('/profile', updateProfile);
 
 // ── @desc    Get all students
 // ── @route   GET /api/users/students

@@ -4,6 +4,7 @@ import { MdPerson, MdSecurity, MdSave, MdBadge, MdEmail, MdPhone, MdVpnKey } fro
 import { fadeInUp } from '../../animations/fadeIn';
 import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
+import api from '../../api/axiosInstance';
 
 const roleColors = {
   student:     'from-blue-500 to-indigo-600',
@@ -36,10 +37,21 @@ const SettingsPage = () => {
     e.preventDefault();
     if (!profile.name) { toast.error('Name is required'); return; }
     setSaving(true);
-    await new Promise(r => setTimeout(r, 1000));
-    updateUser({ name: profile.name });
-    toast.success('Profile updated successfully!');
-    setSaving(false);
+    try {
+      const { data } = await api.put('/users/profile', {
+        name: profile.name,
+        email: profile.email,
+        phone: profile.phone
+      });
+      if (data.success) {
+        updateUser(data.data);
+        toast.success('Profile updated successfully!');
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to update profile');
+    } finally {
+      setSaving(false);
+    }
   };
 
   const savePassword = async e => {
