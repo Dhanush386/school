@@ -47,9 +47,9 @@ const userSchema = new mongoose.Schema(
     },
     phone: {
       type: String,
+      required: [true, 'Phone number is required'],
       trim: true,
       match: [/^\+?[\d\s\-().]{7,20}$/, 'Please provide a valid phone number'],
-      default: null,
     },
     profileImage: {
       type: String,

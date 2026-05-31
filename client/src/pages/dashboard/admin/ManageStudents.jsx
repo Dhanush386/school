@@ -299,8 +299,9 @@ export default function ManageStudents() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-slate-600 mb-1.5">Phone Number (Optional)</label>
+                    <label className="block text-xs font-medium text-slate-600 mb-1.5">Phone Number *</label>
                     <input
+                      required
                       type="text"
                       placeholder="e.g. +91 9876543210"
                       value={studentForm.phone}
