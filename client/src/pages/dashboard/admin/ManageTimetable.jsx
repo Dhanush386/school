@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { MdSchedule, MdSave, MdRefresh } from 'react-icons/md';
 import api from '../../../api/axiosInstance';
 import toast from 'react-hot-toast';
+import { CLASSES_LIST, SECTIONS_LIST } from '../../../constants/academic';
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 20 },
@@ -21,7 +22,7 @@ const emptySchedule = () => ({
 });
 
 export default function ManageTimetable() {
-  const [classFilter, setClassFilter] = useState('10');
+  const [classFilter, setClassFilter] = useState('X');
   const [sectionFilter, setSectionFilter] = useState('A');
   const [schedule, setSchedule] = useState(emptySchedule());
   const [loading, setLoading] = useState(false);
@@ -112,8 +113,8 @@ export default function ManageTimetable() {
               onChange={(e) => setClassFilter(e.target.value)}
               className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-primary-500"
             >
-              {[...Array(12)].map((_, i) => (
-                <option key={i} value={i + 1}>Class {i + 1}</option>
+              {CLASSES_LIST.map((cls) => (
+                <option key={cls.value} value={cls.value}>{cls.label}</option>
               ))}
             </select>
             <select
@@ -121,7 +122,7 @@ export default function ManageTimetable() {
               onChange={(e) => setSectionFilter(e.target.value)}
               className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-primary-500"
             >
-              {['A', 'B', 'C', 'D'].map(s => <option key={s} value={s}>Section {s}</option>)}
+              {SECTIONS_LIST.map(s => <option key={s} value={s}>Section {s}</option>)}
             </select>
           </div>
           <button onClick={fetchTimetable} className="text-slate-500 hover:text-slate-700 flex items-center gap-1 text-sm bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200">

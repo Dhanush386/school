@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { MdPeople, MdAdd, MdClose, MdPayment, MdCheckCircle, MdSchool, MdWarning, MdDelete } from 'react-icons/md';
 import api from '../../../api/axiosInstance';
 import toast from 'react-hot-toast';
+import { CLASSES_LIST, SECTIONS_LIST } from '../../../constants/academic';
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 20 },
@@ -19,7 +20,7 @@ export default function ManageStudents() {
   const [selectedStudent, setSelectedStudent] = useState(null);
 
   // Form states
-  const [studentForm, setStudentForm] = useState({ name: '', loginId: '', department: '1', role: 'student', section: 'A', phone: '' });
+  const [studentForm, setStudentForm] = useState({ name: '', loginId: '', department: 'LKG', role: 'student', section: 'A', phone: '' });
   const [feeForm, setFeeForm] = useState({ feeType: 'Tuition Fee', amount: '', dueDate: '', academicYear: '2024-25' });
 
   // Filters
@@ -55,7 +56,7 @@ export default function ManageStudents() {
       if (data.success) {
         toast.success(data.message);
         setShowAddStudent(false);
-        setStudentForm({ name: '', loginId: '', department: '1', role: 'student', section: 'A', phone: '' });
+        setStudentForm({ name: '', loginId: '', department: 'LKG', role: 'student', section: 'A', phone: '' });
         fetchStudents();
       }
     } catch (error) {
@@ -128,8 +129,8 @@ export default function ManageStudents() {
               className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-primary-500"
             >
               <option value="">All Classes</option>
-              {[...Array(12)].map((_, i) => (
-                <option key={i} value={i + 1}>Class {i + 1}</option>
+              {CLASSES_LIST.map((cls) => (
+                <option key={cls.value} value={cls.value}>{cls.label}</option>
               ))}
             </select>
             <select
@@ -138,7 +139,7 @@ export default function ManageStudents() {
               className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-primary-500"
             >
               <option value="">All Sections</option>
-              {['A', 'B', 'C', 'D'].map(s => <option key={s} value={s}>Section {s}</option>)}
+              {SECTIONS_LIST.map(s => <option key={s} value={s}>Section {s}</option>)}
             </select>
           </div>
         </div>
@@ -292,8 +293,8 @@ export default function ManageStudents() {
                       onChange={(e) => setStudentForm({ ...studentForm, department: e.target.value })}
                       className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary-500"
                     >
-                      {[...Array(12)].map((_, i) => (
-                        <option key={i} value={i + 1}>Class {i + 1}</option>
+                      {CLASSES_LIST.map((cls) => (
+                        <option key={cls.value} value={cls.value}>{cls.label}</option>
                       ))}
                     </select>
                   </div>
