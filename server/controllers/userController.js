@@ -126,7 +126,9 @@ const updateProfile = async (req, res) => {
     }
 
     if (name) user.name = name;
-    if (email !== undefined) user.email = email;
+    if (email !== undefined) {
+      user.email = email.trim() === '' ? undefined : email.trim();
+    }
     if (phone) user.phone = phone;
 
     await user.save();
@@ -147,6 +149,9 @@ const updateProfile = async (req, res) => {
       message: 'Profile updated successfully'
     });
   } catch (error) {
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({ success: false, message: Object.values(error.errors).map(e => e.message).join(', ') });
+    }
     console.error('updateProfile error:', error);
     return res.status(500).json({ success: false, message: 'Server error', error: error.message });
   }
