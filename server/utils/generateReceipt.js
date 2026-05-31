@@ -162,7 +162,7 @@ const generateReceipt = async ({
     color: rgb(0.8, 0.9, 1),
   });
 
-  page.drawText(`₹ ${Number(amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`, {
+  page.drawText(`Rs. ${Number(amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`, {
     x: 55,
     y: amtBoxY + 18,
     size: 20,
