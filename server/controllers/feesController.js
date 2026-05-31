@@ -130,20 +130,24 @@ const getFeeStructure = async (req, res) => {
 // ── @access  Admin, Principal
 const getAllFees = async (req, res) => {
   try {
-    const { status, feeType, academicYear, search, page = 1, limit = 15 } = req.query;
+    const { status, feeType, academicYear, search, department, section, page = 1, limit = 15 } = req.query;
     const filter = {};
     if (status) filter.status = status;
     if (feeType) filter.feeType = feeType;
     if (academicYear) filter.academicYear = academicYear;
 
-    if (search) {
-      const users = await User.find({
-        $or: [
+    if (search || department || section) {
+      const userFilter = { role: 'student' };
+      if (search) {
+        userFilter.$or = [
           { name: { $regex: search, $options: 'i' } },
           { loginId: { $regex: search, $options: 'i' } },
-        ],
-        role: 'student',
-      }).select('_id');
+        ];
+      }
+      if (department) userFilter.department = department;
+      if (section) userFilter.section = section;
+
+      const users = await User.find(userFilter).select('_id');
       filter.$or = [{ studentId: { $in: users.map(u => u._id) } }, { student: { $in: users.map(u => u._id) } }];
     }
 

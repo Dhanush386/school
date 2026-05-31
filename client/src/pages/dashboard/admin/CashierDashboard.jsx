@@ -4,6 +4,7 @@ import { MdSearch, MdPayment, MdCheckCircle, MdMoney, MdPrint } from 'react-icon
 import api from '../../../api/axiosInstance';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../../context/AuthContext';
+import { CLASSES_LIST, SECTIONS_LIST } from '../../../constants/academic';
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -13,6 +14,8 @@ const fadeInUp = {
 const CashierDashboard = () => {
   const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchClass, setSearchClass] = useState('');
+  const [searchSection, setSearchSection] = useState('');
   const [loading, setLoading] = useState(false);
   const [fees, setFees] = useState([]);
   const [searched, setSearched] = useState(false);
@@ -32,12 +35,16 @@ const CashierDashboard = () => {
 
   const handleSearch = async (e) => {
     e.preventDefault();
-    if (!searchQuery.trim()) return;
+    if (!searchQuery.trim() && !searchClass && !searchSection) return;
 
     setLoading(true);
     try {
-      // Admin fees endpoint with search filter
-      const res = await api.get(`/fees?search=${searchQuery}`);
+      const query = new URLSearchParams();
+      if (searchQuery.trim()) query.append('search', searchQuery.trim());
+      if (searchClass) query.append('department', searchClass);
+      if (searchSection) query.append('section', searchSection);
+      
+      const res = await api.get(`/fees?${query.toString()}`);
       // Filter out paid fees so we only show pending/overdue
       const unpaidFees = (res.data.data || []).filter(f => f.status !== 'paid');
       setFees(unpaidFees);
@@ -152,8 +159,28 @@ const CashierDashboard = () => {
         initial="initial"
         animate="animate"
         onSubmit={handleSearch}
-        className="flex gap-4"
+        className="flex flex-col md:flex-row gap-4"
       >
+        <div className="flex gap-4 md:w-1/3">
+          <select
+            value={searchClass}
+            onChange={(e) => setSearchClass(e.target.value)}
+            className="w-1/2 p-3 bg-white border border-slate-200 rounded-2xl outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 text-slate-700 text-sm"
+          >
+            <option value="">All Classes</option>
+            {CLASSES_LIST.map((cls) => (
+              <option key={cls.value} value={cls.value}>{cls.label}</option>
+            ))}
+          </select>
+          <select
+            value={searchSection}
+            onChange={(e) => setSearchSection(e.target.value)}
+            className="w-1/2 p-3 bg-white border border-slate-200 rounded-2xl outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 text-slate-700 text-sm"
+          >
+            <option value="">All Sections</option>
+            {SECTIONS_LIST.map(s => <option key={s} value={s}>Section {s}</option>)}
+          </select>
+        </div>
         <div className="flex-1 relative">
           <MdSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xl" />
           <input
