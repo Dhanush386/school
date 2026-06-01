@@ -61,7 +61,6 @@ const PublicHeader = () => {
           
           <Link to="/academics" className="hover:text-[#28a745] transition-colors pb-1">ACADEMICS</Link>
           <a href="#" className="hover:text-[#28a745] transition-colors pb-1">LIFE @ VVMS</a>
-          <a href="#" className="hover:text-[#28a745] transition-colors pb-1">VVMS-TBI</a>
           
           <div className="relative" ref={studentsDropdownRef}>
             <button 
@@ -125,7 +124,6 @@ const PublicHeader = () => {
           
           <Link to="/academics" onClick={() => setMobileMenuOpen(false)} className="px-6 py-4 border-b border-gray-100 hover:bg-gray-50 hover:text-[#28a745]">ACADEMICS</Link>
           <a href="#" onClick={() => setMobileMenuOpen(false)} className="px-6 py-4 border-b border-gray-100 hover:bg-gray-50 hover:text-[#28a745]">LIFE @ VVMS</a>
-          <a href="#" onClick={() => setMobileMenuOpen(false)} className="px-6 py-4 border-b border-gray-100 hover:bg-gray-50 hover:text-[#28a745]">VVMS-TBI</a>
           
           <div className="flex flex-col border-b border-gray-100">
             <button 
