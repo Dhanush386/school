@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { MdSchedule, MdSave, MdRefresh } from 'react-icons/md';
+import { MdSchedule, MdSave, MdRefresh, MdDelete, MdAdd } from 'react-icons/md';
 import api from '../../../api/axiosInstance';
 import toast from 'react-hot-toast';
 import { CLASSES_LIST, SECTIONS_LIST } from '../../../constants/academic';
@@ -11,19 +11,20 @@ const fadeInUp = {
 };
 
 const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
-const slots = ['08:30-09:30', '09:30-10:30', '10:30-11:30', '11:30-12:30', '01:30-02:30', '02:30-03:30', '03:30-04:30'];
+const defaultSlots = ['08:30-09:30', '09:30-10:30', '10:30-11:30', '11:30-12:30', '01:30-02:30', '02:30-03:30', '03:30-04:30'];
 
-const emptySchedule = () => ({
-  Monday: Array(7).fill(''),
-  Tuesday: Array(7).fill(''),
-  Wednesday: Array(7).fill(''),
-  Thursday: Array(7).fill(''),
-  Friday: Array(7).fill(''),
+const emptySchedule = (numSlots = 7) => ({
+  Monday: Array(numSlots).fill(''),
+  Tuesday: Array(numSlots).fill(''),
+  Wednesday: Array(numSlots).fill(''),
+  Thursday: Array(numSlots).fill(''),
+  Friday: Array(numSlots).fill(''),
 });
 
 export default function ManageTimetable() {
   const [classFilter, setClassFilter] = useState('X');
   const [sectionFilter, setSectionFilter] = useState('A');
+  const [timeSlots, setTimeSlots] = useState(defaultSlots);
   const [schedule, setSchedule] = useState(emptySchedule());
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -37,12 +38,13 @@ export default function ManageTimetable() {
     try {
       const { data } = await api.get(`/timetable?department=${classFilter}&section=${sectionFilter}`);
       if (data.success && data.data) {
-        // Merge with empty to ensure no missing arrays if DB is incomplete
         const dbSchedule = data.data.schedule;
-        const merged = emptySchedule();
+        const activeSlots = data.data.timeSlots && data.data.timeSlots.length > 0 ? data.data.timeSlots : defaultSlots;
+        setTimeSlots(activeSlots);
+        const merged = emptySchedule(activeSlots.length);
         days.forEach(d => {
           if (dbSchedule[d]) {
-            for (let i = 0; i < 7; i++) {
+            for (let i = 0; i < activeSlots.length; i++) {
               merged[d][i] = dbSchedule[d][i] || '';
             }
           }
@@ -52,7 +54,8 @@ export default function ManageTimetable() {
     } catch (error) {
       if (error.response?.status === 404) {
         // No timetable exists for this class/section yet
-        setSchedule(emptySchedule());
+        setTimeSlots(defaultSlots);
+        setSchedule(emptySchedule(defaultSlots.length));
       } else {
         toast.error('Failed to load timetable');
       }
@@ -68,12 +71,35 @@ export default function ManageTimetable() {
     }));
   };
 
+  const handleTimeSlotChange = (index, value) => {
+    setTimeSlots(prev => prev.map((slot, i) => (i === index ? value : slot)));
+  };
+
+  const handleAddSlot = () => {
+    setTimeSlots(prev => [...prev, 'New Slot']);
+    setSchedule(prev => {
+      const next = { ...prev };
+      days.forEach(d => next[d] = [...next[d], '']);
+      return next;
+    });
+  };
+
+  const handleDeleteSlot = (index) => {
+    setTimeSlots(prev => prev.filter((_, i) => i !== index));
+    setSchedule(prev => {
+      const next = { ...prev };
+      days.forEach(d => next[d] = next[d].filter((_, i) => i !== index));
+      return next;
+    });
+  };
+
   const handleSave = async () => {
     setSaving(true);
     try {
       const { data } = await api.post('/timetable', {
         department: classFilter,
         section: sectionFilter,
+        timeSlots,
         schedule
       });
       if (data.success) {
@@ -141,19 +167,34 @@ export default function ManageTimetable() {
               <thead>
                 <tr>
                   <th className="p-3 text-left text-slate-500 font-medium border-b border-slate-200 w-32">Time / Day</th>
-                  {slots.map(slot => (
-                    <th key={slot} className="p-3 text-center text-slate-700 font-semibold border-b border-slate-200 min-w-[120px] whitespace-nowrap">
-                      {slot}
+                  {timeSlots.map((slot, i) => (
+                    <th key={i} className="p-3 text-center border-b border-slate-200 min-w-[120px]">
+                      <div className="flex items-center gap-1 justify-center">
+                        <input
+                          type="text"
+                          value={slot}
+                          onChange={(e) => handleTimeSlotChange(i, e.target.value)}
+                          className="bg-transparent border-b border-dashed border-slate-300 text-slate-700 font-semibold text-center w-24 focus:outline-none focus:border-primary-500"
+                        />
+                        <button onClick={() => handleDeleteSlot(i)} className="text-red-400 hover:text-red-600 transition-colors p-1" title="Delete slot">
+                          <MdDelete />
+                        </button>
+                      </div>
                     </th>
                   ))}
+                  <th className="p-3 text-center border-b border-slate-200 w-16">
+                    <button onClick={handleAddSlot} className="bg-slate-100 hover:bg-slate-200 text-slate-600 p-1.5 rounded-full transition-colors mx-auto flex items-center justify-center" title="Add time slot">
+                      <MdAdd size={16} />
+                    </button>
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {days.map(day => (
                   <tr key={day} className="hover:bg-slate-50/50 transition-colors">
                     <td className="p-3 font-medium text-slate-900 border-r border-slate-100">{day}</td>
-                    {slots.map((slot, i) => (
-                      <td key={slot} className="p-2 border-r border-slate-100 last:border-0">
+                    {timeSlots.map((slot, i) => (
+                      <td key={i} className="p-2 border-r border-slate-100">
                         <input
                           type="text"
                           placeholder="Subject/Break"
@@ -163,6 +204,7 @@ export default function ManageTimetable() {
                         />
                       </td>
                     ))}
+                    <td className="p-2 border-slate-100"></td>
                   </tr>
                 ))}
               </tbody>

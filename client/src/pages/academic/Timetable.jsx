@@ -1,17 +1,20 @@
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { MdSchedule } from 'react-icons/md';
 import { useAuth } from '../../context/AuthContext';
+import api from '../../api/axiosInstance';
+import toast from 'react-hot-toast';
 
 const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
-const slots = ['08:30-09:30', '09:30-10:30', '10:30-11:30', '11:30-12:30', '01:30-02:30', '02:30-03:30', '03:30-04:30'];
+const defaultSlots = ['08:30-09:30', '09:30-10:30', '10:30-11:30', '11:30-12:30', '01:30-02:30', '02:30-03:30', '03:30-04:30'];
 
-const timetable = {
-  Monday:    ['', '', '', '', '', '', ''],
-  Tuesday:   ['', '', '', '', '', '', ''],
-  Wednesday: ['', '', '', '', '', '', ''],
-  Thursday:  ['', '', '', '', '', '', ''],
-  Friday:    ['', '', '', '', '', '', ''],
-};
+const emptySchedule = (numSlots = 7) => ({
+  Monday: Array(numSlots).fill(''),
+  Tuesday: Array(numSlots).fill(''),
+  Wednesday: Array(numSlots).fill(''),
+  Thursday: Array(numSlots).fill(''),
+  Friday: Array(numSlots).fill(''),
+});
 
 const colors = {
   'Mathematics': 'bg-blue-500/20 text-blue-300 border-blue-500/20',
@@ -27,6 +30,41 @@ const colors = {
 
 const Timetable = () => {
   const { user } = useAuth();
+  const [timeSlots, setTimeSlots] = useState(defaultSlots);
+  const [schedule, setSchedule] = useState(emptySchedule());
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchTimetable = async () => {
+      setLoading(true);
+      try {
+        const dept = user?.department || 'X';
+        const sec = user?.section || 'A';
+        const { data } = await api.get(`/timetable?department=${dept}&section=${sec}`);
+        if (data.success && data.data) {
+          const dbSchedule = data.data.schedule;
+          const activeSlots = data.data.timeSlots && data.data.timeSlots.length > 0 ? data.data.timeSlots : defaultSlots;
+          setTimeSlots(activeSlots);
+          const merged = emptySchedule(activeSlots.length);
+          days.forEach(d => {
+            if (dbSchedule[d]) {
+              for (let i = 0; i < activeSlots.length; i++) {
+                merged[d][i] = dbSchedule[d][i] || '';
+              }
+            }
+          });
+          setSchedule(merged);
+        }
+      } catch (error) {
+        if (error.response?.status !== 404) {
+          toast.error('Failed to load timetable');
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTimetable();
+  }, [user]);
   
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth();
@@ -43,34 +81,41 @@ const Timetable = () => {
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
       className="rounded-2xl border border-slate-200 overflow-hidden" style={{ background: 'rgba(255,255,255,1)' }}>
       <div className="overflow-x-auto">
-        <table className="w-full text-sm min-w-[700px]">
-          <thead>
-            <tr className="border-b border-slate-200">
-              <th className="text-left text-slate-500 text-xs font-medium p-4 w-28">Time</th>
-              {days.map(d => <th key={d} className="text-center text-slate-700 text-xs font-semibold p-4">{d}</th>)}
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-200">
-            {slots.map((slot, si) => (
-              <tr key={slot} className="hover:bg-white/2 transition-colors">
-                <td className="p-4 text-slate-500 text-xs font-mono whitespace-nowrap">{slot}</td>
-                {days.map(day => {
-                  const subject = timetable[day][si] || '';
-                  const cls = colors[subject] || 'bg-transparent text-slate-600 border-transparent';
-                  return (
-                    <td key={day} className="p-2 text-center">
-                      {subject ? (
-                        <div className={`px-2 py-1.5 rounded-xl border text-xs font-medium ${cls} transition-all hover:scale-105`}>
-                          {subject}
-                        </div>
-                      ) : <div className="text-slate-700 text-xs">—</div>}
-                    </td>
-                  );
-                })}
+        {loading ? (
+          <div className="p-12 flex flex-col items-center justify-center text-center">
+            <div className="w-8 h-8 border-4 border-primary-500/30 border-t-primary-500 rounded-full animate-spin mb-4" />
+            <p className="text-slate-500">Loading schedule...</p>
+          </div>
+        ) : (
+          <table className="w-full text-sm min-w-[700px]">
+            <thead>
+              <tr className="border-b border-slate-200">
+                <th className="text-left text-slate-500 text-xs font-medium p-4 w-28">Time</th>
+                {days.map(d => <th key={d} className="text-center text-slate-700 text-xs font-semibold p-4">{d}</th>)}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-slate-200">
+              {timeSlots.map((slot, si) => (
+                <tr key={si} className="hover:bg-white/2 transition-colors">
+                  <td className="p-4 text-slate-500 text-xs font-mono whitespace-nowrap">{slot}</td>
+                  {days.map(day => {
+                    const subject = schedule[day][si] || '';
+                    const cls = colors[subject] || 'bg-transparent text-slate-600 border-transparent';
+                    return (
+                      <td key={day} className="p-2 text-center">
+                        {subject ? (
+                          <div className={`px-2 py-1.5 rounded-xl border text-xs font-medium ${cls} transition-all hover:scale-105`}>
+                            {subject}
+                          </div>
+                        ) : <div className="text-slate-700 text-xs">—</div>}
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </motion.div>
     <div className="flex flex-wrap gap-2">

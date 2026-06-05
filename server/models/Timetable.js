@@ -12,6 +12,10 @@ const timetableSchema = new mongoose.Schema(
       enum: ['A', 'B', 'C', 'D'],
       required: [true, 'Section is required'],
     },
+    timeSlots: {
+      type: [String],
+      default: ['08:30-09:30', '09:30-10:30', '10:30-11:30', '11:30-12:30', '01:30-02:30', '02:30-03:30', '03:30-04:30'],
+    },
     schedule: {
       Monday: [String],
       Tuesday: [String],

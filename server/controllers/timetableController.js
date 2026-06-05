@@ -29,16 +29,19 @@ const getTimetable = async (req, res) => {
 // ── @access  Admin
 const saveTimetable = async (req, res) => {
   try {
-    const { department, section, schedule } = req.body;
+    const { department, section, schedule, timeSlots } = req.body;
 
     if (!department || !section || !schedule) {
       return res.status(400).json({ success: false, message: 'Class (department), Section, and schedule are required' });
     }
 
     // Upsert timetable
+    const updateData = { schedule };
+    if (timeSlots) updateData.timeSlots = timeSlots;
+
     const timetable = await Timetable.findOneAndUpdate(
       { department, section },
-      { schedule },
+      updateData,
       { new: true, upsert: true, runValidators: true }
     );
 
