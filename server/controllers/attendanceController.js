@@ -1,16 +1,23 @@
 const Attendance = require('../models/Attendance');
 const User = require('../models/User');
+const twilio = require('twilio');
+
+const getTwilioClient = () => {
+  if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) {
+    return twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+  }
+  return null;
+};
 
 // ── @desc    Teacher marks attendance for their class
 // ── @route   POST /api/academic/attendance
 // ── @access  Teacher, Admin
 const markAttendance = async (req, res) => {
   try {
-    const { date, subject, className, department, records } = req.body;
-    // records: [{ studentId, status }]  status: 'present' | 'absent' | 'late' | 'excused'
+    const { date, session, className, department, records } = req.body;
 
-    if (!date || !subject || !className || !records || !Array.isArray(records) || records.length === 0) {
-      return res.status(400).json({ success: false, message: 'date, subject, className and records are required' });
+    if (!date || !session || !className || !records || !Array.isArray(records) || records.length === 0) {
+      return res.status(400).json({ success: false, message: 'date, session, className and records are required' });
     }
 
     const attendanceDate = new Date(date);
@@ -19,14 +26,14 @@ const markAttendance = async (req, res) => {
     // Check for duplicate
     const duplicate = await Attendance.findOne({
       date: attendanceDate,
-      subject,
+      session,
       className,
       markedBy: req.user.id,
     });
     if (duplicate) {
       return res.status(400).json({
         success: false,
-        message: 'Attendance for this class/subject/date has already been marked. Use update instead.',
+        message: 'Attendance for this class/session/date has already been marked. Use update instead.',
         existingId: duplicate._id,
       });
     }
@@ -46,12 +53,60 @@ const markAttendance = async (req, res) => {
 
     const attendance = await Attendance.create({
       date: attendanceDate,
-      subject,
+      session,
       className,
       department: department || req.user.department,
       markedBy: req.user.id,
       records: attendanceRecords,
     });
+
+    // Twilio Voice Call Logic
+    const absentStudentIds = attendanceRecords.filter(r => r.status === 'absent').map(r => r.student);
+    if (absentStudentIds.length > 0) {
+      const absentUsers = await User.find({ _id: { $in: absentStudentIds } });
+      const twilioClient = getTwilioClient();
+      
+      const shouldCallList = [];
+      if (session === 'Morning') {
+        shouldCallList.push(...absentUsers);
+      } else if (session === 'Evening') {
+        const morningAttendance = await Attendance.findOne({ date: attendanceDate, session: 'Morning', className });
+        if (morningAttendance) {
+          const morningAbsentSet = new Set(
+            morningAttendance.records.filter(r => r.status === 'absent').map(r => r.student.toString())
+          );
+          for (const user of absentUsers) {
+            if (!morningAbsentSet.has(user._id.toString())) {
+              shouldCallList.push(user);
+            }
+          }
+        } else {
+          shouldCallList.push(...absentUsers);
+        }
+      }
+
+      if (twilioClient && process.env.TWILIO_PHONE_NUMBER) {
+        for (const user of shouldCallList) {
+          if (user.phone) {
+            const twiml = new twilio.twiml.VoiceResponse();
+            twiml.say({ language: 'en-IN', voice: 'Polly.Aditi' }, `Hello. This is to inform you that your child, ${user.name}, is absent for today. Thank you.`);
+            twiml.pause({ length: 1 });
+            twiml.say({ language: 'ta-IN', voice: 'Polly.Aditi' }, `வணக்கம். உங்கள் குழந்தை ${user.name} இன்று பள்ளிக்கு வரவில்லை என்பதை தெரிவித்துக் கொள்கிறோம். நன்றி.`);
+            
+            try {
+              await twilioClient.calls.create({
+                twiml: twiml.toString(),
+                to: user.phone,
+                from: process.env.TWILIO_PHONE_NUMBER
+              });
+              console.log(`Twilio call initiated for absent student ${user.name}`);
+            } catch (callErr) {
+              console.error(`Failed to initiate Twilio call for ${user.name}:`, callErr.message);
+            }
+          }
+        }
+      }
+    }
 
     return res.status(201).json({
       success: true,
@@ -59,7 +114,7 @@ const markAttendance = async (req, res) => {
       data: {
         _id: attendance._id,
         date: attendance.date,
-        subject: attendance.subject,
+        session: attendance.session,
         className: attendance.className,
         totalStudents: attendanceRecords.length,
         presentCount: attendanceRecords.filter(r => r.status === 'present').length,
@@ -78,11 +133,11 @@ const markAttendance = async (req, res) => {
 // ── @access  Student
 const getStudentAttendance = async (req, res) => {
   try {
-    const { subject, startDate, endDate } = req.query;
+    const { session, startDate, endDate } = req.query;
     const studentId = req.user.id;
 
     const filter = { 'records.student': studentId };
-    if (subject) filter.subject = subject;
+    if (session) filter.session = session;
     if (startDate || endDate) {
       filter.date = {};
       if (startDate) filter.date.$gte = new Date(startDate);
@@ -91,7 +146,7 @@ const getStudentAttendance = async (req, res) => {
 
     const attendanceList = await Attendance.find(filter)
       .sort({ date: -1 })
-      .select('date subject className records');
+      .select('date session className records');
 
     // Extract student-specific records
     const studentRecords = attendanceList.map(a => {
@@ -99,23 +154,23 @@ const getStudentAttendance = async (req, res) => {
       return {
         _id: a._id,
         date: a.date,
-        subject: a.subject,
+        session: a.session,
         className: a.className,
         status: record ? record.status : 'absent',
         remarks: record ? record.remarks : '',
       };
     });
 
-    // Calculate percentage per subject
-    const subjectMap = {};
+    // Calculate percentage per session
+    const sessionMap = {};
     studentRecords.forEach(r => {
-      if (!subjectMap[r.subject]) subjectMap[r.subject] = { total: 0, present: 0, absent: 0, late: 0, excused: 0 };
-      subjectMap[r.subject].total += 1;
-      subjectMap[r.subject][r.status] = (subjectMap[r.subject][r.status] || 0) + 1;
+      if (!sessionMap[r.session]) sessionMap[r.session] = { total: 0, present: 0, absent: 0, late: 0, excused: 0 };
+      sessionMap[r.session].total += 1;
+      sessionMap[r.session][r.status] = (sessionMap[r.session][r.status] || 0) + 1;
     });
 
-    const subjectStats = Object.entries(subjectMap).map(([sub, stats]) => ({
-      subject: sub,
+    const sessionStats = Object.entries(sessionMap).map(([sub, stats]) => ({
+      session: sub,
       ...stats,
       attendancePercentage: stats.total > 0
         ? (((stats.present + stats.late) / stats.total) * 100).toFixed(2)
@@ -129,7 +184,7 @@ const getStudentAttendance = async (req, res) => {
     return res.status(200).json({
       success: true,
       data: studentRecords,
-      subjectStats,
+      sessionStats,
       summary: { total, present: presentTotal, overallPercentage },
     });
   } catch (error) {
@@ -143,14 +198,14 @@ const getStudentAttendance = async (req, res) => {
 // ── @access  Teacher, Admin, Principal
 const getClassAttendance = async (req, res) => {
   try {
-    const { className, subject, date, startDate, endDate, page = 1, limit = 30 } = req.query;
+    const { className, session, date, startDate, endDate, page = 1, limit = 30 } = req.query;
 
     if (!className) {
       return res.status(400).json({ success: false, message: 'className is required' });
     }
 
     const filter = { className };
-    if (subject) filter.subject = subject;
+    if (session) filter.session = session;
     if (date) {
       const d = new Date(date);
       d.setHours(0, 0, 0, 0);
@@ -185,14 +240,14 @@ const getClassAttendance = async (req, res) => {
 // ── @access  Teacher, Admin, Principal
 const getAttendanceReport = async (req, res) => {
   try {
-    const { className, subject, startDate, endDate, groupBy = 'month' } = req.query;
+    const { className, session, startDate, endDate, groupBy = 'month' } = req.query;
 
     if (!className) {
       return res.status(400).json({ success: false, message: 'className is required' });
     }
 
     const matchStage = { className };
-    if (subject) matchStage.subject = subject;
+    if (session) matchStage.session = session;
     if (startDate || endDate) {
       matchStage.date = {};
       if (startDate) matchStage.date.$gte = new Date(startDate);

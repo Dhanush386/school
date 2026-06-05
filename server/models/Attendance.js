@@ -7,9 +7,10 @@ const attendanceSchema = new mongoose.Schema(
       ref: 'User',
       required: [true, 'Student ID is required'],
     },
-    subject: {
+    session: {
       type: String,
-      required: [true, 'Subject is required'],
+      required: [true, 'Session is required'],
+      enum: ['Morning', 'Evening'],
       trim: true,
     },
     className: {
@@ -41,7 +42,7 @@ const attendanceSchema = new mongoose.Schema(
 );
 
 // ─── Compound unique index: one record per student per subject per date ───────
-attendanceSchema.index({ studentId: 1, subject: 1, date: 1 }, { unique: true });
+attendanceSchema.index({ studentId: 1, session: 1, date: 1 }, { unique: true });
 
 // ─── Additional query indexes ─────────────────────────────────────────────────
 attendanceSchema.index({ className: 1, date: 1 });

@@ -7,17 +7,17 @@ import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
 import { attendanceService, userService } from '../../services/moduleServices';
 
-const subjects = ['Mathematics', 'Science', 'English', 'History', 'Computer Sci'];
+const sessions = ['Morning', 'Evening'];
 
 const Attendance = () => {
   const { user } = useAuth();
   const isTeacher = user?.role === 'teacher' || user?.role === 'admin';
   
-  const [selectedSubject, setSelectedSubject] = useState(subjects[0]);
+  const [selectedSession, setSelectedSession] = useState(sessions[0]);
   
   // Student State
   const [myAttendance, setMyAttendance] = useState([]);
-  const [subjectStats, setSubjectStats] = useState([]);
+  const [sessionStats, setSessionStats] = useState([]);
   const [summary, setSummary] = useState({ total: 0, present: 0, overallPercentage: '0.00' });
   
   // Teacher State
@@ -35,7 +35,7 @@ const Attendance = () => {
         } else {
           const res = await attendanceService.getMy();
           setMyAttendance(res.data?.data || []);
-          setSubjectStats(res.data?.subjectStats || []);
+          setSessionStats(res.data?.sessionStats || []);
           setSummary(res.data?.summary || { total: 0, present: 0, overallPercentage: '0.00' });
         }
       } catch (err) {
@@ -57,7 +57,7 @@ const Attendance = () => {
       
       await attendanceService.mark({
         date: new Date().toISOString(),
-        subject: selectedSubject,
+        session: selectedSession,
         className: '12-A', // In a real app this would be dynamic
         department: user?.department || 'CS',
         records
@@ -110,14 +110,14 @@ const Attendance = () => {
             </div>
           </motion.div>
           <motion.div variants={fadeInUp} className="rounded-2xl p-5 border border-slate-200" style={{ background: 'rgba(255,255,255,1)' }}>
-            <h3 className="text-slate-900 font-semibold mb-4">Subject-wise</h3>
+            <h3 className="text-slate-900 font-semibold mb-4">Session-wise</h3>
             <div className="space-y-3">
-              {subjectStats.length === 0 ? <p className="text-xs text-slate-500">No subject data available.</p> : subjectStats.map(s => {
+              {sessionStats.length === 0 ? <p className="text-xs text-slate-500">No session data available.</p> : sessionStats.map(s => {
                 const pct = Number(s.attendancePercentage);
                 return (
-                  <div key={s.subject}>
+                  <div key={s.session}>
                     <div className="flex justify-between text-xs mb-1">
-                      <span className="text-slate-500 truncate max-w-[60%]">{s.subject}</span>
+                      <span className="text-slate-500 truncate max-w-[60%]">{s.session}</span>
                       <span className={`font-bold ${pct < 75 ? 'text-red-400' : pct < 85 ? 'text-amber-400' : 'text-green-400'}`}>{pct}%</span>
                     </div>
                     <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
@@ -137,7 +137,7 @@ const Attendance = () => {
                   <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${a.status === 'present' ? 'bg-green-500/20 text-green-400' : a.status === 'absent' ? 'bg-red-500/20 text-red-400' : 'bg-amber-500/20 text-amber-400'}`}>
                     {a.status === 'present' ? <MdCheckCircle /> : a.status === 'absent' ? <MdCancel /> : <MdAccessTime />}
                   </div>
-                  <div className="flex-1"><p className="text-slate-900 text-sm font-medium">{a.subject}</p><p className="text-slate-500 text-xs">{new Date(a.date).toLocaleDateString()}</p></div>
+                  <div className="flex-1"><p className="text-slate-900 text-sm font-medium">{a.session}</p><p className="text-slate-500 text-xs">{new Date(a.date).toLocaleDateString()}</p></div>
                   <span className={`text-xs px-2 py-1 rounded-lg font-medium capitalize ${a.status === 'present' ? 'bg-green-500/20 text-green-400' : a.status === 'absent' ? 'bg-red-500/20 text-red-400' : 'bg-amber-500/20 text-amber-400'}`}>{a.status}</span>
                 </div>
               ))}
@@ -150,9 +150,9 @@ const Attendance = () => {
       {isTeacher && (
         <div className="space-y-4">
           <div className="flex flex-wrap gap-2">
-            {subjects.map(s => (
-              <button key={s} onClick={() => { setSelectedSubject(s); setMarking({}); }}
-                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${selectedSubject === s ? 'bg-primary-600 text-slate-900' : 'bg-slate-50 text-slate-500 hover:text-slate-900 border border-slate-200'}`}>
+            {sessions.map(s => (
+              <button key={s} onClick={() => { setSelectedSession(s); setMarking({}); }}
+                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${selectedSession === s ? 'bg-primary-600 text-slate-900' : 'bg-slate-50 text-slate-500 hover:text-slate-900 border border-slate-200'}`}>
                 {s}
               </button>
             ))}
@@ -161,7 +161,7 @@ const Attendance = () => {
             <div className="p-5 border-b border-slate-200">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-slate-900 font-semibold">{selectedSubject}</h3>
+                  <h3 className="text-slate-900 font-semibold">{selectedSession}</h3>
                   <p className="text-slate-500 text-xs mt-0.5">{new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
                 </div>
                 <button onClick={handleSave} className="px-4 py-2 bg-green-600 hover:bg-green-500 text-slate-900 rounded-xl text-sm font-medium transition-colors">Save Attendance</button>
