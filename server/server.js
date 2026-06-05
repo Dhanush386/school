@@ -29,7 +29,19 @@ const path       = require('path');
 // ---------------------------------------------------------------------------
 // 3. Internal modules
 // ---------------------------------------------------------------------------
-const connectDB      = require('./config/db');
+const connectDB = require('./config/db');
+
+// Connect to MongoDB and sync indexes
+connectDB().then(async () => {
+  try {
+    const Attendance = require('./models/Attendance');
+    await Attendance.syncIndexes();
+    console.log('Attendance indexes synced successfully');
+  } catch (err) {
+    console.error('Failed to sync indexes:', err.message);
+  }
+});
+
 const errorHandler   = require('./middleware/errorHandler');
 const socketHandler  = require('./socket/socketHandler');
 

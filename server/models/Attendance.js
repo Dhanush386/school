@@ -2,10 +2,9 @@ const mongoose = require('mongoose');
 
 const attendanceSchema = new mongoose.Schema(
   {
-    studentId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-      required: [true, 'Student ID is required'],
+    date: {
+      type: Date,
+      required: [true, 'Date is required'],
     },
     session: {
       type: String,
@@ -18,36 +17,46 @@ const attendanceSchema = new mongoose.Schema(
       required: [true, 'Class name is required'],
       trim: true,
     },
-    date: {
-      type: Date,
-      required: [true, 'Date is required'],
-    },
-    status: {
+    department: {
       type: String,
-      enum: {
-        values: ['present', 'absent', 'late'],
-        message: 'Status must be one of: present, absent, late',
-      },
-      required: [true, 'Attendance status is required'],
+      required: [true, 'Department is required'],
+      trim: true,
     },
     markedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: [true, 'Marked-by teacher ID is required'],
     },
+    records: [
+      {
+        student: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'User',
+          required: true,
+        },
+        status: {
+          type: String,
+          enum: ['present', 'absent', 'late', 'excused'],
+          default: 'present',
+        },
+        remarks: {
+          type: String,
+          default: '',
+        },
+      },
+    ],
   },
   {
     timestamps: true,
   }
 );
 
-// ─── Compound unique index: one record per student per subject per date ───────
-attendanceSchema.index({ studentId: 1, session: 1, date: 1 }, { unique: true });
+// ─── Compound unique index: one record per class per session per date ───────
+attendanceSchema.index({ className: 1, session: 1, date: 1 }, { unique: true });
 
 // ─── Additional query indexes ─────────────────────────────────────────────────
-attendanceSchema.index({ className: 1, date: 1 });
 attendanceSchema.index({ markedBy: 1, date: 1 });
-attendanceSchema.index({ studentId: 1, date: 1 });
+attendanceSchema.index({ 'records.student': 1, date: 1 });
 
 const Attendance = mongoose.model('Attendance', attendanceSchema);
 
