@@ -10,7 +10,6 @@ import { useAuth } from '../../../context/AuthContext';
 import { staggerContainer, staggerItem } from '../../../animations/stagger';
 import { fadeInUp } from '../../../animations/fadeIn';
 import { feesService, attendanceService, libraryService, notificationService } from '../../../services/moduleServices';
-import Tilt3DCard from '../../../components/3d/Tilt3DCard';
 
 // ─── Quick Actions ────────────────────────────────────────────────────────────
 const quickActions = [
@@ -24,25 +23,24 @@ const quickActions = [
 
 // ─── Sub-Components ───────────────────────────────────────────────────────────
 const StatCard = ({ icon: Icon, label, value, sub, color }) => (
-  <Tilt3DCard>
-    <motion.div
-      variants={staggerItem}
-      className="relative rounded-2xl p-5 overflow-hidden border border-slate-200"
-      style={{ background: 'rgba(255,255,255,1)' }}
-    >
-      <div className={`absolute top-0 right-0 w-32 h-32 rounded-full blur-3xl opacity-10 bg-gradient-to-br ${color}`} />
-      <div className="flex items-start justify-between relative z-10">
-        <div>
-          <p className="text-slate-500 text-xs font-medium uppercase tracking-wider">{label}</p>
-          <p className="text-slate-900 text-3xl font-bold mt-1">{value}</p>
-          {sub && <p className="text-slate-500 text-xs mt-1">{sub}</p>}
-        </div>
-        <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${color} flex items-center justify-center shadow-lg`}>
-          <Icon className="text-slate-900 text-xl" />
-        </div>
+  <motion.div
+    variants={staggerItem}
+    whileHover={{ y: -4, scale: 1.02 }}
+    className="relative rounded-2xl p-5 overflow-hidden border border-slate-200"
+    style={{ background: 'rgba(255,255,255,1)' }}
+  >
+    <div className={`absolute top-0 right-0 w-32 h-32 rounded-full blur-3xl opacity-10 bg-gradient-to-br ${color}`} />
+    <div className="flex items-start justify-between relative z-10">
+      <div>
+        <p className="text-slate-500 text-xs font-medium uppercase tracking-wider">{label}</p>
+        <p className="text-slate-900 text-3xl font-bold mt-1">{value}</p>
+        {sub && <p className="text-slate-500 text-xs mt-1">{sub}</p>}
       </div>
-    </motion.div>
-  </Tilt3DCard>
+      <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${color} flex items-center justify-center shadow-lg`}>
+        <Icon className="text-slate-900 text-xl" />
+      </div>
+    </div>
+  </motion.div>
 );
 
 // ─── Main Dashboard ────────────────────────────────────────────────────────────
