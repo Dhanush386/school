@@ -57,7 +57,9 @@ export const certificateService = {
   request: (data) => api.post('/certificates/request', data),
   getMy: () => api.get('/certificates/my'),
   getAll: (params) => api.get('/certificates', { params }),
-  approve: (id) => api.patch(`/certificates/${id}/approve`),
+  approve: (id, formData) => api.patch(`/certificates/${id}/approve`, formData, {
+    headers: formData ? { 'Content-Type': 'multipart/form-data' } : undefined
+  }),
   reject: (id, remarks) => api.patch(`/certificates/${id}/reject`, { remarks }),
   download: (id) => api.get(`/certificates/${id}/download`, { responseType: 'blob' }),
 };

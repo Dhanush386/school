@@ -46,6 +46,11 @@ const certificateSchema = new mongoose.Schema(
       trim: true,
       default: null,
     },
+    uploadedFile: {
+      data: Buffer,
+      contentType: String,
+      filename: String,
+    },
     approvedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',

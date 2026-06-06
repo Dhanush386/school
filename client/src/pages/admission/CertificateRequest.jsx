@@ -26,6 +26,9 @@ const CertificateRequest = () => {
   const { user } = useAuth();
   const [requests, setRequests] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [showApproveModal, setShowApproveModal] = useState(false);
+  const [approvingId, setApprovingId] = useState(null);
+  const [uploadFile, setUploadFile] = useState(null);
   const [selectedType, setSelectedType] = useState(null);
   const [purpose, setPurpose] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -63,13 +66,24 @@ const CertificateRequest = () => {
     }
   };
 
-  const handleApprove = async (id) => {
+  const handleApprove = async () => {
+    if (!approvingId) return;
     try {
-      await certificateService.approve(id);
+      setSubmitting(true);
+      let formData = null;
+      if (uploadFile) {
+        formData = new FormData();
+        formData.append('file', uploadFile);
+      }
+      await certificateService.approve(approvingId, formData);
       toast.success('Approved!');
+      setShowApproveModal(false);
+      setUploadFile(null);
       fetchRequests();
     } catch (error) {
       toast.error('Failed to approve');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -157,7 +171,7 @@ const CertificateRequest = () => {
                   )}
                   {isAuthority && req.status === 'pending' && (
                     <div className="flex gap-1">
-                      <button onClick={() => handleApprove(req._id)}
+                      <button onClick={() => { setApprovingId(req._id); setUploadFile(null); setShowApproveModal(true); }}
                         className="px-2 py-1 bg-green-600/20 text-green-400 rounded-lg text-xs hover:bg-green-600/30">Approve</button>
                       <button onClick={() => handleReject(req._id)}
                         className="px-2 py-1 bg-red-600/20 text-red-400 rounded-lg text-xs hover:bg-red-600/30">Reject</button>
@@ -201,6 +215,51 @@ const CertificateRequest = () => {
                 {submitting ? <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />Submitting...</> : 'Submit Request'}
               </button>
             </form>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Approve Modal */}
+      {showApproveModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(8px)' }} onClick={() => setShowApproveModal(false)}>
+          <motion.div initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }}
+            className="w-full max-w-md rounded-3xl p-6 border border-white/10"
+            style={{ background: 'rgba(15,23,42,0.98)' }}
+            onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-white text-lg font-bold">Approve Certificate</h2>
+              <button onClick={() => setShowApproveModal(false)} className="text-slate-400 hover:text-white"><MdClose className="text-xl" /></button>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="p-4 rounded-xl border border-white/10 bg-white/5">
+                <p className="text-sm text-slate-300 mb-3">You can either let the system auto-generate the standard certificate PDF, or upload a custom signed PDF.</p>
+                
+                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Upload Custom PDF (Optional)</label>
+                <input 
+                  type="file" 
+                  accept="application/pdf"
+                  onChange={(e) => setUploadFile(e.target.files[0])}
+                  className="block w-full text-sm text-slate-400
+                    file:mr-4 file:py-2 file:px-4
+                    file:rounded-xl file:border-0
+                    file:text-sm file:font-semibold
+                    file:bg-primary-600/20 file:text-primary-400
+                    hover:file:bg-primary-600/30 transition-colors"
+                />
+              </div>
+
+              <div className="flex gap-3">
+                <button onClick={() => setShowApproveModal(false)}
+                  className="flex-1 py-3 bg-white/5 hover:bg-white/10 text-white rounded-xl text-sm font-semibold transition-colors">
+                  Cancel
+                </button>
+                <button onClick={handleApprove} disabled={submitting}
+                  className="flex-1 py-3 bg-green-600 hover:bg-green-500 text-white rounded-xl text-sm font-semibold transition-colors flex items-center justify-center">
+                  {submitting ? 'Approving...' : (uploadFile ? 'Upload & Approve' : 'Auto-Generate & Approve')}
+                </button>
+              </div>
+            </div>
           </motion.div>
         </div>
       )}

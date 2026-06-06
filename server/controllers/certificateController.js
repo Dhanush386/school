@@ -129,6 +129,16 @@ const approveCertificate = async (req, res) => {
     cert.approvedBy = req.user.id;
     cert.approvedAt = new Date();
     cert.adminRemarks = req.body.remarks || '';
+
+    // If a custom PDF was uploaded, save it to the DB
+    if (req.file) {
+      cert.uploadedFile = {
+        data: req.file.buffer,
+        contentType: req.file.mimetype,
+        filename: req.file.originalname,
+      };
+    }
+
     await cert.save();
 
     await Notification.create({
@@ -205,6 +215,14 @@ const downloadCertificate = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Certificate is not yet approved' });
     }
 
+    // If an Admin manually uploaded a file, serve that file!
+    if (cert.uploadedFile && cert.uploadedFile.data) {
+      res.setHeader('Content-Type', cert.uploadedFile.contentType || 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename="${cert.uploadedFile.filename || 'Certificate.pdf'}"`);
+      return res.send(cert.uploadedFile.data);
+    }
+
+    // Otherwise, auto-generate the standard PDF
     const pdfBuffer = await generateCertificatePDF({
       certificateType: cert.type,
       studentName: cert.studentId.name,
