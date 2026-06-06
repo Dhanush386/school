@@ -88,20 +88,17 @@ const markAttendance = async (req, res) => {
       if (twilioClient && process.env.TWILIO_PHONE_NUMBER) {
         for (const user of shouldCallList) {
           if (user.phone) {
-            const twiml = new twilio.twiml.VoiceResponse();
-            twiml.say({ language: 'en-IN', voice: 'Polly.Aditi' }, `Hello. This is to inform you that your child, ${user.name}, is absent for today. Thank you.`);
-            twiml.pause({ length: 1 });
-            twiml.say({ language: 'ta-IN', voice: 'Polly.Aditi' }, `வணக்கம். உங்கள் குழந்தை ${user.name} இன்று பள்ளிக்கு வரவில்லை என்பதை தெரிவித்துக் கொள்கிறோம். நன்றி.`);
+            const messageBody = `Hello. This is to inform you that your child, ${user.name}, is absent for today. Thank you.\n\nவணக்கம். உங்கள் குழந்தை ${user.name} இன்று பள்ளிக்கு வரவில்லை என்பதை தெரிவித்துக் கொள்கிறோம். நன்றி.`;
             
             try {
-              await twilioClient.calls.create({
-                twiml: twiml.toString(),
+              await twilioClient.messages.create({
+                body: messageBody,
                 to: user.phone,
                 from: process.env.TWILIO_PHONE_NUMBER
               });
-              console.log(`Twilio call initiated for absent student ${user.name}`);
-            } catch (callErr) {
-              console.error(`Failed to initiate Twilio call for ${user.name}:`, callErr.message);
+              console.log(`Twilio SMS sent for absent student ${user.name}`);
+            } catch (smsErr) {
+              console.error(`Failed to send Twilio SMS for ${user.name}:`, smsErr.message);
             }
           }
         }
