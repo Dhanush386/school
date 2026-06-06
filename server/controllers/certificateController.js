@@ -70,7 +70,7 @@ const getMyRequests = async (req, res) => {
 
     const requests = await Certificate.find(filter)
       .sort({ createdAt: -1 })
-      .populate('reviewedBy', 'name loginId role');
+      .populate('approvedBy', 'name loginId role');
 
     return res.status(200).json({ success: true, data: requests, count: requests.length });
   } catch (error) {
@@ -100,7 +100,7 @@ const getAllRequests = async (req, res) => {
     const total = await Certificate.countDocuments(filter);
     const requests = await Certificate.find(filter)
       .populate('studentId', 'name loginId department')
-      .populate('reviewedBy', 'name loginId role')
+      .populate('approvedBy', 'name loginId role')
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(Number(limit));
@@ -143,8 +143,8 @@ const approveCertificate = async (req, res) => {
     });
 
     cert.status = 'approved';
-    cert.reviewedBy = req.user.id;
-    cert.reviewedAt = new Date();
+    cert.approvedBy = req.user.id;
+    cert.approvedAt = new Date();
     cert.adminRemarks = req.body.remarks || '';
     cert.pdfFilename = pdfFilename;
     cert.issuedAt = new Date();
@@ -187,8 +187,8 @@ const rejectCertificate = async (req, res) => {
     }
 
     cert.status = 'rejected';
-    cert.reviewedBy = req.user.id;
-    cert.reviewedAt = new Date();
+    cert.approvedBy = req.user.id;
+    cert.approvedAt = new Date();
     cert.adminRemarks = remarks.trim();
     await cert.save();
 
