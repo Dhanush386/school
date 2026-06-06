@@ -44,13 +44,11 @@ const requestCertificate = async (req, res) => {
     // Notify admins
     const adminIds = await getAdminIds();
     const notifications = adminIds.map(aid => ({
-      recipient: aid,
-      sender: req.user.id,
-      type: 'certificate_requested',
+      recipientId: aid,
+      type: 'info',
       title: 'Certificate Request',
       message: `${req.user.name} has requested a ${certificateType} certificate.`,
-      relatedId: certificate._id,
-      relatedModel: 'Certificate',
+      link: '/certificates'
     }));
     if (notifications.length) await Notification.insertMany(notifications);
 
@@ -153,13 +151,11 @@ const approveCertificate = async (req, res) => {
     await cert.save();
 
     await Notification.create({
-      recipient: cert.studentId._id,
-      sender: req.user.id,
-      type: 'certificate_approved',
+      recipientId: cert.studentId._id,
+      type: 'success',
       title: 'Certificate Ready',
       message: `Your ${cert.type} certificate has been approved and is ready for download.`,
-      relatedId: cert._id,
-      relatedModel: 'Certificate',
+      link: '/certificates'
     });
 
     return res.status(200).json({
@@ -197,13 +193,11 @@ const rejectCertificate = async (req, res) => {
     await cert.save();
 
     await Notification.create({
-      recipient: cert.studentId,
-      sender: req.user.id,
-      type: 'certificate_rejected',
+      recipientId: cert.studentId,
+      type: 'error',
       title: 'Certificate Request Rejected',
       message: `Your ${cert.type} certificate request was rejected. Reason: ${remarks.trim()}`,
-      relatedId: cert._id,
-      relatedModel: 'Certificate',
+      link: '/certificates'
     });
 
     return res.status(200).json({ success: true, message: 'Certificate request rejected', data: cert });
