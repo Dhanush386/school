@@ -137,7 +137,7 @@ const CertificateRequest = () => {
         <div className="divide-y divide-white/5">
           {requests.map(req => {
             const S = statusConfig[req.status] || statusConfig['pending'];
-            const certLabel = certTypes.find(c => c.type === req.certificateType)?.label || req.certificateType;
+            const certLabel = certTypes.find(c => c.type === req.type)?.label || req.type;
             return (
               <div key={req._id} className="flex items-center gap-4 p-4 hover:bg-white/3 transition-colors">
                 <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${S.color}`}>
