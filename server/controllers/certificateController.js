@@ -125,29 +125,10 @@ const approveCertificate = async (req, res) => {
 
     if (!cert) return res.status(404).json({ success: false, message: 'Certificate request not found' });
 
-    if (cert.status !== 'pending') {
-      return res.status(400).json({ success: false, message: `Request is already ${cert.status}` });
-    }
-
-    // Generate PDF
-    const pdfFilename = await generateCertificatePDF({
-      certificateType: cert.type,
-      studentName: cert.studentId.name,
-      studentId: cert.studentId.loginId,
-      department: cert.studentId.department,
-      className: cert.className || 'N/A',
-      academicYear: cert.academicYear || new Date().getFullYear() + '-' + (new Date().getFullYear() + 1),
-      purpose: cert.purpose,
-      remarks: req.body.remarks || '',
-      issueDate: new Date(),
-    });
-
     cert.status = 'approved';
     cert.approvedBy = req.user.id;
     cert.approvedAt = new Date();
     cert.adminRemarks = req.body.remarks || '';
-    cert.pdfFilename = pdfFilename;
-    cert.issuedAt = new Date();
     await cert.save();
 
     await Notification.create({
@@ -212,11 +193,11 @@ const rejectCertificate = async (req, res) => {
 // ── @access  Student (owner) / Admin
 const downloadCertificate = async (req, res) => {
   try {
-    const cert = await Certificate.findById(req.params.id);
+    const cert = await Certificate.findById(req.params.id).populate('studentId', 'name loginId department');
     if (!cert) return res.status(404).json({ success: false, message: 'Certificate not found' });
 
     // Access control
-    if (req.user.role === 'student' && cert.studentId.toString() !== req.user.id) {
+    if (req.user.role === 'student' && cert.studentId._id.toString() !== req.user.id) {
       return res.status(403).json({ success: false, message: 'Access denied' });
     }
 
@@ -224,17 +205,21 @@ const downloadCertificate = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Certificate is not yet approved' });
     }
 
-    if (!cert.pdfFilename) {
-      return res.status(404).json({ success: false, message: 'Certificate file not found' });
-    }
-
-    const certPath = path.join(__dirname, '..', 'uploads', 'certificates', cert.pdfFilename);
-    return res.download(certPath, cert.pdfFilename, (err) => {
-      if (err) {
-        console.error('Certificate download error:', err);
-        return res.status(500).json({ success: false, message: 'Could not download certificate' });
-      }
+    const pdfBuffer = await generateCertificatePDF({
+      certificateType: cert.type,
+      studentName: cert.studentId.name,
+      studentId: cert.studentId.loginId,
+      department: cert.studentId.department,
+      className: cert.className || 'N/A',
+      academicYear: cert.academicYear || 'N/A',
+      purpose: cert.purpose,
+      remarks: cert.adminRemarks,
+      issueDate: cert.approvedAt || new Date(),
     });
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="Certificate_${cert.type}.pdf"`);
+    return res.send(pdfBuffer);
   } catch (error) {
     console.error('downloadCertificate error:', error);
     return res.status(500).json({ success: false, message: 'Server error', error: error.message });

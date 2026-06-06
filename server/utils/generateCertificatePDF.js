@@ -264,13 +264,9 @@ const generateCertificatePDF = async ({
     { x: 60, y: 44, size: 8, font: fontRegular, color: grayColor }
   );
 
-  // ── Save ─────────────────────────────────────────────────────────────────────
+  // ── Return Buffer instead of saving to disk ──────────────────────────
   const pdfBytes = await pdfDoc.save();
-  const filename = `${certificateType}_${studentId}_${Date.now()}.pdf`;
-  const filepath = path.join(outputDir, filename);
-  fs.writeFileSync(filepath, pdfBytes);
-
-  return filename;
+  return Buffer.from(pdfBytes);
 };
 
 module.exports = generateCertificatePDF;
