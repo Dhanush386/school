@@ -24,8 +24,8 @@ const requestCertificate = async (req, res) => {
 
     // Prevent duplicate pending request for same type
     const existing = await Certificate.findOne({
-      student: req.user.id,
-      certificateType,
+      studentId: req.user.id,
+      type: certificateType,
       status: 'pending',
     });
     if (existing) {
@@ -33,8 +33,8 @@ const requestCertificate = async (req, res) => {
     }
 
     const certificate = await Certificate.create({
-      student: req.user.id,
-      certificateType,
+      studentId: req.user.id,
+      type: certificateType,
       purpose: purpose?.trim(),
       className,
       academicYear,
@@ -67,7 +67,7 @@ const requestCertificate = async (req, res) => {
 const getMyRequests = async (req, res) => {
   try {
     const { status } = req.query;
-    const filter = { student: req.user.id };
+    const filter = { studentId: req.user.id };
     if (status) filter.status = status;
 
     const requests = await Certificate.find(filter)
@@ -96,12 +96,12 @@ const getAllRequests = async (req, res) => {
         $or: [{ name: { $regex: search, $options: 'i' } }, { loginId: { $regex: search, $options: 'i' } }],
         role: 'student',
       }).select('_id');
-      filter.student = { $in: users.map(u => u._id) };
+      filter.studentId = { $in: users.map(u => u._id) };
     }
 
     const total = await Certificate.countDocuments(filter);
     const requests = await Certificate.find(filter)
-      .populate('student', 'name loginId department')
+      .populate('studentId', 'name loginId department')
       .populate('reviewedBy', 'name loginId role')
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
@@ -123,7 +123,7 @@ const getAllRequests = async (req, res) => {
 // ── @access  Admin, Principal
 const approveCertificate = async (req, res) => {
   try {
-    const cert = await Certificate.findById(req.params.id).populate('student', 'name loginId department');
+    const cert = await Certificate.findById(req.params.id).populate('studentId', 'name loginId department');
 
     if (!cert) return res.status(404).json({ success: false, message: 'Certificate request not found' });
 
@@ -133,10 +133,10 @@ const approveCertificate = async (req, res) => {
 
     // Generate PDF
     const pdfFilename = await generateCertificatePDF({
-      certificateType: cert.certificateType,
-      studentName: cert.student.name,
-      studentId: cert.student.loginId,
-      department: cert.student.department,
+      certificateType: cert.type,
+      studentName: cert.studentId.name,
+      studentId: cert.studentId.loginId,
+      department: cert.studentId.department,
       className: cert.className || 'N/A',
       academicYear: cert.academicYear || new Date().getFullYear() + '-' + (new Date().getFullYear() + 1),
       purpose: cert.purpose,
@@ -153,11 +153,11 @@ const approveCertificate = async (req, res) => {
     await cert.save();
 
     await Notification.create({
-      recipient: cert.student._id,
+      recipient: cert.studentId._id,
       sender: req.user.id,
       type: 'certificate_approved',
       title: 'Certificate Ready',
-      message: `Your ${cert.certificateType} certificate has been approved and is ready for download.`,
+      message: `Your ${cert.type} certificate has been approved and is ready for download.`,
       relatedId: cert._id,
       relatedModel: 'Certificate',
     });
@@ -197,11 +197,11 @@ const rejectCertificate = async (req, res) => {
     await cert.save();
 
     await Notification.create({
-      recipient: cert.student,
+      recipient: cert.studentId,
       sender: req.user.id,
       type: 'certificate_rejected',
       title: 'Certificate Request Rejected',
-      message: `Your ${cert.certificateType} certificate request was rejected. Reason: ${remarks.trim()}`,
+      message: `Your ${cert.type} certificate request was rejected. Reason: ${remarks.trim()}`,
       relatedId: cert._id,
       relatedModel: 'Certificate',
     });
@@ -222,7 +222,7 @@ const downloadCertificate = async (req, res) => {
     if (!cert) return res.status(404).json({ success: false, message: 'Certificate not found' });
 
     // Access control
-    if (req.user.role === 'student' && cert.student.toString() !== req.user.id) {
+    if (req.user.role === 'student' && cert.studentId.toString() !== req.user.id) {
       return res.status(403).json({ success: false, message: 'Access denied' });
     }
 

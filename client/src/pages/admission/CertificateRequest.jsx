@@ -144,7 +144,7 @@ const CertificateRequest = () => {
                   <S.icon className="text-lg" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-white text-sm font-medium">{isAuthority && req.student ? `${req.student.name} - ${certLabel}` : certLabel}</p>
+                  <p className="text-white text-sm font-medium">{isAuthority && req.studentId ? `${req.studentId.name} - ${certLabel}` : certLabel}</p>
                   <p className="text-slate-400 text-xs mt-0.5">{req.purpose} · {new Date(req.createdAt).toLocaleDateString()}</p>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">

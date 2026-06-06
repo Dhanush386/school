@@ -20,6 +20,14 @@ const certificateSchema = new mongoose.Schema(
       required: [true, 'Purpose is required'],
       trim: true,
     },
+    className: {
+      type: String,
+      trim: true,
+    },
+    academicYear: {
+      type: String,
+      trim: true,
+    },
     status: {
       type: String,
       enum: {
