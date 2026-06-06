@@ -60,6 +60,7 @@ const cronRoutes       = require('./routes/cron.routes');
 const userRoutesLocal  = require('./routes/user.routes');
 const notificationRoutes = require('./routes/notification.routes');
 const dashboardRoutes  = require('./routes/dashboard.routes');
+const certificateRoutes = require('./routes/certificate.routes');
 const { initCronJobs } = require('./cron/reminderJobs');
 
 // ---------------------------------------------------------------------------
@@ -139,6 +140,7 @@ app.use('/api/library',    libraryRoutes);
 app.use('/api/feedback',   feedbackRoutes);
 app.use('/api/transport',  transportRoutes);
 app.use('/api/complaints', complaintsRoutes);
+app.use('/api/certificates', certificateRoutes);
 app.use('/api/payment',    paymentRoutes);
 app.use('/api/cron',       cronRoutes);
 app.use('/api/users',      userRoutesLocal);

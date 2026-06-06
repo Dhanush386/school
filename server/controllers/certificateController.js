@@ -17,7 +17,7 @@ const requestCertificate = async (req, res) => {
   try {
     const { certificateType, purpose, className, academicYear } = req.body;
 
-    const validTypes = ['bonafide', 'transfer', 'conduct', 'study'];
+    const validTypes = ['bonafide', 'transfer', 'completion', 'character', 'migration'];
     if (!certificateType || !validTypes.includes(certificateType)) {
       return res.status(400).json({ success: false, message: `certificateType must be one of: ${validTypes.join(', ')}` });
     }

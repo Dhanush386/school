@@ -55,10 +55,10 @@ export const feedbackService = {
 
 export const certificateService = {
   request: (data) => api.post('/certificates/request', data),
-  getMy: () => api.get('/certificates/mine'),
-  getAll: () => api.get('/certificates/all'),
-  approve: (id) => api.put(`/certificates/${id}/approve`),
-  reject: (id, remarks) => api.put(`/certificates/${id}/reject`, { remarks }),
+  getMy: () => api.get('/certificates/my'),
+  getAll: (params) => api.get('/certificates', { params }),
+  approve: (id) => api.patch(`/certificates/${id}/approve`),
+  reject: (id, remarks) => api.patch(`/certificates/${id}/reject`, { remarks }),
   download: (id) => api.get(`/certificates/${id}/download`, { responseType: 'blob' }),
 };
 

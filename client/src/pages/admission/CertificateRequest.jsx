@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { MdSchool, MdCheckCircle, MdClose, MdHourglassEmpty, MdDownload } from 'react-icons/md';
 import { fadeInUp } from '../../animations/fadeIn';
 import { staggerContainer, staggerItem } from '../../animations/stagger';
 import toast from 'react-hot-toast';
 import { useAuth } from '../../context/AuthContext';
+import { certificateService } from '../../services/moduleServices';
 
 const certTypes = [
   { type: 'bonafide', label: 'Bonafide Certificate', description: 'Certifies you are a genuine student of this institution.', turnaround: '2-3 working days', icon: '🎓', color: 'from-blue-500 to-cyan-600' },
@@ -21,31 +22,83 @@ const statusConfig = {
   rejected: { label: 'Rejected', color: 'bg-red-500/20 text-red-400', icon: MdClose },
 };
 
-const mockRequests = [
-  { id: 1, type: 'bonafide', label: 'Bonafide Certificate', purpose: 'Bank account opening', date: '2024-06-10', status: 'ready' },
-  { id: 2, type: 'character', label: 'Character Certificate', purpose: 'Job application', date: '2024-06-18', status: 'pending' },
-];
-
 const CertificateRequest = () => {
   const { user } = useAuth();
-  const [requests, setRequests] = useState(mockRequests);
+  const [requests, setRequests] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedType, setSelectedType] = useState(null);
   const [purpose, setPurpose] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const isAuthority = user?.role === 'admin' || user?.role === 'principal';
 
+  const fetchRequests = useCallback(async () => {
+    try {
+      const res = isAuthority ? await certificateService.getAll() : await certificateService.getMy();
+      if (res.data.success) {
+        setRequests(res.data.data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch certificate requests', error);
+    }
+  }, [isAuthority]);
+
+  useEffect(() => {
+    fetchRequests();
+  }, [fetchRequests]);
+
   const handleRequest = async (e) => {
     e.preventDefault();
     if (!purpose.trim()) { toast.error('Please describe the purpose.'); return; }
     setSubmitting(true);
-    await new Promise(r => setTimeout(r, 1200));
-    const ct = certTypes.find(c => c.type === selectedType);
-    setRequests(prev => [{ id: Date.now(), type: selectedType, label: ct.label, purpose, date: new Date().toISOString().split('T')[0], status: 'pending' }, ...prev]);
-    setShowModal(false);
-    setPurpose('');
-    toast.success('Certificate request submitted!');
-    setSubmitting(false);
+    try {
+      await certificateService.request({ certificateType: selectedType, purpose });
+      toast.success('Certificate request submitted!');
+      setShowModal(false);
+      setPurpose('');
+      fetchRequests();
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to submit request');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleApprove = async (id) => {
+    try {
+      await certificateService.approve(id);
+      toast.success('Approved!');
+      fetchRequests();
+    } catch (error) {
+      toast.error('Failed to approve');
+    }
+  };
+
+  const handleReject = async (id) => {
+    const remarks = window.prompt("Enter rejection reason:");
+    if (!remarks) return;
+    try {
+      await certificateService.reject(id, remarks);
+      toast.error('Rejected');
+      fetchRequests();
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to reject');
+    }
+  };
+
+  const handleDownload = async (id) => {
+    try {
+      toast.success('Downloading certificate...');
+      const res = await certificateService.download(id);
+      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `certificate-${id}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+    } catch (error) {
+      toast.error('Download failed');
+    }
   };
 
   return (
@@ -83,29 +136,30 @@ const CertificateRequest = () => {
         </div>
         <div className="divide-y divide-white/5">
           {requests.map(req => {
-            const S = statusConfig[req.status];
+            const S = statusConfig[req.status] || statusConfig['pending'];
+            const certLabel = certTypes.find(c => c.type === req.certificateType)?.label || req.certificateType;
             return (
-              <div key={req.id} className="flex items-center gap-4 p-4 hover:bg-white/3 transition-colors">
+              <div key={req._id} className="flex items-center gap-4 p-4 hover:bg-white/3 transition-colors">
                 <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${S.color}`}>
                   <S.icon className="text-lg" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-white text-sm font-medium">{req.label}</p>
-                  <p className="text-slate-400 text-xs mt-0.5">{req.purpose} · {req.date}</p>
+                  <p className="text-white text-sm font-medium">{isAuthority && req.student ? `${req.student.name} - ${certLabel}` : certLabel}</p>
+                  <p className="text-slate-400 text-xs mt-0.5">{req.purpose} · {new Date(req.createdAt).toLocaleDateString()}</p>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <span className={`text-xs px-2 py-1 rounded-lg font-medium ${S.color}`}>{S.label}</span>
-                  {req.status === 'ready' && (
-                    <button onClick={() => toast.success('Downloading certificate...')}
+                  {(req.status === 'ready' || req.status === 'approved') && (
+                    <button onClick={() => handleDownload(req._id)}
                       className="flex items-center gap-1 px-3 py-1.5 bg-green-600/20 text-green-400 rounded-lg text-xs hover:bg-green-600/30 transition-colors">
                       <MdDownload /> Download
                     </button>
                   )}
                   {isAuthority && req.status === 'pending' && (
                     <div className="flex gap-1">
-                      <button onClick={() => { setRequests(prev => prev.map(r => r.id === req.id ? { ...r, status: 'ready' } : r)); toast.success('Approved!'); }}
+                      <button onClick={() => handleApprove(req._id)}
                         className="px-2 py-1 bg-green-600/20 text-green-400 rounded-lg text-xs hover:bg-green-600/30">Approve</button>
-                      <button onClick={() => { setRequests(prev => prev.map(r => r.id === req.id ? { ...r, status: 'rejected' } : r)); toast.error('Rejected'); }}
+                      <button onClick={() => handleReject(req._id)}
                         className="px-2 py-1 bg-red-600/20 text-red-400 rounded-lg text-xs hover:bg-red-600/30">Reject</button>
                     </div>
                   )}
@@ -113,6 +167,11 @@ const CertificateRequest = () => {
               </div>
             );
           })}
+          {requests.length === 0 && (
+            <div className="p-8 text-center text-slate-500 text-sm">
+              No certificate requests found.
+            </div>
+          )}
         </div>
       </motion.div>
 
