@@ -33,7 +33,7 @@ const CertificateRequest = () => {
   const [selectedType, setSelectedType] = useState(null);
   const [purpose, setPurpose] = useState('');
   const [submitting, setSubmitting] = useState(false);
-  const isAdmin = user?.role === 'admin';
+  const isAuthority = user?.role === 'admin' || user?.role === 'principal';
 
   const handleRequest = async (e) => {
     e.preventDefault();
@@ -56,7 +56,8 @@ const CertificateRequest = () => {
       </motion.div>
 
       {/* Certificate Types */}
-      <motion.div variants={staggerContainer} initial="initial" animate="animate" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {!isAuthority && (
+        <motion.div variants={staggerContainer} initial="initial" animate="animate" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {certTypes.map(cert => (
           <motion.div key={cert.type} variants={staggerItem} whileHover={{ y: -4 }}
             className="rounded-2xl p-5 border border-white/5" style={{ background: 'rgba(30,41,59,0.8)' }}>
@@ -72,12 +73,13 @@ const CertificateRequest = () => {
             </button>
           </motion.div>
         ))}
-      </motion.div>
+        </motion.div>
+      )}
 
       {/* My Requests */}
       <motion.div variants={fadeInUp} className="rounded-2xl border border-white/5 overflow-hidden" style={{ background: 'rgba(30,41,59,0.8)' }}>
         <div className="p-5 border-b border-white/5">
-          <h3 className="text-white font-semibold">{isAdmin ? 'All Requests' : 'My Requests'}</h3>
+          <h3 className="text-white font-semibold">{isAuthority ? 'All Requests' : 'My Requests'}</h3>
         </div>
         <div className="divide-y divide-white/5">
           {requests.map(req => {
@@ -99,7 +101,7 @@ const CertificateRequest = () => {
                       <MdDownload /> Download
                     </button>
                   )}
-                  {isAdmin && req.status === 'pending' && (
+                  {isAuthority && req.status === 'pending' && (
                     <div className="flex gap-1">
                       <button onClick={() => { setRequests(prev => prev.map(r => r.id === req.id ? { ...r, status: 'ready' } : r)); toast.success('Approved!'); }}
                         className="px-2 py-1 bg-green-600/20 text-green-400 rounded-lg text-xs hover:bg-green-600/30">Approve</button>
