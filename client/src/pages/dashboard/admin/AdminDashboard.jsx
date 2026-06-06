@@ -14,6 +14,7 @@ import { useAuth } from '../../../context/AuthContext';
 import { staggerContainer, staggerItem } from '../../../animations/stagger';
 import { fadeInUp } from '../../../animations/fadeIn';
 import { dashboardService } from '../../../services/moduleServices';
+import Tilt3DCard from '../../../components/3d/Tilt3DCard';
 
 // Dummy fallback for charts since they are complex to aggregate purely backend
 const revenueData = [
@@ -110,20 +111,22 @@ const AdminDashboard = () => {
       {/* Stats Grid */}
       <motion.div variants={staggerContainer} initial="initial" animate="animate" className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         {stats.map(s => (
-          <motion.div key={s.label} variants={staggerItem} whileHover={{ y: -4 }}
-            className="rounded-2xl p-5 border border-slate-200 relative overflow-hidden" style={{ background: 'rgba(255,255,255,1)' }}>
-            <div className={`absolute top-0 right-0 w-28 h-28 rounded-full blur-3xl opacity-10 bg-gradient-to-br ${s.color}`} />
-            <div className="relative flex items-start justify-between">
-              <div>
-                <p className="text-slate-500 text-xs font-medium uppercase tracking-wider">{s.label}</p>
-                <p className="text-slate-900 text-2xl font-bold mt-1">{s.value}</p>
-                <p className="text-slate-500 text-xs mt-1">{s.sub}</p>
+          <Tilt3DCard key={s.label}>
+            <motion.div variants={staggerItem}
+              className="rounded-2xl p-5 border border-slate-200 relative overflow-hidden" style={{ background: 'rgba(255,255,255,1)' }}>
+              <div className={`absolute top-0 right-0 w-28 h-28 rounded-full blur-3xl opacity-10 bg-gradient-to-br ${s.color}`} />
+              <div className="relative flex items-start justify-between">
+                <div>
+                  <p className="text-slate-500 text-xs font-medium uppercase tracking-wider">{s.label}</p>
+                  <p className="text-slate-900 text-2xl font-bold mt-1">{s.value}</p>
+                  <p className="text-slate-500 text-xs mt-1">{s.sub}</p>
+                </div>
+                <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${s.color} flex items-center justify-center shadow-lg`}>
+                  <s.icon className="text-white text-lg" />
+                </div>
               </div>
-              <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${s.color} flex items-center justify-center shadow-lg`}>
-                <s.icon className="text-white text-lg" />
-              </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </Tilt3DCard>
         ))}
       </motion.div>
 

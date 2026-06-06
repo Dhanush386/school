@@ -12,6 +12,7 @@ import { useAuth } from '../../../context/AuthContext';
 import { staggerContainer, staggerItem } from '../../../animations/stagger';
 import { fadeInUp } from '../../../animations/fadeIn';
 import { dashboardService } from '../../../services/moduleServices';
+import Tilt3DCard from '../../../components/3d/Tilt3DCard';
 
 const cardStyle = {
   background: 'rgba(255,255,255,1)',
@@ -60,17 +61,19 @@ const statusBadge = (status) => {
 };
 
 const StatCard = ({ icon: Icon, label, value, color, sub }) => (
-  <motion.div variants={staggerItem} style={cardStyle}
-    className="rounded-2xl p-5 border border-slate-200 flex items-center gap-4 hover:shadow-sm transition-shadow">
-    <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${color}`}>
-      <Icon className="text-white text-2xl" />
-    </div>
-    <div>
-      <p className="text-slate-500 text-sm font-medium">{label}</p>
-      <p className="text-slate-900 text-2xl font-bold">{value}</p>
-      {sub && <p className="text-slate-500 text-xs mt-0.5">{sub}</p>}
-    </div>
-  </motion.div>
+  <Tilt3DCard>
+    <motion.div variants={staggerItem} style={cardStyle}
+      className="rounded-2xl p-5 border border-slate-200 flex items-center gap-4 hover:shadow-sm transition-shadow">
+      <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${color}`}>
+        <Icon className="text-white text-2xl" />
+      </div>
+      <div>
+        <p className="text-slate-500 text-sm font-medium">{label}</p>
+        <p className="text-slate-900 text-2xl font-bold">{value}</p>
+        {sub && <p className="text-slate-500 text-xs mt-0.5">{sub}</p>}
+      </div>
+    </motion.div>
+  </Tilt3DCard>
 );
 
 export default function TeacherDashboard() {
