@@ -113,12 +113,27 @@ const LandingPage = () => {
             className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
               index === currentSlide ? 'opacity-100 z-0' : 'opacity-0 -z-10'
             }`}
-            style={{
-              backgroundImage: `url('${src}')`,
-              backgroundSize: "cover",
-              backgroundPosition: "center"
-            }}
-          />
+          >
+            {/* Blurred background to fill empty space */}
+            <div 
+              className="absolute inset-0 blur-lg scale-110 opacity-30"
+              style={{
+                backgroundImage: `url('${src}')`,
+                backgroundSize: "cover",
+                backgroundPosition: "center"
+              }}
+            />
+            {/* Foreground image fitted without cropping */}
+            <div 
+              className="absolute inset-0"
+              style={{
+                backgroundImage: `url('${src}')`,
+                backgroundSize: "contain",
+                backgroundPosition: "center",
+                backgroundRepeat: "no-repeat"
+              }}
+            />
+          </div>
         ))}
 
         {/* Overlay gradient to ensure text readability */}
