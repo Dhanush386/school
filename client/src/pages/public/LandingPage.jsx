@@ -60,7 +60,25 @@ const HeroTypewriter = () => {
   );
 };
 
+const carouselImages = [
+  '/hero-image/slide1.jpeg',
+  '/hero-image/slide2.jpeg',
+  'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80'
+];
+
 const LandingPage = () => {
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % carouselImages.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % carouselImages.length);
+  const prevSlide = () => setCurrentSlide((prev) => (prev === 0 ? carouselImages.length - 1 : prev - 1));
+
   return (
     <div className="min-h-screen flex flex-col font-sans">
       {/* Top Bar */}
@@ -87,19 +105,36 @@ const LandingPage = () => {
       <PublicHeader />
 
       {/* Hero Section */}
-      <div className="relative flex-1 bg-slate-900 overflow-hidden flex flex-col justify-center min-h-[600px]" style={{
-        backgroundImage: "url('https://images.unsplash.com/photo-1541339907198-e08756dedf3f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80')",
-        backgroundSize: "cover",
-        backgroundPosition: "center"
-      }}>
+      <div className="relative flex-1 bg-slate-900 overflow-hidden flex flex-col justify-center min-h-[600px]">
+        {/* Carousel Background Images */}
+        {carouselImages.map((src, index) => (
+          <div
+            key={src}
+            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+              index === currentSlide ? 'opacity-100 z-0' : 'opacity-0 -z-10'
+            }`}
+            style={{
+              backgroundImage: `url('${src}')`,
+              backgroundSize: "cover",
+              backgroundPosition: "center"
+            }}
+          />
+        ))}
+
         {/* Overlay gradient to ensure text readability */}
-        <div className="absolute inset-0 bg-black/30"></div>
+        <div className="absolute inset-0 bg-black/50 z-0"></div>
 
         {/* Left/Right Carousel Controls */}
-        <button className="absolute left-4 top-1/2 -translate-y-1/2 text-white/70 hover:text-white transition-colors">
+        <button 
+          onClick={prevSlide}
+          className="absolute left-4 top-1/2 -translate-y-1/2 text-white/70 hover:text-white transition-colors z-20"
+        >
           <MdArrowBackIos className="text-5xl" />
         </button>
-        <button className="absolute right-4 top-1/2 -translate-y-1/2 text-white/70 hover:text-white transition-colors">
+        <button 
+          onClick={nextSlide}
+          className="absolute right-4 top-1/2 -translate-y-1/2 text-white/70 hover:text-white transition-colors z-20"
+        >
           <MdArrowForwardIos className="text-5xl" />
         </button>
 
