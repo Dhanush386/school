@@ -115,8 +115,8 @@ const LandingPage = () => {
             }`}
             style={{
               backgroundImage: `url('${src}')`,
-              backgroundSize: "cover",
-              backgroundPosition: "top center",
+              backgroundSize: "100% 100%",
+              backgroundPosition: "center",
               backgroundRepeat: "no-repeat"
             }}
           />
